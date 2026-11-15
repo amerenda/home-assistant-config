@@ -24,6 +24,52 @@ views:
           - entity: input_boolean.ha_automation_enabled
             name: Automations Active
 
+      # ── Security cameras ───────────────────────────────────
+      - type: vertical-stack
+        cards:
+          - type: glance
+            title: Security Cameras
+            show_state: true
+            state_color: true
+            entities:
+              - entity: switch.living_room_privacy_mode
+                name: Living Room
+                tap_action:
+                  action: none
+              - entity: switch.bedroom_privacy_mode
+                name: Bedroom
+                tap_action:
+                  action: none
+              - entity: switch.kitchen_privacy_mode
+                name: Kitchen
+                tap_action:
+                  action: none
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Cameras On
+                icon: mdi:cctv
+                show_state: false
+                tap_action:
+                  action: perform-action
+                  perform_action: script.cameras_manual_on
+                  confirmation:
+                    text: Turn the cameras on? They stay on until the next arrival or departure.
+              - type: button
+                name: Cameras Off
+                icon: mdi:cctv-off
+                show_state: false
+                tap_action:
+                  action: perform-action
+                  perform_action: script.cameras_manual_off
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_boolean.camera_manual_override
+                name: Manual override (off = automations in control)
+              - entity: input_boolean.master_automation_pause
+                name: Pause all automations (forces cameras off)
+
       # ── On arrival ─────────────────────────────────────────
       - type: entities
         title: On Arrival

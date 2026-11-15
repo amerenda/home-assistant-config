@@ -1,0 +1,119 @@
+# Camera privacy control shared by the presence automations and the dashboards.
+# Dashboard buttons run the same automations as presence (security_everyone_left /
+# security_someone_home), so "off" always goes preset "off" -> LED off -> privacy.
+
+input_boolean:
+  camera_manual_override:
+    name: "Cameras: manual override"
+    icon: mdi:hand-back-right
+
+script:
+  cameras_manual_on:
+    alias: "Cameras: on (dashboard)"
+    description: Hold the cameras on until the next arrival or departure, through the automation that turns them on when everyone leaves.
+    mode: restart
+    icon: mdi:cctv
+    sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.camera_manual_override
+      - action: automation.trigger
+        target:
+          entity_id: automation.security_everyone_left_cameras_on
+        data:
+          skip_condition: true
+
+  cameras_manual_off:
+    alias: "Cameras: off (dashboard)"
+    description: Turn the cameras to preset "off" and into privacy until the next arrival or departure, through the automation that runs when someone comes home.
+    mode: restart
+    icon: mdi:cctv-off
+    sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.camera_manual_override
+      - action: automation.trigger
+        target:
+          entity_id: automation.security_someone_home_cameras_off
+        data:
+          skip_condition: true
+
+automation:
+  - id: camera_manual_override_clear
+    alias: "Cameras: hand back to automations on arrival/departure"
+    description: A real presence change ends a dashboard override, so the presence automations are in charge again.
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.anyone_home
+        from: ["on", "off"]
+        to: ["on", "off"]
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.camera_manual_override
+
+  - id: security_privacy_monitor_debounced
+    alias: "Security: Privacy Monitor (debounced)"
+    description: >
+      Every minute and at HA start, re-sync camera privacy to occupancy. Privacy on right away
+      when someone is home; cameras on only after nobody has been home for 5 minutes (a 107 s
+      GPS false-away turned them on with Alex home, 2026-11-14). Skipped while the master pause
+      or the dashboard manual override is on.
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: time_pattern
+        minutes: "/1"
+      - trigger: homeassistant
+        event: start
+    conditions:
+      - condition: state
+        entity_id: input_boolean.master_automation_pause
+        state: "off"
+      - condition: state
+        entity_id: input_boolean.camera_manual_override
+        state: "off"
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.anyone_home
+            state: ["unavailable", "unknown"]
+    actions:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.anyone_home
+                state: "on"
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: switch.bedroom_privacy_mode
+                    state: "off"
+                  - condition: state
+                    entity_id: switch.living_room_privacy_mode
+                    state: "off"
+                  - condition: state
+                    entity_id: switch.kitchen_privacy_mode
+                    state: "off"
+            sequence:
+              - action: script.camera_privacy_on
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.anyone_home
+                state: "off"
+                for:
+                  minutes: 5
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: switch.bedroom_privacy_mode
+                    state: "on"
+                  - condition: state
+                    entity_id: switch.living_room_privacy_mode
+                    state: "on"
+                  - condition: state
+                    entity_id: switch.kitchen_privacy_mode
+                    state: "on"
+            sequence:
+              - action: script.camera_privacy_off

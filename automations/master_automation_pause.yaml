@@ -46,8 +46,11 @@ action:
               entity_id:
                 - input_boolean.ha_automation_enabled
                 - input_boolean.sl_enabled
+          - service: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.camera_manual_override
           - service: automation.trigger
             target:
-              entity_id: automation.security_privacy_monitor_drift_correction
+              entity_id: automation.security_privacy_monitor_debounced
             data:
               skip_condition: true
