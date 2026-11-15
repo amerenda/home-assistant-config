@@ -70,6 +70,26 @@ views:
       grid_options:
         columns: full
     - type: entities
+      title: Bedroom AC night mode
+      show_header_toggle: false
+      grid_options:
+        columns: full
+      entities:
+      - entity: input_boolean.bedroom_ac_night_enabled
+        name: Night mode
+      - entity: input_select.bedroom_ac_night_fan
+        name: Night fan
+      - entity: input_boolean.bedroom_ac_night_temp_enabled
+        name: Set night temperature (cool/dry/auto only)
+      - entity: input_number.bedroom_ac_night_temp
+        name: Night temperature
+      - entity: input_boolean.bedroom_ac_night_active
+        name: Active now
+        tap_action:
+          action: none
+      - entity: sensor.sl_current_window
+        name: Lighting window
+    - type: entities
       title: Sensor batteries
       entities:
       - entity: sensor.living_room_t_1_battery

@@ -1,0 +1,157 @@
+# Bedroom AC night mode. Triggers on the lighting window (sensor.sl_current_window), never on clock
+# times, so it follows schedule edits and later sunset-based windows.
+# Night + bedroom lights off + AC on -> sound off, display off, fan to the chosen level, optional
+# night temperature. Morning window -> undo (fan and temperature back to what they were).
+
+input_boolean:
+  bedroom_ac_night_enabled:
+    name: "Bedroom AC: night mode"
+    icon: mdi:weather-night
+  bedroom_ac_night_temp_enabled:
+    name: "Bedroom AC: set night temperature"
+    icon: mdi:thermometer-auto
+  bedroom_ac_night_active:
+    name: "Bedroom AC: night mode active"
+    icon: mdi:sleep
+
+input_select:
+  bedroom_ac_night_fan:
+    name: "Bedroom AC: night fan"
+    icon: mdi:fan-chevron-down
+    options:
+      - silent
+      - low
+      - medium
+      - auto
+
+input_number:
+  bedroom_ac_night_temp:
+    name: "Bedroom AC: night temperature"
+    icon: mdi:thermometer
+    min: 16
+    max: 30
+    step: 0.5
+    unit_of_measurement: "°C"
+    mode: box
+
+input_text:
+  bedroom_ac_night_saved:
+    name: "Bedroom AC: settings before night mode"
+    max: 255
+
+automation:
+  - id: bedroom_ac_night_on
+    alias: "Bedroom AC: night mode on"
+    description: Night window, bedroom lights off and the AC running -> quiet the AC. Re-checked when any of the three changes.
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: sensor.sl_current_window
+        to: night
+      - trigger: state
+        entity_id: light.bedroom
+        to: "off"
+        for:
+          minutes: 1
+      - trigger: state
+        entity_id: climate.151732607639365_climate
+        from: "off"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.bedroom_ac_night_enabled
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.bedroom_ac_night_active
+        state: "off"
+      - condition: state
+        entity_id: sensor.sl_current_window
+        state: night
+      - condition: state
+        entity_id: light.bedroom
+        state: "off"
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: climate.151732607639365_climate
+            state: ["off", "unavailable", "unknown"]
+    actions:
+      - variables:
+          ac: climate.151732607639365_climate
+          set_temp: >-
+            {{ is_state('input_boolean.bedroom_ac_night_temp_enabled', 'on')
+               and states(ac) in ['cool', 'dry', 'auto'] }}
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.bedroom_ac_night_saved
+        data:
+          value: >-
+            {{ {'fan': state_attr(ac, 'fan_mode'),
+                'temp': state_attr(ac, 'temperature') if set_temp else none} | to_json }}
+      # Sound first, so the commands below do not beep.
+      - action: switch.turn_off
+        target:
+          entity_id: switch.151732607639365_sound
+        continue_on_error: true
+      - action: switch.turn_off
+        target:
+          entity_id: switch.151732607639365_screen_display
+        continue_on_error: true
+      - action: climate.set_fan_mode
+        target:
+          entity_id: "{{ ac }}"
+        data:
+          fan_mode: "{{ states('input_select.bedroom_ac_night_fan') }}"
+        continue_on_error: true
+      - if: "{{ set_temp }}"
+        then:
+          - action: climate.set_temperature
+            target:
+              entity_id: "{{ ac }}"
+            data:
+              temperature: "{{ states('input_number.bedroom_ac_night_temp') | float }}"
+            continue_on_error: true
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.bedroom_ac_night_active
+
+  - id: bedroom_ac_night_off
+    alias: "Bedroom AC: night mode off (morning)"
+    description: Morning window -> sound and display back on, fan and temperature back to what they were before night mode.
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: sensor.sl_current_window
+        to: morning
+    conditions:
+      - condition: state
+        entity_id: input_boolean.bedroom_ac_night_active
+        state: "on"
+    actions:
+      - variables:
+          ac: climate.151732607639365_climate
+          saved: "{{ states('input_text.bedroom_ac_night_saved') | from_json(default={}) }}"
+      - action: climate.set_fan_mode
+        target:
+          entity_id: "{{ ac }}"
+        data:
+          fan_mode: "{{ saved.fan | default('auto', true) }}"
+        continue_on_error: true
+      - if: "{{ saved.temp is not none and saved.temp is defined }}"
+        then:
+          - action: climate.set_temperature
+            target:
+              entity_id: "{{ ac }}"
+            data:
+              temperature: "{{ saved.temp | float }}"
+            continue_on_error: true
+      - action: switch.turn_on
+        target:
+          entity_id: switch.151732607639365_screen_display
+        continue_on_error: true
+      - action: switch.turn_on
+        target:
+          entity_id: switch.151732607639365_sound
+        continue_on_error: true
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.bedroom_ac_night_active
