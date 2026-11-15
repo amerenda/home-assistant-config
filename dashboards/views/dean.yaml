@@ -1,0 +1,308 @@
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    # Hide unavailable entities and specific entity configurations
+    card_options:
+      # Camera cards - hide when privacy mode is enabled
+      camera.bedroom_fluent:
+        hidden: "{{ is_state('switch.bedroom_privacy_mode', 'on') }}"
+      camera.living_room_fluent:
+        hidden: "{{ is_state('switch.living_room_privacy_mode', 'on') }}"
+      camera.kitchen_fluent:
+        hidden: "{{ is_state('switch.kitchen_privacy_mode', 'on') }}"
+      # Hide individual lights that duplicate single-member groups
+      light.fixture:
+        hidden: true
+      light.bathroom_1:
+        hidden: true
+      light.hallway_1:
+        hidden: true
+      # Hide PTZ and guard buttons, sirens, and motion/animal sensors for bedroom, living room and kitchen when unavailable
+      # Bedroom entities
+      button.bedroom_guard_go_to:
+        hidden: true
+      button.bedroom_ptz_down:
+        hidden: true
+      button.bedroom_ptz_left:
+        hidden: true
+      button.bedroom_ptz_right:
+        hidden: true
+      button.bedroom_ptz_up:
+        hidden: true
+      button.bedroom_ptz_stop:
+        hidden: true
+      siren.bedroom_siren:
+        hidden: true
+      binary_sensor.bedroom_animal:
+        hidden: true
+      binary_sensor.bedroom_motion:
+        hidden: true
+      binary_sensor.bedroom_baby_crying:
+        hidden: true
+      binary_sensor.bedroom_person:
+        hidden: true
+
+      # Living room entities
+      button.living_room_guard_go_to:
+        hidden: true
+      button.living_room_ptz_down:
+        hidden: true
+      button.living_room_ptz_left:
+        hidden: true
+      button.living_room_ptz_right:
+        hidden: true
+      button.living_room_ptz_up:
+        hidden: true
+      button.living_room_ptz_stop:
+        hidden: true
+      siren.living_room_siren:
+        hidden: true
+      binary_sensor.living_room_animal:
+        hidden: true
+      binary_sensor.living_room_motion:
+        hidden: true
+      binary_sensor.living_room_baby_crying:
+        hidden: true
+      binary_sensor.living_room_person:
+        hidden: true
+
+      # Kitchen entities
+      button.kitchen_guard_go_to:
+        hidden: true
+      button.kitchen_ptz_down:
+        hidden: true
+      button.kitchen_ptz_left:
+        hidden: true
+      button.kitchen_ptz_right:
+        hidden: true
+      button.kitchen_ptz_up:
+        hidden: true
+      button.kitchen_ptz_stop:
+        hidden: true
+      siren.kitchen_siren:
+        hidden: true
+      binary_sensor.kitchen_animal:
+        hidden: true
+      binary_sensor.kitchen_motion:
+        hidden: true
+      binary_sensor.kitchen_baby_crying:
+        hidden: true
+      binary_sensor.kitchen_person:
+        hidden: true
+
+    # Hide unavailable entities using card_options templates
+    # Note: mushroom-strategy doesn't support domain-level filtering by state
+    # We need to add specific entities here as they're discovered
+    # Alternatively, entities can be hidden individually in card_options above
+
+    # Quick access cards (between greeting and area cards)
+    # Extra cards (below area cards)
+    extra_cards:
+      - type: custom:mushroom-title-card
+        title: Lights
+      - type: custom:mushroom-template-card
+        primary: All Lights
+        secondary: >
+          {% set on_count = [
+            is_state('light.living_room', 'on'),
+            is_state('light.bedroom', 'on'),
+            is_state('light.bathroom', 'on'),
+            is_state('light.kitchen', 'on'),
+            is_state('light.hallway', 'on')
+          ] | select('true') | list | count %}
+          {{ on_count }} of 5 rooms on
+        icon: mdi:lightbulb-group
+        icon_color: >
+          {% if is_state('light.living_room', 'on')
+             or is_state('light.bedroom', 'on')
+             or is_state('light.bathroom', 'on')
+             or is_state('light.kitchen', 'on')
+             or is_state('light.hallway', 'on') %}
+            amber
+          {% else %}
+            disabled
+          {% endif %}
+        tap_action:
+          action: call-service
+          service: script.sl_toggle_all
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Morning
+            icon: mdi:weather-sunset-up
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.sl_all_rooms_scene
+              data:
+                window: morning
+          - type: button
+            name: Day
+            icon: mdi:weather-sunny
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.sl_all_rooms_scene
+              data:
+                window: day
+          - type: button
+            name: Evening
+            icon: mdi:weather-sunset-down
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.sl_all_rooms_scene
+              data:
+                window: evening
+          - type: button
+            name: Night
+            icon: mdi:weather-night
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.sl_all_rooms_scene
+              data:
+                window: night
+
+      - type: custom:mushroom-title-card
+        title: Latest Pet Detection
+      - type: conditional
+        conditions:
+          - entity: input_text.event_image_location
+            state_not: ""
+          - entity: input_text.event_image_location
+            state_not: "unknown"
+        card:
+          type: markdown
+          content: >
+            {% set loc = states('input_text.event_image_location') %}
+            {% set ts = states('input_text.event_image_timestamp') %}
+            ![Pet](/local/pets/{{ loc }}_{{ ts }}.jpg)
+
+    # Area configuration
+    areas:
+      living_room:
+        name: Living Room
+        icon: mdi:sofa
+        icon_color: blue
+        order: 1
+        extra_cards:
+          - type: conditional
+            conditions:
+              - entity: switch.living_room_privacy_mode
+                state_not: "on"
+            card:
+              type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                title: Camera Controls
+                show_header_toggle: false
+              filter:
+                include:
+                  - entity_id: button.living_room_guard_go_to
+                  - entity_id: button.living_room_ptz_down
+                  - entity_id: button.living_room_ptz_left
+                  - entity_id: button.living_room_ptz_right
+                  - entity_id: button.living_room_ptz_up
+                  - entity_id: button.living_room_ptz_stop
+                  - entity_id: siren.living_room_siren
+                  - entity_id: binary_sensor.living_room_animal
+                  - entity_id: binary_sensor.living_room_motion
+                  - entity_id: binary_sensor.living_room_baby_crying
+                  - entity_id: binary_sensor.living_room_person
+                exclude:
+                  - state: "unavailable"
+                  - state: "unknown"
+      kitchen:
+        name: Kitchen
+        icon: mdi:silverware-fork-knife
+        icon_color: orange
+        order: 2
+        extra_cards:
+          - type: conditional
+            conditions:
+              - entity: switch.kitchen_privacy_mode
+                state_not: "on"
+            card:
+              type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                title: Camera Controls
+                show_header_toggle: false
+              filter:
+                include:
+                  - entity_id: button.kitchen_guard_go_to
+                  - entity_id: button.kitchen_ptz_down
+                  - entity_id: button.kitchen_ptz_left
+                  - entity_id: button.kitchen_ptz_right
+                  - entity_id: button.kitchen_ptz_up
+                  - entity_id: button.kitchen_ptz_stop
+                  - entity_id: siren.kitchen_siren
+                  - entity_id: binary_sensor.kitchen_animal
+                  - entity_id: binary_sensor.kitchen_motion
+                  - entity_id: binary_sensor.kitchen_baby_crying
+                  - entity_id: binary_sensor.kitchen_person
+                exclude:
+                  - state: "unavailable"
+                  - state: "unknown"
+      bathroom:
+        name: Bathroom
+        icon: mdi:shower
+        icon_color: cyan
+        order: 3
+      bedroom:
+        name: Bedroom
+        icon: mdi:bed
+        icon_color: purple
+        order: 4
+        extra_cards:
+          - type: conditional
+            conditions:
+              - entity: switch.bedroom_privacy_mode
+                state_not: "on"
+            card:
+              type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                title: Camera Controls
+                show_header_toggle: false
+              filter:
+                include:
+                  - entity_id: button.bedroom_guard_go_to
+                  - entity_id: button.bedroom_ptz_down
+                  - entity_id: button.bedroom_ptz_left
+                  - entity_id: button.bedroom_ptz_right
+                  - entity_id: button.bedroom_ptz_up
+                  - entity_id: button.bedroom_ptz_stop
+                  - entity_id: siren.bedroom_siren
+                  - entity_id: binary_sensor.bedroom_animal
+                  - entity_id: binary_sensor.bedroom_motion
+                  - entity_id: binary_sensor.bedroom_baby_crying
+                  - entity_id: binary_sensor.bedroom_person
+                exclude:
+                  - state: "unavailable"
+                  - state: "unknown"
+      hallway:
+        name: Hallway
+        icon: mdi:door-open
+        icon_color: amber
+        order: 5
+      # Hide the 'home' area card, but keep the main dashboard view
+      home:
+        hidden: true
+
+    # View customizations
+    views:
+      # Customize default view
+      home:
+        title: Home
+        icon: mdi:home
+        path: home
+      # Ensure switch view is visible
+      switch:
+        hidden: false
+
+

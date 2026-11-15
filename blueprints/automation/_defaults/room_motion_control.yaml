@@ -1,0 +1,89 @@
+blueprint:
+  name: "Room - Motion Control (SL scene on motion)"
+  description: >
+    On motion: turn on lights with the current SL scene.
+    On motion clear: turn off after configurable timeout.
+  domain: "automation"
+
+  input:
+    room_key:
+      name: "Room Key"
+      description: "Room identifier matching SL convention (e.g., living_room)"
+      selector: { text: {} }
+
+    target_lights:
+      name: "Target lights (group or list)"
+      selector: { target: { entity: { domain: "light" } } }
+
+    motion_sensor:
+      name: "Motion sensor (binary_sensor)"
+      selector: { entity: { domain: "binary_sensor" } }
+
+    motion_enabled:
+      name: "Motion Control Enabled (input_boolean)"
+      description: "If OFF, motion won't control lights in this room."
+      selector: { entity: { domain: "input_boolean" } }
+
+    auto_off_minutes:
+      name: "Auto-off timeout (minutes)"
+      description: "Turn off lights after motion clears for this many minutes. 0 = no auto-off."
+      default: 15
+      selector:
+        number:
+          min: 0
+          max: 240
+          mode: "slider"
+
+mode: "restart"
+max_exceeded: "silent"
+
+variables:
+  room: !input room_key
+
+trigger:
+  - platform: "state"
+    entity_id: !input motion_sensor
+    to: "on"
+    id: "motion_on"
+
+  - platform: "state"
+    entity_id: !input motion_sensor
+    to: "off"
+    id: "motion_off"
+
+condition: []
+
+action:
+  - choose:
+      - conditions:
+          - condition: "trigger"
+            id: "motion_on"
+          - condition: "state"
+            entity_id: !input motion_enabled
+            state: "on"
+        sequence:
+          - service: script.sl_room_on
+            data:
+              room: "{{ room }}"
+
+      - conditions:
+          - condition: "trigger"
+            id: "motion_off"
+          - condition: "state"
+            entity_id: !input motion_enabled
+            state: "on"
+        sequence:
+          - variables:
+              timeout: !input auto_off_minutes
+          - if:
+              - condition: template
+                value_template: "{{ timeout | int(0) > 0 }}"
+            then:
+              - delay:
+                  minutes: "{{ timeout | int(0) }}"
+              - condition: "state"
+                entity_id: !input motion_sensor
+                state: "off"
+              - service: script.sl_room_off
+                data:
+                  room: "{{ room }}"

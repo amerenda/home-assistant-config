@@ -1,0 +1,19 @@
+name: check
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  yamllint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet yamllint && yamllint --strict -c .yamllint .
+  check-config:
+    runs-on: ubuntu-latest
+    env:
+      # Keep in step with image.tag in dean-amer-dev/dean-tofu k3s/apps/prod/home-assistant/application.yaml
+      HA_IMAGE: ghcr.io/home-assistant/home-assistant:2026.7.0
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker run --rm --entrypoint "" -v "$PWD:/repo:ro" "$HA_IMAGE" sh /repo/ci/check.sh

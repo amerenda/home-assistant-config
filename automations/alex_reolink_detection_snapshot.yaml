@@ -1,0 +1,94 @@
+alias: "Alex - Reolink Detection Snapshot (Away)"
+id: alex_reolink_detection_snapshot
+description: >
+  Human or pet detected by a Reolink camera while Alex is away: snapshot,
+  update the last-human / last-pet helpers, push a notification.
+  To add a camera: add its two sensors to the trigger list below. The
+  camera feed, room name and file slug come from the camera's device and
+  its HA area (set the area on the device), so nothing else changes.
+  Replaces alex_reolink_human_detect_snapshot + alex_reolink_pet_detect_snapshot.
+mode: queued
+max: 10
+triggers:
+  - trigger: state
+    entity_id:
+      # One pair per camera: <cam>_person, <cam>_animal
+      - binary_sensor.living_room_person
+      - binary_sensor.living_room_animal
+      - binary_sensor.bedroom_person
+      - binary_sensor.bedroom_animal
+      - binary_sensor.kitchen_person
+      - binary_sensor.kitchen_animal
+    from: "off"
+    to: "on"
+conditions:
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: person.alex_merenda
+        state: home
+  - condition: state
+    entity_id: input_boolean.master_automation_pause
+    state: "off"
+variables:
+  kind: "{{ 'human' if trigger.entity_id.endswith('_person') else 'pet' }}"
+  KINDS:
+    human:
+      folder: intruders
+      location_helper: input_text.intruder_image_location
+      timestamp_helper: input_text.intruder_image_timestamp
+      title: Human detected
+      importance: high
+    pet:
+      folder: pets
+      location_helper: input_text.event_image_location
+      timestamp_helper: input_text.event_image_timestamp
+      title: Pet detected
+      importance: low
+  k: "{{ KINDS[kind] }}"
+  device: "{{ device_id(trigger.entity_id) }}"
+  cam: >
+    {{ device_entities(device)
+       | select('match', 'camera\.')
+       | reject('search', 'snapshots|_clear$')
+       | first | default('') }}
+  slug: "{{ area_id(trigger.entity_id) or (device_attr(device, 'name') | slugify) }}"
+  room: "{{ area_name(trigger.entity_id) or device_attr(device, 'name') }}"
+  timestamp: "{{ now().strftime('%Y%m%d_%H%M%S') }}"
+  path: "/config/www/{{ k.folder }}/{{ slug }}_{{ timestamp }}.jpg"
+  url: "/local/{{ k.folder }}/{{ slug }}_{{ timestamp }}.jpg"
+actions:
+  - if:
+      - condition: template
+        value_template: "{{ cam == '' }}"
+    then:
+      - action: system_log.write
+        data:
+          level: warning
+          logger: reolink_detection_snapshot
+          message: "No camera entity found for {{ trigger.entity_id }}"
+      - stop: "No camera entity for the triggering sensor"
+  - action: camera.snapshot
+    target:
+      entity_id: "{{ cam }}"
+    data:
+      filename: "{{ path }}"
+  - action: input_text.set_value
+    target:
+      entity_id: "{{ k.location_helper }}"
+    data:
+      value: "{{ slug }}"
+  - action: input_text.set_value
+    target:
+      entity_id: "{{ k.timestamp_helper }}"
+    data:
+      value: "{{ timestamp }}"
+  - action: notify.mobile_app_pixel_9_pro_xl
+    data:
+      title: "{{ k.title }} - {{ room }}"
+      message: "{{ now().strftime('%-I:%M %p on %b %-d') }}"
+      data:
+        image: "{{ url }}"
+        tag: "{{ kind }}-{{ slug }}"
+        importance: "{{ k.importance }}"
+        sticky: true

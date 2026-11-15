@@ -1,0 +1,17 @@
+# Smart Lighting v2 — Global toggles
+
+# Master toggle — enables/disables the entire v2 system
+sl_enabled:
+  name: "SL: Smart Lighting Enabled"
+  icon: mdi:lightbulb-auto
+
+# Dashboard UI toggles
+sl_show_button_config:
+  name: "SL: Show Button Config"
+  icon: mdi:gesture-tap-button
+sl_show_defaults:
+  name: "SL: Show Default Templates"
+  icon: mdi:tune-variant
+sl_show_schedule:
+  name: "SL: Show Schedule"
+  icon: mdi:clock-edit-outline
