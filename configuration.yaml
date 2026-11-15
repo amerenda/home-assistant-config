@@ -1,0 +1,78 @@
+# Copied to /config/configuration.yaml by the HA pod's init container on every start.
+# Paths are relative to /config; the repo is checked out at /config/git/current (git-sync).
+# Changes here need an HA restart. Everything that can live in a package goes in packages/.
+default_config:
+
+homeassistant:
+  packages: !include_dir_named git/current/packages
+  media_dirs:
+    pets: /config/www/pets
+    intruders: /config/www/intruders
+
+frontend:
+  themes: !include_dir_merge_named git/current/themes
+
+# UI-managed files stay on the PVC (not in git)
+automation: !include automations.yaml
+scene: !include scenes.yaml
+script: !include scripts.yaml
+
+recorder:
+  purge_keep_days: 14
+  auto_purge: true
+  auto_repack: true
+  db_url: !env_var HA_DB_URL
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 10.44.0.0/16
+    - 10.45.0.0/16
+    - 10.100.20.0/24
+    - 127.0.0.1
+
+lovelace:
+  mode: storage
+  dashboards:
+    dean-dashboard:
+      mode: yaml
+      title: Dean
+      icon: mdi:home
+      show_in_sidebar: true
+      filename: git/current/dashboards/views/dean.yaml
+    subway-dashboard:
+      mode: yaml
+      title: Subway
+      icon: mdi:subway-variant
+      show_in_sidebar: true
+      filename: git/current/dashboards/views/subway.yaml
+    security-dashboard:
+      mode: yaml
+      title: Security
+      icon: mdi:cctv
+      show_in_sidebar: true
+      filename: git/current/dashboards/views/security.yaml
+    uni-dashboard:
+      mode: yaml
+      title: Uni
+      icon: mdi:cat
+      show_in_sidebar: true
+      filename: git/current/dashboards/views/uni.yaml
+    smart-lighting-dashboard:
+      mode: yaml
+      title: Smart Lighting
+      icon: mdi:lightbulb-auto
+      show_in_sidebar: true
+      filename: git/current/dashboards/views/smart_lighting.yaml
+    home-away-dashboard:
+      mode: yaml
+      title: Home & Away
+      icon: mdi:home-account
+      show_in_sidebar: true
+      filename: git/current/dashboards/views/home_away.yaml
+    climate-dashboard:
+      mode: yaml
+      title: Climate
+      icon: mdi:thermometer
+      show_in_sidebar: true
+      filename: git/current/dashboards/views/climate.yaml

@@ -1,0 +1,52 @@
+# Smart Lighting v2 — House mode
+sl_house_mode:
+  name: "SL: House Mode"
+  options:
+    - Home
+    - Away
+    - Sleep
+    - Guest
+  initial: Home
+  icon: mdi:home-account
+
+sl_scene_window:
+  name: "SL: Scene Window"
+  options:
+    - Morning
+    - Day
+    - Evening
+    - Night
+  initial: Morning
+  icon: mdi:weather-sunset-up
+
+sl_scene_type:
+  name: "SL: Scene Type"
+  options:
+    - Ambiance
+    - Dimmable
+  initial: Ambiance
+  icon: mdi:lightbulb-group
+
+sl_switch_selector:
+  name: "SL: Switch"
+  options:
+    - living_room_s_1
+    - bedroom_s_1
+    - bathroom_s_1
+    - kitchen_s_1
+    - hallway_s_1
+    - hallway_s_2
+  initial: living_room_s_1
+  icon: mdi:light-switch
+
+sl_room_selector:
+  name: "SL: Room"
+  options:
+    - All Rooms
+    - Bathroom
+    - Bedroom
+    - Hallway
+    - Kitchen
+    - Living Room
+  initial: Living Room
+  icon: mdi:floor-plan

@@ -1,0 +1,189 @@
+views:
+  - title: Cameras
+    path: cameras
+    icon: mdi:cctv
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Master Control
+            heading_style: title
+            icon: mdi:pause-octagon
+          - type: tile
+            entity: input_boolean.master_automation_pause
+            name: Pause All Automations
+            icon: mdi:pause-octagon
+            vertical: false
+            color: red
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Camera Feeds
+            heading_style: title
+            icon: mdi:camera
+          - type: grid
+            square: false
+            columns: 1
+            cards:
+              - type: picture-entity
+                entity: camera.living_room_fluent
+              - type: picture-entity
+                entity: camera.bedroom_fluent
+              - type: picture-entity
+                entity: camera.kitchen_fluent
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Privacy
+            heading_style: title
+            icon: mdi:camera-lock
+          - type: tile
+            entity: switch.living_room_privacy_mode
+            name: Living Room Privacy
+          - type: tile
+            entity: switch.bedroom_privacy_mode
+            name: Bedroom Privacy
+          - type: tile
+            entity: switch.kitchen_privacy_mode
+            name: Kitchen Privacy
+          - type: tile
+            entity: light.living_room_status_led
+            name: Living Room LED
+          - type: tile
+            entity: light.bedroom_status_led
+            name: Bedroom LED
+          - type: tile
+            entity: light.kitchen_status_led
+            name: Kitchen LED
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Cameras Off
+                icon: mdi:camera-off
+                show_state: false
+                tap_action:
+                  action: call-service
+                  service: script.camera_privacy_on
+              - type: button
+                name: Cameras On
+                icon: mdi:camera
+                show_state: false
+                tap_action:
+                  action: call-service
+                  service: script.camera_privacy_off
+          - type: button
+            name: Drift Correction
+            entity: automation.security_privacy_monitor_drift_correction
+            show_state: true
+            tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.security_privacy_monitor_drift_correction
+              data:
+                skip_condition: true
+            icon: mdi:sync-alert
+
+      - type: grid
+        columns: 2
+        cards:
+          - type: heading
+            heading: Last Human Detected
+            heading_style: title
+            icon: mdi:account-alert
+          - type: heading
+            heading: Last Pet Detected
+            heading_style: title
+            icon: mdi:paw
+          - type: markdown
+            content: >
+              {% set loc = states('input_text.intruder_image_location') %}
+              {% set ts = states('input_text.intruder_image_timestamp') %}
+              {% if loc and loc not in ['unknown', 'unavailable', ''] %}
+                ![Human](/local/intruders/{{ loc }}_{{ ts }}.jpg)
+
+                **{{ loc | replace('_', ' ') | title }}** —
+                {{ strptime(ts, '%Y%m%d_%H%M%S').strftime('%-I:%M %p, %b %-d') if ts and ts not in ['unknown', 'unavailable'] else 'Unknown time' }}
+              {% else %}
+                *No human detected while away.*
+              {% endif %}
+          - type: markdown
+            content: >
+              {% set loc = states('input_text.event_image_location') %}
+              {% set ts = states('input_text.event_image_timestamp') %}
+              {% if loc and loc not in ['unknown', 'unavailable', ''] %}
+                ![Pet](/local/pets/{{ loc }}_{{ ts }}.jpg)
+
+                **{{ loc | replace('_', ' ') | title }}** —
+                {{ strptime(ts, '%Y%m%d_%H%M%S').strftime('%-I:%M %p, %b %-d') if ts and ts not in ['unknown', 'unavailable'] else 'Unknown time' }}
+              {% else %}
+                *No pet detected while away.*
+              {% endif %}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Detection Sensors
+            heading_style: title
+            icon: mdi:motion-sensor
+          - type: entities
+            title: Living Room
+            entities:
+              - entity: binary_sensor.living_room_person
+                name: Person
+              - entity: binary_sensor.living_room_animal
+                name: Pet
+          - type: entities
+            title: Bedroom
+            entities:
+              - entity: binary_sensor.bedroom_person
+                name: Person
+              - entity: binary_sensor.bedroom_animal
+                name: Pet
+          - type: entities
+            title: Kitchen
+            entities:
+              - entity: binary_sensor.kitchen_person
+                name: Person
+              - entity: binary_sensor.kitchen_animal
+                name: Pet
+
+    header:
+      card:
+        type: markdown
+        text_only: true
+        content: '# Security'
+
+  - title: Guests
+    path: guests
+    icon: mdi:account-group
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Guests Present
+            heading_style: title
+            icon: mdi:account-check
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+              state_color: true
+            filter:
+              include:
+                - group: group.guests
+                  state: home
+            show_empty: false
+          - type: heading
+            heading: All Guests
+            heading_style: title
+            icon: mdi:account-group
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - group: group.guests

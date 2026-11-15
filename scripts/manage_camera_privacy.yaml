@@ -1,0 +1,196 @@
+camera_off:
+  alias: "Security: Camera Off (one camera)"
+  description: >
+    Turn guard return off (it moves the camera back to the monitor point
+    after its return time, even in privacy), move to PTZ preset "off",
+    wait for the move, turn the status LED off,
+    wait for the LED to report off, then turn privacy mode on. A step that
+    fails or times out logs a warning and the flow continues, so privacy
+    always turns on. Skips the move when privacy is already on (camera is
+    unreachable then). HA only reads a camera's preset list when the
+    integration loads, so a missing "off" option triggers a config-entry
+    reload first. There is no "arrived at preset" signal and PTZ position
+    updates are irregular, so the move wait is fixed (moves measured 11-18 s).
+  mode: parallel
+  max: 10
+  fields:
+    camera:
+      description: Camera slug
+      required: true
+      example: kitchen
+      selector:
+        select:
+          options:
+            - bedroom
+            - living_room
+            - kitchen
+  variables:
+    preset_map:
+      bedroom: select.bedroom_ptz_preset
+      living_room: select.living_room_living_room_ptz_preset
+      kitchen: select.kitchen_ptz_preset
+    preset: "{{ preset_map[camera] }}"
+    led: "light.{{ camera }}_status_led"
+    privacy: "switch.{{ camera }}_privacy_mode"
+    guard_return: "switch.{{ camera }}_guard_return"
+  sequence:
+    - if:
+        - condition: template
+          value_template: "{{ is_state(privacy, 'off') }}"
+      then:
+        # Right after privacy turns off the camera reconnects for a few
+        # seconds; commands sent then are dropped.
+        - wait_template: >
+            {{ states(preset) != 'unavailable'
+               and states(guard_return) != 'unavailable'
+               and states(led) != 'unavailable' }}
+          timeout: "00:00:30"
+          continue_on_timeout: true
+        - if:
+            - condition: template
+              value_template: "{{ 'off' not in (state_attr(preset, 'options') or []) }}"
+          then:
+            - action: homeassistant.reload_config_entry
+              continue_on_error: true
+              target:
+                entity_id: "{{ preset }}"
+            - wait_template: "{{ 'off' in (state_attr(preset, 'options') or []) }}"
+              timeout: "00:00:30"
+              continue_on_timeout: true
+        - action: switch.turn_off
+          continue_on_error: true
+          target:
+            entity_id: "{{ guard_return }}"
+        - action: select.select_option
+          continue_on_error: true
+          target:
+            entity_id: "{{ preset }}"
+          data:
+            option: "off"
+        - delay: "00:00:25"
+        - action: light.turn_off
+          continue_on_error: true
+          target:
+            entity_id: "{{ led }}"
+        - wait_template: "{{ is_state(led, 'off') }}"
+          timeout: "00:00:05"
+          continue_on_timeout: true
+        - if:
+            - condition: template
+              value_template: "{{ not wait.completed }}"
+          then:
+            - action: system_log.write
+              data:
+                level: warning
+                logger: camera_privacy
+                message: "{{ camera }}: status LED did not report off; enabling privacy anyway"
+    - action: switch.turn_on
+      continue_on_error: true
+      target:
+        entity_id: "{{ privacy }}"
+
+camera_on:
+  alias: "Security: Camera On (one camera)"
+  description: >
+    Turn privacy mode off, wait for the camera to come back, move it to its
+    monitor point (Reolink guard position), turn guard return back on,
+    then turn the status LED on.
+  mode: parallel
+  max: 10
+  fields:
+    camera:
+      description: Camera slug
+      required: true
+      example: kitchen
+      selector:
+        select:
+          options:
+            - bedroom
+            - living_room
+            - kitchen
+  variables:
+    led: "light.{{ camera }}_status_led"
+    privacy: "switch.{{ camera }}_privacy_mode"
+    guard: "button.{{ camera }}_guard_go_to"
+    guard_return: "switch.{{ camera }}_guard_return"
+  sequence:
+    - action: switch.turn_off
+      continue_on_error: true
+      target:
+        entity_id: "{{ privacy }}"
+    - wait_template: >
+        {{ is_state(privacy, 'off')
+           and states(guard) != 'unavailable'
+           and states(led) != 'unavailable' }}
+      timeout: "00:00:30"
+      continue_on_timeout: true
+    - if:
+        - condition: template
+          value_template: "{{ not wait.completed }}"
+      then:
+        - action: system_log.write
+          data:
+            level: warning
+            logger: camera_privacy
+            message: "{{ camera }}: camera not back 30 s after privacy off"
+    - action: button.press
+      continue_on_error: true
+      target:
+        entity_id: "{{ guard }}"
+    - action: switch.turn_on
+      continue_on_error: true
+      target:
+        entity_id: "{{ guard_return }}"
+    - action: light.turn_on
+      continue_on_error: true
+      target:
+        entity_id: "{{ led }}"
+
+camera_privacy_on:
+  alias: "Security: Cameras Off (Privacy On)"
+  description: >
+    Stop any running on flow, then run camera_off for every camera in
+    parallel (an on flow finishing late would turn the camera back to its
+    monitor point).
+  mode: single
+  max_exceeded: silent
+  sequence:
+    - action: script.turn_off
+      target:
+        entity_id:
+          - script.camera_privacy_off
+          - script.camera_on
+    - parallel:
+        - action: script.camera_off
+          data:
+            camera: bedroom
+        - action: script.camera_off
+          data:
+            camera: living_room
+        - action: script.camera_off
+          data:
+            camera: kitchen
+
+camera_privacy_off:
+  alias: "Security: Cameras On (Privacy Off)"
+  description: >
+    Stop any running off flow, then run camera_on for every camera in
+    parallel.
+  mode: single
+  max_exceeded: silent
+  sequence:
+    - action: script.turn_off
+      target:
+        entity_id:
+          - script.camera_privacy_on
+          - script.camera_off
+    - parallel:
+        - action: script.camera_on
+          data:
+            camera: bedroom
+        - action: script.camera_on
+          data:
+            camera: living_room
+        - action: script.camera_on
+          data:
+            camera: kitchen

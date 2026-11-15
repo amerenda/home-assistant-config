@@ -1,0 +1,12 @@
+members:
+  name: Members
+  entities:
+    - person.alex_merenda
+    - person.eirill
+  all: false
+
+guests:
+  name: Guests
+  entities:
+    - person.eirill
+  all: false

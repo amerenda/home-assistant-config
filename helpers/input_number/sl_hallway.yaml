@@ -1,0 +1,21 @@
+# Smart Lighting v2 — Hallway settings
+
+sl_hallway_motion_timeout:
+  name: "SL: Hallway — Motion Timeout (min)"
+  min: 1
+  max: 60
+  step: 1
+  initial: 5
+  unit_of_measurement: min
+  icon: mdi:timer-outline
+  mode: box
+
+sl_hallway_smooth_transition_duration:
+  name: "SL: Hallway — Transition Duration (min)"
+  min: 1
+  max: 90
+  step: 1
+  initial: 60
+  unit_of_measurement: min
+  icon: mdi:timer-sand
+  mode: box

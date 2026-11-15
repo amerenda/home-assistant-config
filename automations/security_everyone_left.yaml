@@ -1,0 +1,24 @@
+alias: "Security: Everyone Left — Cameras On"
+id: security_everyone_left
+mode: restart
+trigger:
+  - platform: state
+    entity_id: binary_sensor.anyone_home
+    to: "off"
+    from: "on"
+    for: "00:05:00"
+condition:
+  - condition: state
+    entity_id: binary_sensor.anyone_home
+    state: "off"
+  # Block if the combined sensor is unavailable — prevents cameras activating on HA restart
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.anyone_home
+        state: "unavailable"
+  - condition: state
+    entity_id: input_boolean.master_automation_pause
+    state: "off"
+action:
+  - service: script.camera_privacy_off

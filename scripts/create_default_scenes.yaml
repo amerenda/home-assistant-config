@@ -1,0 +1,123 @@
+create_default_scenes:
+  alias: "SL: Initialize Default Scene Values"
+  description: "Writes default brightness/color_temp values to all scene helpers, then syncs to Z2M. Run once to bootstrap or reset to defaults."
+  mode: single
+  sequence:
+
+    # ── Living Room ───────────────────────────────────────────────────────────
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_living_room_morning_brightness }
+      data: { value: 180 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_living_room_morning_color_temp }
+      data: { value: 320 }
+
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_living_room_day_brightness }
+      data: { value: 254 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_living_room_day_color_temp }
+      data: { value: 250 }
+
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_living_room_evening_brightness }
+      data: { value: 160 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_living_room_evening_color_temp }
+      data: { value: 380 }
+
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_living_room_night_brightness }
+      data: { value: 60 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_living_room_night_color_temp }
+      data: { value: 454 }
+
+    # ── Bedroom ───────────────────────────────────────────────────────────────
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bedroom_morning_brightness }
+      data: { value: 180 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bedroom_morning_color_temp }
+      data: { value: 320 }
+
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bedroom_day_brightness }
+      data: { value: 254 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bedroom_day_color_temp }
+      data: { value: 250 }
+
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bedroom_evening_brightness }
+      data: { value: 140 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bedroom_evening_color_temp }
+      data: { value: 400 }
+
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bedroom_night_brightness }
+      data: { value: 40 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bedroom_night_color_temp }
+      data: { value: 454 }
+
+    # ── Bathroom ──────────────────────────────────────────────────────────────
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bathroom_morning_brightness }
+      data: { value: 200 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bathroom_morning_color_temp }
+      data: { value: 280 }
+
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bathroom_day_brightness }
+      data: { value: 254 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bathroom_day_color_temp }
+      data: { value: 250 }
+
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bathroom_evening_brightness }
+      data: { value: 180 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bathroom_evening_color_temp }
+      data: { value: 350 }
+
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bathroom_night_brightness }
+      data: { value: 60 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_bathroom_night_color_temp }
+      data: { value: 454 }
+
+    # ── Kitchen (brightness only) ─────────────────────────────────────────────
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_kitchen_morning_brightness }
+      data: { value: 200 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_kitchen_day_brightness }
+      data: { value: 254 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_kitchen_evening_brightness }
+      data: { value: 180 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_kitchen_night_brightness }
+      data: { value: 80 }
+
+    # ── Hallway (brightness only) ─────────────────────────────────────────────
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_hallway_morning_brightness }
+      data: { value: 180 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_hallway_day_brightness }
+      data: { value: 254 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_hallway_evening_brightness }
+      data: { value: 140 }
+    - service: input_number.set_value
+      target: { entity_id: input_number.sl_hallway_night_brightness }
+      data: { value: 60 }
+
+    # Sync all values to Z2M
+    - service: script.sl_push_config

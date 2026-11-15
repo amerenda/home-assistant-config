@@ -1,0 +1,170 @@
+# Core config moved out of configuration.yaml (seeded from the live HA PVC).
+# Includes resolve relative to this file, hence ../
+automation manual: !include_dir_list ../automations
+group: !include ../groups.yaml
+script: !include_dir_merge_named ../scripts
+python_script:
+input_boolean: !include_dir_merge_named ../helpers/input_boolean/
+input_datetime: !include_dir_merge_named ../helpers/input_datetime/
+input_select: !include_dir_merge_named ../helpers/input_select/
+input_number: !include_dir_merge_named ../helpers/input_number/
+input_text: !include_dir_merge_named ../helpers/input_text/
+timer: !include_dir_merge_named ../helpers/timer/
+
+template:
+  - binary_sensor:
+      - name: "Anyone Home"
+        unique_id: anyone_home
+        device_class: occupancy
+        # 2026-08-25: a UniFi tracker-refresh hiccup flipped every
+        # device_tracker (and the AP entity itself) to unavailable for
+        # ~16s, which briefly zeroed group.members/group.guests and
+        # dropped this sensor to off, then back on 16s later — nobody
+        # actually left. ha_someone_arrived/security_someone_home already
+        # debounce the on-side (30s "for" on the off→on trigger), but
+        # that only guards against short-lived ON blips: once back on
+        # "on" and holding (which it did — presence was real), the 30s
+        # timer is satisfied and it fires as a fresh arrival regardless
+        # of how brief the preceding off-blip was. delay_off absorbs the
+        # spurious off at the source instead, so it never reaches the
+        # consumer automations. Real departures are unaffected —
+        # ha_everyone_left/security_everyone_left already require this
+        # sensor to stay off for 1min/5min before acting, well past this
+        # delay — and real arrivals see zero added latency, since
+        # delay_off only guards the off state, not the transition to on.
+        delay_off: "00:01:00"
+        # Reads group.members + group.guests (groups.yaml) rather than
+        # hardcoding person.* entities — 2026-08-22: found this sensor only
+        # ever checked Alex + Eirill, so an approved guest present alone
+        # (neither of them home) wasn't counted as occupied, and arrival
+        # automations (ha_someone_arrived, security_someone_home) would
+        # incorrectly fire "welcome home" behaviors for whoever arrived
+        # next even though someone was already there. Adding a new approved
+        # guest is now just adding their tracker to group.guests in
+        # groups.yaml — no template change needed.
+        availability: >
+          {{ not (is_state('group.members', 'unavailable')
+
+
+
+
+
+                  and is_state('group.guests', 'unavailable')) }}
+        state: >
+          {{ is_state('group.members', 'home')
+
+
+
+
+
+             or is_state('group.guests', 'home') }}
+  # Smart Lighting v2 — template sensor for current time window
+  - sensor:
+      - name: "SL: Current Window"
+        unique_id: sl_current_window
+        icon: mdi:clock-time-four-outline
+        state: >
+          {% set day_names = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'] %} {% set today = day_names[now().weekday()] %} {% set profile = states('input_select.sl_profile_' ~ today) | default('weekday') %} {% set morning = states('input_datetime.sl_morning_start_' ~ profile) | default('06:00:00') %} {% set day_start = states('input_datetime.sl_day_start_' ~ profile) | default('09:00:00') %} {% set evening = states('input_datetime.sl_evening_start_' ~ profile) | default('17:00:00') %} {% set night = states('input_datetime.sl_night_start_' ~ profile) | default('22:00:00') %} {% set t = now().strftime('%H:%M:%S') %} {% if morning <= t < day_start %}morning {% elif day_start <= t < evening %}day {% elif evening <= t < night %}evening {% else %}night{% endif %}
+
+        attributes:
+          profile: >
+            {% set day_names = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'] %} {% set today = day_names[now().weekday()] %} {{ states('input_select.sl_profile_' ~ today) | default('weekday') }}
+
+          next_transition: >
+            {% set day_names = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'] %} {% set today = day_names[now().weekday()] %} {% set profile = states('input_select.sl_profile_' ~ today) | default('weekday') %} {% set times = {
+
+
+
+
+
+              'morning': states('input_datetime.sl_morning_start_' ~ profile),
+              'day': states('input_datetime.sl_day_start_' ~ profile),
+              'evening': states('input_datetime.sl_evening_start_' ~ profile),
+              'night': states('input_datetime.sl_night_start_' ~ profile)
+            } %} {% set t = now().strftime('%H:%M:%S') %} {% set upcoming = times | dictsort(by='value') | selectattr('1', 'gt', t) | first | default(none) %} {{ upcoming[1] if upcoming else times.values() | sort | first }}
+
+
+zone:
+  - name: Nearby
+    latitude: 40.6834109
+    longitude: -73.980568
+    radius: 800
+    icon: mdi:map-marker-radius
+    passive: true
+
+mqtt:
+  sensor:
+    - name: "SL: Z2M Sync Status"
+      unique_id: sl_z2m_sync_status
+      state_topic: "zigbee2mqtt/sl/status"
+      value_template: >-
+        {% set s = value_json.status | default('unknown') %} {% if s is match('window_') %}
+
+
+
+
+
+          {{ s[7:] }}
+        {% else %}
+
+
+
+
+
+          {{ s }}
+        {% endif %}
+      json_attributes_topic: "zigbee2mqtt/sl/status"
+      json_attributes_template: "{{ value_json | tojson }}"
+      icon: mdi:sync
+
+prometheus:
+  namespace: homeassistant
+  filter:
+    include_domains:
+      - light
+      - switch
+      - binary_sensor
+      - sensor
+      - automation
+      - script
+      - scene
+      - input_boolean
+      - input_select
+      - input_number
+      - input_datetime
+      - input_text
+      - person
+      - device_tracker
+      - event
+
+media_source: {}
+
+logger:
+  default: warning
+  logs:
+    pychromecast.socket_client: critical
+    custom_components.gtfs_realtime.coordinator: critical
+
+rest_command:
+  jellyfin_search:
+    url: >-
+      http://10.100.20.19:8096/Items?searchTerm={{ title | urlencode }}&IncludeItemTypes=Movie,Series,Episode&Recursive=true&Limit=5
+    method: GET
+    headers:
+      X-Emby-Token: !env_var JELLYFIN_API_KEY unset
+  jellyfin_next_up:
+    url: >-
+      http://10.100.20.19:8096/Shows/NextUp?SeriesId={{ series_id }}&UserId=4e56c2a4ae1847a998965736b7a8891d&Limit=1
+    method: GET
+    headers:
+      X-Emby-Token: !env_var JELLYFIN_API_KEY unset
+  jellyfin_first_episode:
+    url: >-
+      http://10.100.20.19:8096/Items?ParentId={{ series_id }}&IncludeItemTypes=Episode&Recursive=true&SortBy=ParentIndexNumber,IndexNumber&SortOrder=Ascending&Limit=1
+    method: GET
+    headers:
+      X-Emby-Token: !env_var JELLYFIN_API_KEY unset
+
+shell_command:
+  cleanup_old_photos: 'find /config/www/pets -name "*.jpg" -mtime +30 -delete && find /config/www/intruders -name "*.jpg" -mtime +30 -delete'
+  subway_status_update: 'sh /config/git/current/scripts_shell/subway_status.sh'

@@ -1,0 +1,119 @@
+# Climate dashboard. Created in the UI 2026-11-15, moved to git.
+title: Climate
+views:
+- title: Climate
+  path: climate
+  type: sections
+  max_columns: 3
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Rooms now (24 h trend)
+    - type: sensor
+      entity: sensor.living_room_t_1_temperature
+      name: Living Room
+      graph: line
+      hours_to_show: 24
+    - type: sensor
+      entity: sensor.living_room_t_1_humidity
+      name: Living Room
+      graph: line
+      hours_to_show: 24
+    - type: sensor
+      entity: sensor.bedroom_t_1_temperature
+      name: Bedroom
+      graph: line
+      hours_to_show: 24
+    - type: sensor
+      entity: sensor.bedroom_t_1_humidity
+      name: Bedroom
+      graph: line
+      hours_to_show: 24
+    - type: sensor
+      entity: sensor.kitchen_t_1_temperature
+      name: Kitchen
+      graph: line
+      hours_to_show: 24
+    - type: sensor
+      entity: sensor.kitchen_t_1_humidity
+      name: Kitchen
+      graph: line
+      hours_to_show: 24
+    - type: sensor
+      entity: sensor.bathroom_t_1_temperature
+      name: Bathroom
+      graph: line
+      hours_to_show: 24
+    - type: sensor
+      entity: sensor.bathroom_t_1_humidity
+      name: Bathroom
+      graph: line
+      hours_to_show: 24
+  - type: grid
+    cards:
+    - type: heading
+      heading: Outside and AC
+    - type: weather-forecast
+      entity: weather.forecast_home
+      forecast_type: daily
+      grid_options:
+        columns: full
+    - type: thermostat
+      entity: climate.151732605151026_climate
+      name: Living Room AC
+      grid_options:
+        columns: full
+    - type: entities
+      title: Sensor batteries
+      entities:
+      - entity: sensor.living_room_t_1_battery
+        name: Living Room
+      - entity: sensor.bedroom_t_1_battery
+        name: Bedroom
+      - entity: sensor.kitchen_t_1_battery
+        name: Kitchen
+      - entity: sensor.bathroom_t_1_battery
+        name: Bathroom
+      grid_options:
+        columns: full
+  - type: grid
+    cards:
+    - type: heading
+      heading: History
+    - type: statistics-graph
+      title: Temperature, 7 days
+      entities:
+      - entity: sensor.living_room_t_1_temperature
+        name: Living Room
+      - entity: sensor.bedroom_t_1_temperature
+        name: Bedroom
+      - entity: sensor.kitchen_t_1_temperature
+        name: Kitchen
+      - entity: sensor.bathroom_t_1_temperature
+        name: Bathroom
+      days_to_show: 7
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      grid_options:
+        columns: full
+    - type: statistics-graph
+      title: Humidity, 7 days
+      entities:
+      - entity: sensor.living_room_t_1_humidity
+        name: Living Room
+      - entity: sensor.bedroom_t_1_humidity
+        name: Bedroom
+      - entity: sensor.kitchen_t_1_humidity
+        name: Kitchen
+      - entity: sensor.bathroom_t_1_humidity
+        name: Bathroom
+      days_to_show: 7
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      grid_options:
+        columns: full

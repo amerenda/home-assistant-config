@@ -1,0 +1,48 @@
+sl_save_scene:
+  alias: "SL: Save Current Light State as Scene"
+  description: "Snapshot current lights into helpers, sync to Z2M"
+  mode: single
+  fields:
+    room:
+      description: "Room identifier (e.g., living_room)"
+      required: true
+      selector:
+        text:
+    window:
+      description: "Time window (morning/day/evening/night)"
+      required: true
+      selector:
+        text:
+  sequence:
+    - variables:
+        room_lights:
+          living_room: ["light.living_room_1"]
+          bedroom: ["light.bedroom_1", "light.bedroom_2", "light.lamp_1"]
+          bathroom: ["light.bathroom_1"]
+          kitchen: ["light.kitchen_1", "light.kitchen_2"]
+          hallway: ["light.hallway_1"]
+        ambiance_rooms: ["living_room", "bedroom", "bathroom"]
+        lights: "{{ room_lights[room] | default([]) }}"
+        first_light: "{{ lights[0] if lights | length > 0 else '' }}"
+        current_brightness: "{{ state_attr(first_light, 'brightness') | int(200) }}"
+        current_color_temp_kelvin: "{{ state_attr(first_light, 'color_temp_kelvin') | int(0) }}"
+        current_color_temp: "{{ (1000000 / current_color_temp_kelvin) | int if current_color_temp_kelvin > 0 else 370 }}"
+        brightness_helper: "input_number.sl_{{ room }}_{{ window }}_brightness"
+        color_temp_helper: "input_number.sl_{{ room }}_{{ window }}_color_temp"
+    - service: input_number.set_value
+      target:
+        entity_id: "{{ brightness_helper }}"
+      data:
+        value: "{{ current_brightness }}"
+    - if:
+        - condition: template
+          value_template: "{{ room in ambiance_rooms }}"
+      then:
+        - service: input_number.set_value
+          target:
+            entity_id: "{{ color_temp_helper }}"
+          data:
+            value: "{{ current_color_temp }}"
+    - delay:
+        seconds: 1
+    - service: script.sl_push_config
