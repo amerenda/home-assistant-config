@@ -64,6 +64,11 @@ views:
       name: Living Room AC
       grid_options:
         columns: full
+    - type: thermostat
+      entity: climate.151732607639365_climate
+      name: Bedroom AC
+      grid_options:
+        columns: full
     - type: entities
       title: Sensor batteries
       entities:
