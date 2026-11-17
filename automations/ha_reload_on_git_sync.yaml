@@ -1,0 +1,16 @@
+alias: "HA: Reload YAML after git-sync"
+id: ha_reload_on_git_sync
+description: >
+  The git-sync sidecar in the HA pod calls this webhook after it checks out a
+  new commit of this repo (GITSYNC_WEBHOOK_URL in dean-tofu
+  k3s/apps/prod/home-assistant). Reload all YAML so that new helpers, scripts
+  and automations load without a restart. reload_all checks the config first.
+mode: single
+trigger:
+  - platform: webhook
+    webhook_id: git-sync-reload-5d8e2b7c41
+    allowed_methods:
+      - POST
+    local_only: true
+action:
+  - service: homeassistant.reload_all
