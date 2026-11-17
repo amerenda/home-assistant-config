@@ -11,7 +11,7 @@ views:
             icon: mdi:pause-octagon
           - type: tile
             entity: input_boolean.master_automation_pause
-            name: Pause All Automations
+            name: Pause Security Automations
             icon: mdi:pause-octagon
             vertical: false
             color: red

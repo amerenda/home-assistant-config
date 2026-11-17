@@ -68,7 +68,7 @@ views:
               - entity: input_boolean.camera_manual_override
                 name: Manual override (off = automations in control)
               - entity: input_boolean.master_automation_pause
-                name: Pause all automations (forces cameras off)
+                name: Pause security automations (cameras manual, lights keep running)
 
       # ── On arrival ─────────────────────────────────────────
       - type: entities

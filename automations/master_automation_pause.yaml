@@ -1,56 +1,29 @@
-alias: "Master: Pause/Resume All Automations"
+alias: "Security: Pause/Resume Security Automations"
 id: master_automation_pause
 description: >
-  Single dashboard toggle (input_boolean.master_automation_pause) that
-  suspends camera privacy/security automation, arrival/departure lighting
-  and AC automation (via ha_automation_enabled), and the Smart Lighting
-  motion engine (via sl_enabled) — and forces cameras into privacy/off
-  state immediately. On resume, restores both toggles and re-syncs camera
-  state to actual occupancy right away instead of waiting for the next
-  minute's drift-correction pass.
-
-  Camera/security automations are gated by an added
-  input_boolean.master_automation_pause condition rather than
-  automation.turn_off, so the pause survives an HA restart correctly —
-  security_privacy_monitor has initial_state: true specifically because a
-  past incident left it silently disabled after a restart; turning it off
-  here would reintroduce that failure mode.
+  Dashboard toggle input_boolean.master_automation_pause pauses only the
+  security automations: camera on/off on presence (security_everyone_left,
+  security_someone_home), the privacy drift monitor
+  (security_privacy_monitor_debounced) and the detection notifications
+  (alex_reolink_detection_snapshot). Each of them has a condition on the
+  toggle, so the pause survives an HA restart.
+  A pause does not move the cameras. You control them by hand (dashboard
+  buttons or privacy switches). Lights, Smart Lighting and the
+  arrival/departure light and AC automations are not paused.
+  On resume, this automation clears the manual override and re-syncs the
+  cameras to occupancy immediately.
 mode: single
 trigger:
   - platform: state
     entity_id: input_boolean.master_automation_pause
-    to: "on"
-    id: pause
-  - platform: state
-    entity_id: input_boolean.master_automation_pause
+    from: "on"
     to: "off"
-    id: resume
 action:
-  - choose:
-      - conditions:
-          - condition: trigger
-            id: pause
-        sequence:
-          - service: input_boolean.turn_off
-            target:
-              entity_id:
-                - input_boolean.ha_automation_enabled
-                - input_boolean.sl_enabled
-          - service: script.camera_privacy_on
-      - conditions:
-          - condition: trigger
-            id: resume
-        sequence:
-          - service: input_boolean.turn_on
-            target:
-              entity_id:
-                - input_boolean.ha_automation_enabled
-                - input_boolean.sl_enabled
-          - service: input_boolean.turn_off
-            target:
-              entity_id: input_boolean.camera_manual_override
-          - service: automation.trigger
-            target:
-              entity_id: automation.security_privacy_monitor_debounced
-            data:
-              skip_condition: true
+  - service: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.camera_manual_override
+  - service: automation.trigger
+    target:
+      entity_id: automation.security_privacy_monitor_debounced
+    data:
+      skip_condition: true
