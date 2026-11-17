@@ -58,7 +58,7 @@ automation:
     description: >
       Every minute and at HA start, re-sync camera privacy to occupancy. Privacy on right away
       when someone is home; cameras on only after nobody has been home for 5 minutes (a 107 s
-      GPS false-away turned them on with Alex home, 2026-11-14). Skipped while the master pause
+      GPS false-away turned them on with Alex home, 2026-11-14). Skipped while the security pause
       or the dashboard manual override is on.
     mode: single
     max_exceeded: silent
