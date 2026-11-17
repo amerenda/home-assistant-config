@@ -15,3 +15,6 @@ sl_show_defaults:
 sl_show_schedule:
   name: "SL: Show Schedule"
   icon: mdi:clock-edit-outline
+sl_show_save_scene:
+  name: "SL: Show Save Scene"
+  icon: mdi:content-save-outline
