@@ -6,7 +6,7 @@ Hand-written Home Assistant config for `ha.amer.dev`. Merged to `main` = live wi
 
 - A git-sync sidecar in the HA pod checks this repo out at `/config/git/current` every 30 s
   (deployed by `dean-amer-dev/dean-tofu` `k3s/apps/prod/home-assistant`).
-- After each new commit it calls a local HA webhook; an automation in `packages/` reloads HA.
+- After each new commit it calls a local HA webhook; `automations/ha_reload_on_git_sync.yaml` reloads all YAML.
 - On every pod start an init container copies `configuration.yaml` from here to `/config/configuration.yaml`
   and links `/config/python_scripts` and `/config/blueprints` here.
 
