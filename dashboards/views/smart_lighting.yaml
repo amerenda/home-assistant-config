@@ -1,8 +1,263 @@
 title: Smart Lighting
 views:
-  - title: Controls
+  # ════════════════════════════════════════════════════════════
+  # Lights Tab (default): ad-hoc changes per bulb
+  # ════════════════════════════════════════════════════════════
+  - title: Lights
+    path: lights
+    icon: mdi:lightbulb-group
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_select.sl_room_selector
+                name: Room
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Living Room"
+            card:
+              type: vertical-stack
+              cards:
+                - type: custom:hue-like-light-card
+                  entity: light.living_room_1
+                  title: Living Room
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Bedroom"
+            card:
+              type: vertical-stack
+              cards:
+                - type: custom:hue-like-light-card
+                  entity: light.bedroom_1
+                  title: Bedroom 1
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+                - type: custom:hue-like-light-card
+                  entity: light.bedroom_2
+                  title: Bedroom 2
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+                - type: custom:hue-like-light-card
+                  entity: light.lamp_1
+                  title: Lamp
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Bathroom"
+            card:
+              type: vertical-stack
+              cards:
+                - type: custom:hue-like-light-card
+                  entity: light.bathroom_1
+                  title: Bathroom
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Kitchen"
+            card:
+              type: vertical-stack
+              cards:
+                - type: custom:hue-like-light-card
+                  entity: light.kitchen_1
+                  title: Kitchen 1
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+                - type: custom:hue-like-light-card
+                  entity: light.kitchen_2
+                  title: Kitchen 2
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Hallway"
+            card:
+              type: vertical-stack
+              cards:
+                - type: custom:hue-like-light-card
+                  entity: light.hallway_1
+                  title: Hallway
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "All Rooms"
+            card:
+              type: vertical-stack
+              cards:
+                - type: custom:mushroom-title-card
+                  title: Living Room
+                - type: custom:hue-like-light-card
+                  entity: light.living_room_1
+                  title: Living Room
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+                - type: custom:mushroom-title-card
+                  title: Bedroom
+                - type: custom:hue-like-light-card
+                  entity: light.bedroom_1
+                  title: Bedroom 1
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+                - type: custom:hue-like-light-card
+                  entity: light.bedroom_2
+                  title: Bedroom 2
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+                - type: custom:hue-like-light-card
+                  entity: light.lamp_1
+                  title: Lamp
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+                - type: custom:mushroom-title-card
+                  title: Bathroom
+                - type: custom:hue-like-light-card
+                  entity: light.bathroom_1
+                  title: Bathroom
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+                - type: custom:mushroom-title-card
+                  title: Kitchen
+                - type: custom:hue-like-light-card
+                  entity: light.kitchen_1
+                  title: Kitchen 1
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+                - type: custom:hue-like-light-card
+                  entity: light.kitchen_2
+                  title: Kitchen 2
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+                - type: custom:mushroom-title-card
+                  title: Hallway
+                - type: custom:hue-like-light-card
+                  entity: light.hallway_1
+                  title: Hallway
+                  showSwitch: false
+                  scenes: []
+                  slider: default
+                  onClickAction: hue-screen
+                  offClickAction: hue-screen
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_boolean.sl_show_save_scene
+                name: Save current setup as scene
+          - type: conditional
+            conditions:
+              - entity: input_boolean.sl_show_save_scene
+                state: "on"
+            card:
+              type: horizontal-stack
+              cards:
+                - type: button
+                  name: As Morning
+                  icon: mdi:weather-sunset-up
+                  show_state: false
+                  tap_action:
+                    action: call-service
+                    service: script.sl_save_current_as_scene
+                    data:
+                      room: "{{ states('input_select.sl_room_selector') | lower | replace(' ', '_') | replace('all_rooms', 'all') }}"
+                      window: morning
+                    confirmation:
+                      text: Save the current lights as the Morning scene for the selected room?
+                - type: button
+                  name: As Day
+                  icon: mdi:weather-sunny
+                  show_state: false
+                  tap_action:
+                    action: call-service
+                    service: script.sl_save_current_as_scene
+                    data:
+                      room: "{{ states('input_select.sl_room_selector') | lower | replace(' ', '_') | replace('all_rooms', 'all') }}"
+                      window: day
+                    confirmation:
+                      text: Save the current lights as the Day scene for the selected room?
+                - type: button
+                  name: As Evening
+                  icon: mdi:weather-sunset-down
+                  show_state: false
+                  tap_action:
+                    action: call-service
+                    service: script.sl_save_current_as_scene
+                    data:
+                      room: "{{ states('input_select.sl_room_selector') | lower | replace(' ', '_') | replace('all_rooms', 'all') }}"
+                      window: evening
+                    confirmation:
+                      text: Save the current lights as the Evening scene for the selected room?
+                - type: button
+                  name: As Night
+                  icon: mdi:weather-night
+                  show_state: false
+                  tap_action:
+                    action: call-service
+                    service: script.sl_save_current_as_scene
+                    data:
+                      room: "{{ states('input_select.sl_room_selector') | lower | replace(' ', '_') | replace('all_rooms', 'all') }}"
+                      window: night
+                    confirmation:
+                      text: Save the current lights as the Night scene for the selected room?
+
+  - title: Settings
     path: schedule
-    icon: mdi:lightbulb-auto
+    icon: mdi:cog
     cards:
       # ── Top Bar ────────────────────────────────────────────
       - type: entities
@@ -15,16 +270,6 @@ views:
             name: House Mode
           - entity: sensor.sl_z2m_sync_status
             name: Z2M Sync
-
-      - type: button
-        name: Debug — read all light attrs
-        icon: mdi:bug-outline
-        show_state: false
-        tap_action:
-          action: call-service
-          service: script.sl_debug_save_read
-          data:
-            room: all
 
       # ── Schedule (collapsible) ─────────────────────────────
       - type: entities
@@ -2007,40 +2252,10 @@ views:
         entities:
           - entity: sensor.sl_z2m_sync_status
             name: Sync status
-      - type: markdown
-        content: >
-          {% set st = states('sensor.sl_z2m_sync_status') %}
-          {% set sync = state_attr('sensor.sl_z2m_sync_status', 'last_sync') %}
-          {% set hash = state_attr('sensor.sl_z2m_sync_status', 'config_hash') %}
-          {% set window = state_attr('sensor.sl_z2m_sync_status', 'current_window') %}
-          {% set has_cfg = state_attr('sensor.sl_z2m_sync_status', 'has_config') %}
-          {% set mqtt_ts = state_attr('sensor.sl_z2m_sync_status', 'timestamp') %}
-          {% if st == 'synced' %}
-          **Event:** Full scene push finished (HA config applied to groups/bulbs).
-          {% elif st in ['morning', 'day', 'evening', 'night'] %}
-          **Event:** Time window changed ({{ st }}) → extension recalled window scenes on groups whose lights were already on, and cleared manual-override flags. Firmware defaults (`hue_power_on_*`) are **not** touched here — those only change via "Save as Firmware Default" in the Scene Editor. This is normal; it is **not** a failed HA sync.
-          {% elif st == 'started' %}
-          **Event:** Smart Lighting extension started (may still be waiting for first config if no hash yet).
-          {% elif st == 'config_updated' %}
-          **Event:** New config received from HA (full push usually follows immediately; status often becomes `synced`).
-          {% else %}
-          **Event:** `{{ st }}`
-          {% endif %}
-
-          **Z2M computed window:** {{ window | default('unknown') }}
-
-          **HA has config cached in Z2M:** {{ has_cfg | default('unknown') }}
-
-          **Config hash:** {{ hash | default('none') }}
-
-          **Last full scene push** (HA → Z2M `scene_add` on groups): {{ sync | default('never') }}
-
-          **Last status MQTT message:** {{ mqtt_ts | default('unknown') }}
-
-          ---
-
-          *`last_sync` only updates when a **full** push runs (after `script.sl_push_config`, on config MQTT, or startup with cache). Window transitions set the entity **state** to the window name (`morning`, `day`, …) but do not refresh `last_sync`. Raw MQTT still uses the `window_` prefix in the `status` attribute. Use **Force Sync** to confirm end-to-end; you should see state `synced` and a new `last_sync` time.*
-
+          - type: attribute
+            entity: sensor.sl_z2m_sync_status
+            attribute: last_sync
+            name: Last sync
       - type: button
         name: Force Sync
         icon: mdi:sync
