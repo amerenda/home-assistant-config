@@ -96,11 +96,14 @@ sl_scene_save:
   description: >
     Reads the live state of each checked bulb and sends one save command. A
     scene with the same name is replaced. If a checked bulb is unavailable,
-    nothing is saved and a notification names the bulb.
+    nothing is saved and a notification names the bulb. A running effect
+    (Effects tab) is saved with its speed; its color is the bulb color.
   mode: single
   sequence:
     - variables:
         all_bulbs: [living_room_1, bedroom_1, bedroom_2, lamp_1, bathroom_1, kitchen_1, kitchen_2, hallway_1]
+        # Effects that a scene can keep (WO-0269). Same list as SCENE_EFFECTS in smart-lighting.js.
+        scene_effects: [candle, fireplace, colorloop, sunset, sunrise, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant, breathe]
         snapshot: >-
           {% set ns = namespace(lights={}, missing=[]) %}
           {% for b in all_bulbs if is_state('input_boolean.sl_scene_bulb_' ~ b, 'on') %}
@@ -119,6 +122,14 @@ sl_scene_save:
           {% set v = dict(v, color_temp=(1000000 / k) | round | int) %}
           {% elif mode in ['xy', 'hs', 'rgb'] and xy %}
           {% set v = dict(v, color={'x': xy[0] | round(4), 'y': xy[1] | round(4)}) %}
+          {% endif %}
+          {% set fx = state_attr(e, 'effect') %}
+          {% if fx in scene_effects %}
+          {% set v = dict(v, effect=fx) %}
+          {% set sp = states('number.' ~ b ~ '_effect_speed') | float(-1) %}
+          {% if sp >= 0 and sp <= 1 %}
+          {% set v = dict(v, effect_speed=sp | round(2)) %}
+          {% endif %}
           {% endif %}
           {% set ns.lights = dict(ns.lights, **{b: v}) %}
           {% endif %}
