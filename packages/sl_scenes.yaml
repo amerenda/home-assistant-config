@@ -6,15 +6,17 @@ template:
       # Button actions. Each select stores its value in input_text.<same id>
       # (helpers/input_text/sl_switch_buttons.yaml). Options: the fixed actions,
       # "Scene: <name>" for each scene, and the stored value if it is not in the list.
-      - &sl_button_action
-        name: "SL: LR Button 1 Short"
+      # The other 47 use the same state, options and select_option through value
+      # anchors. Do not use YAML merge keys (<<:): HA logs a duplicate key warning
+      # for each override at each load (ci/check.sh fails on it).
+      - name: "SL: LR Button 1 Short"
         unique_id: sl_living_room_b1_short_select
         default_entity_id: select.sl_living_room_b1_short
         icon: mdi:gesture-tap-button
-        state: >-
+        state: &sl_btn_state >-
           {% set v = states('input_text.' ~ this.entity_id.split('.')[1]) %}
           {{ v if v not in ['', 'unknown', 'unavailable'] else 'Default' }}
-        options: >-
+        options: &sl_btn_options >-
           {% set ns = namespace(o=['Default', 'Toggle Room', 'Power Off Room', 'Power Off All', 'Brightness Up', 'Brightness Down', 'Brightness Max', 'Brightness Min', 'Cycle Scenes', 'Toggle All Rooms', 'Multi-Room Scene', 'Do Nothing']) %}
           {% for s in state_attr('sensor.sl_scenes', 'scenes') or [] %}
           {% set ns.o = ns.o + ['Scene: ' ~ s.name] %}
@@ -24,200 +26,341 @@ template:
           {% set ns.o = ns.o + [v] %}
           {% endif %}
           {{ ns.o }}
-        select_option:
+        select_option: &sl_btn_select
           - action: input_text.set_value
             target:
               entity_id: "input_text.{{ this.entity_id.split('.')[1] }}"
             data:
               value: "{{ option }}"
-      - <<: *sl_button_action
-        name: "SL: LR Button 1 Long"
+      - name: "SL: LR Button 1 Long"
         unique_id: sl_living_room_b1_long_select
         default_entity_id: select.sl_living_room_b1_long
-      - <<: *sl_button_action
-        name: "SL: LR Button 2 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: LR Button 2 Short"
         unique_id: sl_living_room_b2_short_select
         default_entity_id: select.sl_living_room_b2_short
-      - <<: *sl_button_action
-        name: "SL: LR Button 2 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: LR Button 2 Long"
         unique_id: sl_living_room_b2_long_select
         default_entity_id: select.sl_living_room_b2_long
-      - <<: *sl_button_action
-        name: "SL: LR Button 3 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: LR Button 3 Short"
         unique_id: sl_living_room_b3_short_select
         default_entity_id: select.sl_living_room_b3_short
-      - <<: *sl_button_action
-        name: "SL: LR Button 3 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: LR Button 3 Long"
         unique_id: sl_living_room_b3_long_select
         default_entity_id: select.sl_living_room_b3_long
-      - <<: *sl_button_action
-        name: "SL: LR Button 4 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: LR Button 4 Short"
         unique_id: sl_living_room_b4_short_select
         default_entity_id: select.sl_living_room_b4_short
-      - <<: *sl_button_action
-        name: "SL: LR Button 4 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: LR Button 4 Long"
         unique_id: sl_living_room_b4_long_select
         default_entity_id: select.sl_living_room_b4_long
-      - <<: *sl_button_action
-        name: "SL: BR Button 1 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BR Button 1 Short"
         unique_id: sl_bedroom_b1_short_select
         default_entity_id: select.sl_bedroom_b1_short
-      - <<: *sl_button_action
-        name: "SL: BR Button 1 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BR Button 1 Long"
         unique_id: sl_bedroom_b1_long_select
         default_entity_id: select.sl_bedroom_b1_long
-      - <<: *sl_button_action
-        name: "SL: BR Button 2 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BR Button 2 Short"
         unique_id: sl_bedroom_b2_short_select
         default_entity_id: select.sl_bedroom_b2_short
-      - <<: *sl_button_action
-        name: "SL: BR Button 2 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BR Button 2 Long"
         unique_id: sl_bedroom_b2_long_select
         default_entity_id: select.sl_bedroom_b2_long
-      - <<: *sl_button_action
-        name: "SL: BR Button 3 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BR Button 3 Short"
         unique_id: sl_bedroom_b3_short_select
         default_entity_id: select.sl_bedroom_b3_short
-      - <<: *sl_button_action
-        name: "SL: BR Button 3 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BR Button 3 Long"
         unique_id: sl_bedroom_b3_long_select
         default_entity_id: select.sl_bedroom_b3_long
-      - <<: *sl_button_action
-        name: "SL: BR Button 4 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BR Button 4 Short"
         unique_id: sl_bedroom_b4_short_select
         default_entity_id: select.sl_bedroom_b4_short
-      - <<: *sl_button_action
-        name: "SL: BR Button 4 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BR Button 4 Long"
         unique_id: sl_bedroom_b4_long_select
         default_entity_id: select.sl_bedroom_b4_long
-      - <<: *sl_button_action
-        name: "SL: BA Button 1 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BA Button 1 Short"
         unique_id: sl_bathroom_b1_short_select
         default_entity_id: select.sl_bathroom_b1_short
-      - <<: *sl_button_action
-        name: "SL: BA Button 1 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BA Button 1 Long"
         unique_id: sl_bathroom_b1_long_select
         default_entity_id: select.sl_bathroom_b1_long
-      - <<: *sl_button_action
-        name: "SL: BA Button 2 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BA Button 2 Short"
         unique_id: sl_bathroom_b2_short_select
         default_entity_id: select.sl_bathroom_b2_short
-      - <<: *sl_button_action
-        name: "SL: BA Button 2 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BA Button 2 Long"
         unique_id: sl_bathroom_b2_long_select
         default_entity_id: select.sl_bathroom_b2_long
-      - <<: *sl_button_action
-        name: "SL: BA Button 3 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BA Button 3 Short"
         unique_id: sl_bathroom_b3_short_select
         default_entity_id: select.sl_bathroom_b3_short
-      - <<: *sl_button_action
-        name: "SL: BA Button 3 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BA Button 3 Long"
         unique_id: sl_bathroom_b3_long_select
         default_entity_id: select.sl_bathroom_b3_long
-      - <<: *sl_button_action
-        name: "SL: BA Button 4 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BA Button 4 Short"
         unique_id: sl_bathroom_b4_short_select
         default_entity_id: select.sl_bathroom_b4_short
-      - <<: *sl_button_action
-        name: "SL: BA Button 4 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: BA Button 4 Long"
         unique_id: sl_bathroom_b4_long_select
         default_entity_id: select.sl_bathroom_b4_long
-      - <<: *sl_button_action
-        name: "SL: KI Button 1 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: KI Button 1 Short"
         unique_id: sl_kitchen_b1_short_select
         default_entity_id: select.sl_kitchen_b1_short
-      - <<: *sl_button_action
-        name: "SL: KI Button 1 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: KI Button 1 Long"
         unique_id: sl_kitchen_b1_long_select
         default_entity_id: select.sl_kitchen_b1_long
-      - <<: *sl_button_action
-        name: "SL: KI Button 2 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: KI Button 2 Short"
         unique_id: sl_kitchen_b2_short_select
         default_entity_id: select.sl_kitchen_b2_short
-      - <<: *sl_button_action
-        name: "SL: KI Button 2 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: KI Button 2 Long"
         unique_id: sl_kitchen_b2_long_select
         default_entity_id: select.sl_kitchen_b2_long
-      - <<: *sl_button_action
-        name: "SL: KI Button 3 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: KI Button 3 Short"
         unique_id: sl_kitchen_b3_short_select
         default_entity_id: select.sl_kitchen_b3_short
-      - <<: *sl_button_action
-        name: "SL: KI Button 3 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: KI Button 3 Long"
         unique_id: sl_kitchen_b3_long_select
         default_entity_id: select.sl_kitchen_b3_long
-      - <<: *sl_button_action
-        name: "SL: KI Button 4 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: KI Button 4 Short"
         unique_id: sl_kitchen_b4_short_select
         default_entity_id: select.sl_kitchen_b4_short
-      - <<: *sl_button_action
-        name: "SL: KI Button 4 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: KI Button 4 Long"
         unique_id: sl_kitchen_b4_long_select
         default_entity_id: select.sl_kitchen_b4_long
-      - <<: *sl_button_action
-        name: "SL: HL Button 1 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL Button 1 Short"
         unique_id: sl_hallway_b1_short_select
         default_entity_id: select.sl_hallway_b1_short
-      - <<: *sl_button_action
-        name: "SL: HL Button 1 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL Button 1 Long"
         unique_id: sl_hallway_b1_long_select
         default_entity_id: select.sl_hallway_b1_long
-      - <<: *sl_button_action
-        name: "SL: HL Button 2 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL Button 2 Short"
         unique_id: sl_hallway_b2_short_select
         default_entity_id: select.sl_hallway_b2_short
-      - <<: *sl_button_action
-        name: "SL: HL Button 2 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL Button 2 Long"
         unique_id: sl_hallway_b2_long_select
         default_entity_id: select.sl_hallway_b2_long
-      - <<: *sl_button_action
-        name: "SL: HL Button 3 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL Button 3 Short"
         unique_id: sl_hallway_b3_short_select
         default_entity_id: select.sl_hallway_b3_short
-      - <<: *sl_button_action
-        name: "SL: HL Button 3 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL Button 3 Long"
         unique_id: sl_hallway_b3_long_select
         default_entity_id: select.sl_hallway_b3_long
-      - <<: *sl_button_action
-        name: "SL: HL Button 4 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL Button 4 Short"
         unique_id: sl_hallway_b4_short_select
         default_entity_id: select.sl_hallway_b4_short
-      - <<: *sl_button_action
-        name: "SL: HL Button 4 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL Button 4 Long"
         unique_id: sl_hallway_b4_long_select
         default_entity_id: select.sl_hallway_b4_long
-      - <<: *sl_button_action
-        name: "SL: HL-S2 Button 1 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL-S2 Button 1 Short"
         unique_id: sl_hallway_s2_b1_short_select
         default_entity_id: select.sl_hallway_s2_b1_short
-      - <<: *sl_button_action
-        name: "SL: HL-S2 Button 1 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL-S2 Button 1 Long"
         unique_id: sl_hallway_s2_b1_long_select
         default_entity_id: select.sl_hallway_s2_b1_long
-      - <<: *sl_button_action
-        name: "SL: HL-S2 Button 2 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL-S2 Button 2 Short"
         unique_id: sl_hallway_s2_b2_short_select
         default_entity_id: select.sl_hallway_s2_b2_short
-      - <<: *sl_button_action
-        name: "SL: HL-S2 Button 2 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL-S2 Button 2 Long"
         unique_id: sl_hallway_s2_b2_long_select
         default_entity_id: select.sl_hallway_s2_b2_long
-      - <<: *sl_button_action
-        name: "SL: HL-S2 Button 3 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL-S2 Button 3 Short"
         unique_id: sl_hallway_s2_b3_short_select
         default_entity_id: select.sl_hallway_s2_b3_short
-      - <<: *sl_button_action
-        name: "SL: HL-S2 Button 3 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL-S2 Button 3 Long"
         unique_id: sl_hallway_s2_b3_long_select
         default_entity_id: select.sl_hallway_s2_b3_long
-      - <<: *sl_button_action
-        name: "SL: HL-S2 Button 4 Short"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL-S2 Button 4 Short"
         unique_id: sl_hallway_s2_b4_short_select
         default_entity_id: select.sl_hallway_s2_b4_short
-      - <<: *sl_button_action
-        name: "SL: HL-S2 Button 4 Long"
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
+      - name: "SL: HL-S2 Button 4 Long"
         unique_id: sl_hallway_s2_b4_long_select
         default_entity_id: select.sl_hallway_s2_b4_long
+        icon: mdi:gesture-tap-button
+        state: *sl_btn_state
+        options: *sl_btn_options
+        select_option: *sl_btn_select
 
       # Scene list of the Lights tab: the scenes with the home room of
       # input_select.sl_room_selector (All Rooms: all scenes).
