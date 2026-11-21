@@ -1,0 +1,149 @@
+# Smart Lighting - button action of each Hue dimmer button.
+# The value is a button action name ("Toggle Room", "Scene: Movie", ...).
+# Empty = Default. No "initial": HA keeps the value at a restart.
+# The dashboard shows select.<same id> (packages/sl_scenes.yaml).
+# script.sl_push_config sends the values to Z2M.
+sl_living_room_b1_short:
+  name: "SL: LR Button 1 Short (stored)"
+  max: 100
+sl_living_room_b1_long:
+  name: "SL: LR Button 1 Long (stored)"
+  max: 100
+sl_living_room_b2_short:
+  name: "SL: LR Button 2 Short (stored)"
+  max: 100
+sl_living_room_b2_long:
+  name: "SL: LR Button 2 Long (stored)"
+  max: 100
+sl_living_room_b3_short:
+  name: "SL: LR Button 3 Short (stored)"
+  max: 100
+sl_living_room_b3_long:
+  name: "SL: LR Button 3 Long (stored)"
+  max: 100
+sl_living_room_b4_short:
+  name: "SL: LR Button 4 Short (stored)"
+  max: 100
+sl_living_room_b4_long:
+  name: "SL: LR Button 4 Long (stored)"
+  max: 100
+sl_bedroom_b1_short:
+  name: "SL: BR Button 1 Short (stored)"
+  max: 100
+sl_bedroom_b1_long:
+  name: "SL: BR Button 1 Long (stored)"
+  max: 100
+sl_bedroom_b2_short:
+  name: "SL: BR Button 2 Short (stored)"
+  max: 100
+sl_bedroom_b2_long:
+  name: "SL: BR Button 2 Long (stored)"
+  max: 100
+sl_bedroom_b3_short:
+  name: "SL: BR Button 3 Short (stored)"
+  max: 100
+sl_bedroom_b3_long:
+  name: "SL: BR Button 3 Long (stored)"
+  max: 100
+sl_bedroom_b4_short:
+  name: "SL: BR Button 4 Short (stored)"
+  max: 100
+sl_bedroom_b4_long:
+  name: "SL: BR Button 4 Long (stored)"
+  max: 100
+sl_bathroom_b1_short:
+  name: "SL: BA Button 1 Short (stored)"
+  max: 100
+sl_bathroom_b1_long:
+  name: "SL: BA Button 1 Long (stored)"
+  max: 100
+sl_bathroom_b2_short:
+  name: "SL: BA Button 2 Short (stored)"
+  max: 100
+sl_bathroom_b2_long:
+  name: "SL: BA Button 2 Long (stored)"
+  max: 100
+sl_bathroom_b3_short:
+  name: "SL: BA Button 3 Short (stored)"
+  max: 100
+sl_bathroom_b3_long:
+  name: "SL: BA Button 3 Long (stored)"
+  max: 100
+sl_bathroom_b4_short:
+  name: "SL: BA Button 4 Short (stored)"
+  max: 100
+sl_bathroom_b4_long:
+  name: "SL: BA Button 4 Long (stored)"
+  max: 100
+sl_kitchen_b1_short:
+  name: "SL: KI Button 1 Short (stored)"
+  max: 100
+sl_kitchen_b1_long:
+  name: "SL: KI Button 1 Long (stored)"
+  max: 100
+sl_kitchen_b2_short:
+  name: "SL: KI Button 2 Short (stored)"
+  max: 100
+sl_kitchen_b2_long:
+  name: "SL: KI Button 2 Long (stored)"
+  max: 100
+sl_kitchen_b3_short:
+  name: "SL: KI Button 3 Short (stored)"
+  max: 100
+sl_kitchen_b3_long:
+  name: "SL: KI Button 3 Long (stored)"
+  max: 100
+sl_kitchen_b4_short:
+  name: "SL: KI Button 4 Short (stored)"
+  max: 100
+sl_kitchen_b4_long:
+  name: "SL: KI Button 4 Long (stored)"
+  max: 100
+sl_hallway_b1_short:
+  name: "SL: HL Button 1 Short (stored)"
+  max: 100
+sl_hallway_b1_long:
+  name: "SL: HL Button 1 Long (stored)"
+  max: 100
+sl_hallway_b2_short:
+  name: "SL: HL Button 2 Short (stored)"
+  max: 100
+sl_hallway_b2_long:
+  name: "SL: HL Button 2 Long (stored)"
+  max: 100
+sl_hallway_b3_short:
+  name: "SL: HL Button 3 Short (stored)"
+  max: 100
+sl_hallway_b3_long:
+  name: "SL: HL Button 3 Long (stored)"
+  max: 100
+sl_hallway_b4_short:
+  name: "SL: HL Button 4 Short (stored)"
+  max: 100
+sl_hallway_b4_long:
+  name: "SL: HL Button 4 Long (stored)"
+  max: 100
+sl_hallway_s2_b1_short:
+  name: "SL: HL-S2 Button 1 Short (stored)"
+  max: 100
+sl_hallway_s2_b1_long:
+  name: "SL: HL-S2 Button 1 Long (stored)"
+  max: 100
+sl_hallway_s2_b2_short:
+  name: "SL: HL-S2 Button 2 Short (stored)"
+  max: 100
+sl_hallway_s2_b2_long:
+  name: "SL: HL-S2 Button 2 Long (stored)"
+  max: 100
+sl_hallway_s2_b3_short:
+  name: "SL: HL-S2 Button 3 Short (stored)"
+  max: 100
+sl_hallway_s2_b3_long:
+  name: "SL: HL-S2 Button 3 Long (stored)"
+  max: 100
+sl_hallway_s2_b4_short:
+  name: "SL: HL-S2 Button 4 Short (stored)"
+  max: 100
+sl_hallway_s2_b4_long:
+  name: "SL: HL-S2 Button 4 Long (stored)"
+  max: 100

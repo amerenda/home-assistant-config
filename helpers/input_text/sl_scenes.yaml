@@ -1,0 +1,10 @@
+# Smart Lighting named scenes (WO-0263) - Lights tab form and scene list.
+sl_scene_name:
+  name: "SL: Scene Name"
+  min: 0
+  max: 40
+  icon: mdi:tag
+sl_scene_selected:
+  name: "SL: Selected Scene (stored)"
+  min: 0
+  max: 40

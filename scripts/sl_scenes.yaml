@@ -1,0 +1,214 @@
+# Smart Lighting named scenes (WO-0263). The Z2M extension owns the scenes.
+# These scripts send commands to zigbee2mqtt/sl/scene/<op>. The extension
+# validates each command and publishes the result in sensor.sl_scenes
+# (attribute last_result). A scene: name, home room, in_cycle flag, and the
+# settings of the checked bulbs (any bulbs in any room).
+
+sl_scene_form_new:
+  alias: "SL: Scene - new scene form"
+  description: >
+    Opens the save form on the Lights tab. The bulbs of the selected room are
+    checked (All Rooms: all 8), the home room is the selected room.
+  mode: single
+  sequence:
+    - variables:
+        room: "{{ states('input_select.sl_room_selector') }}"
+        room_bulbs:
+          Living Room: [living_room_1]
+          Bedroom: [bedroom_1, bedroom_2, lamp_1]
+          Bathroom: [bathroom_1]
+          Kitchen: [kitchen_1, kitchen_2]
+          Hallway: [hallway_1]
+        all_bulbs: [living_room_1, bedroom_1, bedroom_2, lamp_1, bathroom_1, kitchen_1, kitchen_2, hallway_1]
+        checked: "{{ all_bulbs if room == 'All Rooms' else room_bulbs.get(room, []) }}"
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.sl_scene_name
+      data:
+        value: ""
+    - if:
+        - condition: template
+          value_template: "{{ room != 'All Rooms' }}"
+      then:
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.sl_scene_room
+          data:
+            option: "{{ room }}"
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.sl_scene_in_cycle
+    - repeat:
+        for_each: "{{ all_bulbs }}"
+        sequence:
+          - action: "input_boolean.turn_{{ 'on' if repeat.item in checked else 'off' }}"
+            target:
+              entity_id: "input_boolean.sl_scene_bulb_{{ repeat.item }}"
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.sl_show_save_scene
+
+sl_scene_load:
+  alias: "SL: Scene - edit the selected scene"
+  description: >
+    Applies the selected scene to its bulbs and fills the save form with its
+    name, home room, cycle flag and bulbs. Change the lights, then save with
+    the same name to replace the scene.
+  mode: single
+  sequence:
+    - variables:
+        name: "{{ states('select.sl_scene_selected') }}"
+        scene: >-
+          {{ (state_attr('sensor.sl_scenes', 'scenes') or [])
+             | selectattr('name', 'eq', name) | list | first | default({}) }}
+        all_bulbs: [living_room_1, bedroom_1, bedroom_2, lamp_1, bathroom_1, kitchen_1, kitchen_2, hallway_1]
+    - condition: template
+      value_template: "{{ scene.name is defined }}"
+    - action: mqtt.publish
+      data:
+        topic: zigbee2mqtt/sl/scene/apply
+        payload: "{{ {'name': name} | tojson }}"
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.sl_scene_name
+      data:
+        value: "{{ scene.name }}"
+    - action: input_select.select_option
+      target:
+        entity_id: input_select.sl_scene_room
+      data:
+        option: "{{ scene.room }}"
+    - action: "input_boolean.turn_{{ 'on' if scene.in_cycle else 'off' }}"
+      target:
+        entity_id: input_boolean.sl_scene_in_cycle
+    - repeat:
+        for_each: "{{ all_bulbs }}"
+        sequence:
+          - action: "input_boolean.turn_{{ 'on' if repeat.item in scene.lights else 'off' }}"
+            target:
+              entity_id: "input_boolean.sl_scene_bulb_{{ repeat.item }}"
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.sl_show_save_scene
+
+sl_scene_save:
+  alias: "SL: Scene - save the checked bulbs"
+  description: >
+    Reads the live state of each checked bulb and sends one save command. A
+    scene with the same name is replaced. If a checked bulb is unavailable,
+    nothing is saved and a notification names the bulb.
+  mode: single
+  sequence:
+    - variables:
+        all_bulbs: [living_room_1, bedroom_1, bedroom_2, lamp_1, bathroom_1, kitchen_1, kitchen_2, hallway_1]
+        snapshot: >-
+          {% set ns = namespace(lights={}, missing=[]) %}
+          {% for b in all_bulbs if is_state('input_boolean.sl_scene_bulb_' ~ b, 'on') %}
+          {% set e = 'light.' ~ b %}
+          {% set st = states(e) %}
+          {% if st in ['unknown', 'unavailable'] %}
+          {% set ns.missing = ns.missing + [b] %}
+          {% elif st == 'off' %}
+          {% set ns.lights = dict(ns.lights, **{b: {'state': 'OFF'}}) %}
+          {% else %}
+          {% set v = {'state': 'ON', 'brightness': state_attr(e, 'brightness') | int(254)} %}
+          {% set mode = state_attr(e, 'color_mode') %}
+          {% set k = state_attr(e, 'color_temp_kelvin') | int(0) %}
+          {% set xy = state_attr(e, 'xy_color') %}
+          {% if mode == 'color_temp' and k > 0 %}
+          {% set v = dict(v, color_temp=(1000000 / k) | round | int) %}
+          {% elif mode in ['xy', 'hs', 'rgb'] and xy %}
+          {% set v = dict(v, color={'x': xy[0] | round(4), 'y': xy[1] | round(4)}) %}
+          {% endif %}
+          {% set ns.lights = dict(ns.lights, **{b: v}) %}
+          {% endif %}
+          {% endfor %}
+          {{ {'lights': ns.lights, 'missing': ns.missing} }}
+        name: "{{ states('input_text.sl_scene_name') | trim }}"
+    - if:
+        - condition: template
+          value_template: "{{ snapshot.missing | count > 0 }}"
+      then:
+        - action: persistent_notification.create
+          data:
+            notification_id: sl_scene_save
+            title: Smart Lighting
+            message: "Scene '{{ name }}' is not saved. These bulbs are unavailable: {{ snapshot.missing | join(', ') }}."
+        - stop: "Checked bulb unavailable"
+    - action: mqtt.publish
+      data:
+        topic: zigbee2mqtt/sl/scene/save
+        payload: >-
+          {{ {'name': name,
+              'room': states('input_select.sl_scene_room'),
+              'in_cycle': is_state('input_boolean.sl_scene_in_cycle', 'on'),
+              'lights': snapshot.lights} | tojson }}
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.sl_scene_selected
+      data:
+        value: "{{ name }}"
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.sl_show_save_scene
+
+sl_scene_apply:
+  alias: "SL: Scene - apply the selected scene"
+  mode: single
+  sequence:
+    - condition: template
+      value_template: "{{ states('select.sl_scene_selected') not in ['(no scenes)', 'unknown', 'unavailable'] }}"
+    - action: mqtt.publish
+      data:
+        topic: zigbee2mqtt/sl/scene/apply
+        payload: "{{ {'name': states('select.sl_scene_selected')} | tojson }}"
+
+sl_scene_delete:
+  alias: "SL: Scene - delete the selected scene"
+  mode: single
+  sequence:
+    - condition: template
+      value_template: "{{ states('select.sl_scene_selected') not in ['(no scenes)', 'unknown', 'unavailable'] }}"
+    - action: mqtt.publish
+      data:
+        topic: zigbee2mqtt/sl/scene/delete
+        payload: "{{ {'name': states('select.sl_scene_selected')} | tojson }}"
+
+sl_scene_toggle_cycle:
+  alias: "SL: Scene - cycle flag on or off for the selected scene"
+  mode: single
+  sequence:
+    - variables:
+        name: "{{ states('select.sl_scene_selected') }}"
+        scene: >-
+          {{ (state_attr('sensor.sl_scenes', 'scenes') or [])
+             | selectattr('name', 'eq', name) | list | first | default({}) }}
+    - condition: template
+      value_template: "{{ scene.name is defined }}"
+    - action: mqtt.publish
+      data:
+        topic: zigbee2mqtt/sl/scene/update
+        payload: "{{ {'name': name, 'in_cycle': not scene.in_cycle} | tojson }}"
+
+sl_scene_window_cycle_toggle:
+  alias: "SL: Scene - cycle flag on or off for a window scene"
+  description: "Window scene of the room in input_select.sl_room_selector. Not for All Rooms."
+  mode: single
+  fields:
+    window:
+      description: "morning, day, evening or night"
+      required: true
+      selector:
+        select:
+          options: [morning, day, evening, night]
+  sequence:
+    - variables:
+        room: "{{ states('input_select.sl_room_selector') }}"
+        flags: "{{ (state_attr('sensor.sl_scenes', 'window_cycle') or {}).get(room, {}) }}"
+        current: "{{ flags.get(window, true) }}"
+    - condition: template
+      value_template: "{{ room != 'All Rooms' and window in ['morning', 'day', 'evening', 'night'] }}"
+    - action: mqtt.publish
+      data:
+        topic: zigbee2mqtt/sl/scene/update
+        payload: "{{ {'room': room, 'window': window, 'in_cycle': not current} | tojson }}"

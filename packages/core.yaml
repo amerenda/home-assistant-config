@@ -3,7 +3,6 @@
 automation manual: !include_dir_list ../automations
 group: !include ../groups.yaml
 script: !include_dir_merge_named ../scripts
-python_script:
 input_boolean: !include_dir_merge_named ../helpers/input_boolean/
 input_datetime: !include_dir_merge_named ../helpers/input_datetime/
 input_select: !include_dir_merge_named ../helpers/input_select/
@@ -116,6 +115,15 @@ mqtt:
       json_attributes_topic: "zigbee2mqtt/sl/status"
       json_attributes_template: "{{ value_json | tojson }}"
       icon: mdi:sync
+    # Named light scenes, published retained by the Z2M extension (WO-0263).
+    # State = number of scenes. Attributes: scenes, window_cycle, last_result.
+    - name: "SL: Scenes"
+      unique_id: sl_scenes
+      state_topic: "zigbee2mqtt/sl/scenes"
+      value_template: "{{ value_json.scenes | count }}"
+      json_attributes_topic: "zigbee2mqtt/sl/scenes"
+      json_attributes_template: "{{ value_json | tojson }}"
+      icon: mdi:palette
 
 prometheus:
   namespace: homeassistant

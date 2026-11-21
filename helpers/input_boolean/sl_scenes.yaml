@@ -1,0 +1,28 @@
+# Smart Lighting named scenes (WO-0263) - Lights tab form.
+sl_scene_in_cycle:
+  name: "SL: Scene In Button 4 Cycle"
+  icon: mdi:rotate-right
+sl_scene_bulb_living_room_1:
+  name: "SL: Scene Bulb Living Room"
+  icon: mdi:lightbulb-outline
+sl_scene_bulb_bedroom_1:
+  name: "SL: Scene Bulb Bedroom 1"
+  icon: mdi:lightbulb-outline
+sl_scene_bulb_bedroom_2:
+  name: "SL: Scene Bulb Bedroom 2"
+  icon: mdi:lightbulb-outline
+sl_scene_bulb_lamp_1:
+  name: "SL: Scene Bulb Bedroom Lamp"
+  icon: mdi:lightbulb-outline
+sl_scene_bulb_bathroom_1:
+  name: "SL: Scene Bulb Bathroom"
+  icon: mdi:lightbulb-outline
+sl_scene_bulb_kitchen_1:
+  name: "SL: Scene Bulb Kitchen 1"
+  icon: mdi:lightbulb-outline
+sl_scene_bulb_kitchen_2:
+  name: "SL: Scene Bulb Kitchen 2"
+  icon: mdi:lightbulb-outline
+sl_scene_bulb_hallway_1:
+  name: "SL: Scene Bulb Hallway"
+  icon: mdi:lightbulb-outline

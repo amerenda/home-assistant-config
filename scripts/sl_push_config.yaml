@@ -55,18 +55,12 @@ sl_push_config:
               {"brightness": {{ b }}}
             {% endif %}
           {% endmacro %}
-          {# Custom scenes hold a per-light snapshot (each light can have its own
-             brightness/color, unlike the uniform window scenes above) — captured
-             live by python_script.sl_save_custom_scene_lights, not set via sliders.
-             input_text.sl_<room>_<slot>_lights already holds the exact JSON shape
-             we want to publish, so this just reads name + that blob straight through. #}
-          {% macro custom_scene(room, slot) %}
-            {% set nm = states('input_text.sl_' ~ room ~ '_' ~ slot ~ '_name') %}
-            {% set name = '' if nm in ['unknown', 'unavailable', none] else nm %}
-            {% set lights_raw = states('input_text.sl_' ~ room ~ '_' ~ slot ~ '_lights') %}
-            {% set lights = (lights_raw | from_json) if lights_raw not in ['', 'unknown', 'unavailable', none] else {} %}
-            {"name": {{ name | tojson }}, "lights": {{ lights | tojson }}}
-          {% endmacro %}
+          {# Button action of one dimmer button: the stored value of
+             input_text.<id> (set through select.<id>), or Default when empty. #}
+          {%- macro btn(id) -%}
+            {%- set v = states('input_text.' ~ id) -%}
+            {{- v if v not in ['', 'unknown', 'unavailable'] else 'Default' -}}
+          {%- endmacro -%}
           {% macro room_config(room_key, room_name, lights) %}
             {% set spo = false if is_guest else is_state('input_boolean.sl_' ~ room_key ~ '_smart_power_on', 'on') %}
             {% set auto_t = is_state('input_boolean.sl_' ~ room_key ~ '_auto_transition', 'on') %}
@@ -84,11 +78,6 @@ sl_push_config:
                 "day": {{ scene(room_key, 'day') | from_json | tojson }},
                 "evening": {{ scene(room_key, 'evening') | from_json | tojson }},
                 "night": {{ scene(room_key, 'night') | from_json | tojson }}
-              },
-              "custom_scenes": {
-                "custom1": {{ custom_scene(room_key, 'custom1') | from_json | tojson }},
-                "custom2": {{ custom_scene(room_key, 'custom2') | from_json | tojson }},
-                "custom3": {{ custom_scene(room_key, 'custom3') | from_json | tojson }}
               }
             }
           {% endmacro %}
@@ -107,14 +96,14 @@ sl_push_config:
               'brightness_step_pct': states('input_number.sl_living_room_brightness_step') | float(20),
               'min_brightness_pct': states('input_number.sl_living_room_min_brightness') | float(20),
               'multi_room_groups': (['Living Room'] if is_state('input_boolean.sl_living_room_multi_living_room', 'on') else []) + (['Bedroom'] if is_state('input_boolean.sl_living_room_multi_bedroom', 'on') else []) + (['Bathroom'] if is_state('input_boolean.sl_living_room_multi_bathroom', 'on') else []) + (['Kitchen'] if is_state('input_boolean.sl_living_room_multi_kitchen', 'on') else []) + (['Hallway'] if is_state('input_boolean.sl_living_room_multi_hallway', 'on') else []),
-              'b1_short': states('input_select.sl_living_room_b1_short'),
-              'b1_long': states('input_select.sl_living_room_b1_long'),
-              'b2_short': states('input_select.sl_living_room_b2_short'),
-              'b2_long': states('input_select.sl_living_room_b2_long'),
-              'b3_short': states('input_select.sl_living_room_b3_short'),
-              'b3_long': states('input_select.sl_living_room_b3_long'),
-              'b4_short': states('input_select.sl_living_room_b4_short'),
-              'b4_long': states('input_select.sl_living_room_b4_long')
+              'b1_short': btn('sl_living_room_b1_short'),
+              'b1_long': btn('sl_living_room_b1_long'),
+              'b2_short': btn('sl_living_room_b2_short'),
+              'b2_long': btn('sl_living_room_b2_long'),
+              'b3_short': btn('sl_living_room_b3_short'),
+              'b3_long': btn('sl_living_room_b3_long'),
+              'b4_short': btn('sl_living_room_b4_short'),
+              'b4_long': btn('sl_living_room_b4_long')
             },
             'bedroom_s_1': {
               'sid': 'bedroom',
@@ -123,14 +112,14 @@ sl_push_config:
               'brightness_step_pct': states('input_number.sl_bedroom_brightness_step') | float(20),
               'min_brightness_pct': states('input_number.sl_bedroom_min_brightness') | float(20),
               'multi_room_groups': (['Living Room'] if is_state('input_boolean.sl_bedroom_multi_living_room', 'on') else []) + (['Bedroom'] if is_state('input_boolean.sl_bedroom_multi_bedroom', 'on') else []) + (['Bathroom'] if is_state('input_boolean.sl_bedroom_multi_bathroom', 'on') else []) + (['Kitchen'] if is_state('input_boolean.sl_bedroom_multi_kitchen', 'on') else []) + (['Hallway'] if is_state('input_boolean.sl_bedroom_multi_hallway', 'on') else []),
-              'b1_short': states('input_select.sl_bedroom_b1_short'),
-              'b1_long': states('input_select.sl_bedroom_b1_long'),
-              'b2_short': states('input_select.sl_bedroom_b2_short'),
-              'b2_long': states('input_select.sl_bedroom_b2_long'),
-              'b3_short': states('input_select.sl_bedroom_b3_short'),
-              'b3_long': states('input_select.sl_bedroom_b3_long'),
-              'b4_short': states('input_select.sl_bedroom_b4_short'),
-              'b4_long': states('input_select.sl_bedroom_b4_long')
+              'b1_short': btn('sl_bedroom_b1_short'),
+              'b1_long': btn('sl_bedroom_b1_long'),
+              'b2_short': btn('sl_bedroom_b2_short'),
+              'b2_long': btn('sl_bedroom_b2_long'),
+              'b3_short': btn('sl_bedroom_b3_short'),
+              'b3_long': btn('sl_bedroom_b3_long'),
+              'b4_short': btn('sl_bedroom_b4_short'),
+              'b4_long': btn('sl_bedroom_b4_long')
             },
             'bathroom_s_1': {
               'sid': 'bathroom',
@@ -139,14 +128,14 @@ sl_push_config:
               'brightness_step_pct': states('input_number.sl_bathroom_brightness_step') | float(20),
               'min_brightness_pct': states('input_number.sl_bathroom_min_brightness') | float(20),
               'multi_room_groups': (['Living Room'] if is_state('input_boolean.sl_bathroom_multi_living_room', 'on') else []) + (['Bedroom'] if is_state('input_boolean.sl_bathroom_multi_bedroom', 'on') else []) + (['Bathroom'] if is_state('input_boolean.sl_bathroom_multi_bathroom', 'on') else []) + (['Kitchen'] if is_state('input_boolean.sl_bathroom_multi_kitchen', 'on') else []) + (['Hallway'] if is_state('input_boolean.sl_bathroom_multi_hallway', 'on') else []),
-              'b1_short': states('input_select.sl_bathroom_b1_short'),
-              'b1_long': states('input_select.sl_bathroom_b1_long'),
-              'b2_short': states('input_select.sl_bathroom_b2_short'),
-              'b2_long': states('input_select.sl_bathroom_b2_long'),
-              'b3_short': states('input_select.sl_bathroom_b3_short'),
-              'b3_long': states('input_select.sl_bathroom_b3_long'),
-              'b4_short': states('input_select.sl_bathroom_b4_short'),
-              'b4_long': states('input_select.sl_bathroom_b4_long')
+              'b1_short': btn('sl_bathroom_b1_short'),
+              'b1_long': btn('sl_bathroom_b1_long'),
+              'b2_short': btn('sl_bathroom_b2_short'),
+              'b2_long': btn('sl_bathroom_b2_long'),
+              'b3_short': btn('sl_bathroom_b3_short'),
+              'b3_long': btn('sl_bathroom_b3_long'),
+              'b4_short': btn('sl_bathroom_b4_short'),
+              'b4_long': btn('sl_bathroom_b4_long')
             },
             'kitchen_s_1': {
               'sid': 'kitchen',
@@ -155,14 +144,14 @@ sl_push_config:
               'brightness_step_pct': states('input_number.sl_kitchen_brightness_step') | float(20),
               'min_brightness_pct': states('input_number.sl_kitchen_min_brightness') | float(20),
               'multi_room_groups': (['Living Room'] if is_state('input_boolean.sl_kitchen_multi_living_room', 'on') else []) + (['Bedroom'] if is_state('input_boolean.sl_kitchen_multi_bedroom', 'on') else []) + (['Bathroom'] if is_state('input_boolean.sl_kitchen_multi_bathroom', 'on') else []) + (['Kitchen'] if is_state('input_boolean.sl_kitchen_multi_kitchen', 'on') else []) + (['Hallway'] if is_state('input_boolean.sl_kitchen_multi_hallway', 'on') else []),
-              'b1_short': states('input_select.sl_kitchen_b1_short'),
-              'b1_long': states('input_select.sl_kitchen_b1_long'),
-              'b2_short': states('input_select.sl_kitchen_b2_short'),
-              'b2_long': states('input_select.sl_kitchen_b2_long'),
-              'b3_short': states('input_select.sl_kitchen_b3_short'),
-              'b3_long': states('input_select.sl_kitchen_b3_long'),
-              'b4_short': states('input_select.sl_kitchen_b4_short'),
-              'b4_long': states('input_select.sl_kitchen_b4_long')
+              'b1_short': btn('sl_kitchen_b1_short'),
+              'b1_long': btn('sl_kitchen_b1_long'),
+              'b2_short': btn('sl_kitchen_b2_short'),
+              'b2_long': btn('sl_kitchen_b2_long'),
+              'b3_short': btn('sl_kitchen_b3_short'),
+              'b3_long': btn('sl_kitchen_b3_long'),
+              'b4_short': btn('sl_kitchen_b4_short'),
+              'b4_long': btn('sl_kitchen_b4_long')
             },
             'hallway_s_1': {
               'sid': 'hallway',
@@ -171,14 +160,14 @@ sl_push_config:
               'brightness_step_pct': states('input_number.sl_hallway_brightness_step') | float(20),
               'min_brightness_pct': states('input_number.sl_hallway_min_brightness') | float(20),
               'multi_room_groups': (['Living Room'] if is_state('input_boolean.sl_hallway_multi_living_room', 'on') else []) + (['Bedroom'] if is_state('input_boolean.sl_hallway_multi_bedroom', 'on') else []) + (['Bathroom'] if is_state('input_boolean.sl_hallway_multi_bathroom', 'on') else []) + (['Kitchen'] if is_state('input_boolean.sl_hallway_multi_kitchen', 'on') else []) + (['Hallway'] if is_state('input_boolean.sl_hallway_multi_hallway', 'on') else []),
-              'b1_short': states('input_select.sl_hallway_b1_short'),
-              'b1_long': states('input_select.sl_hallway_b1_long'),
-              'b2_short': states('input_select.sl_hallway_b2_short'),
-              'b2_long': states('input_select.sl_hallway_b2_long'),
-              'b3_short': states('input_select.sl_hallway_b3_short'),
-              'b3_long': states('input_select.sl_hallway_b3_long'),
-              'b4_short': states('input_select.sl_hallway_b4_short'),
-              'b4_long': states('input_select.sl_hallway_b4_long')
+              'b1_short': btn('sl_hallway_b1_short'),
+              'b1_long': btn('sl_hallway_b1_long'),
+              'b2_short': btn('sl_hallway_b2_short'),
+              'b2_long': btn('sl_hallway_b2_long'),
+              'b3_short': btn('sl_hallway_b3_short'),
+              'b3_long': btn('sl_hallway_b3_long'),
+              'b4_short': btn('sl_hallway_b4_short'),
+              'b4_long': btn('sl_hallway_b4_long')
             },
             'hallway_s_2': {
               'sid': 'hallway_s2',
@@ -187,14 +176,14 @@ sl_push_config:
               'brightness_step_pct': states('input_number.sl_hallway_s2_brightness_step') | float(20),
               'min_brightness_pct': states('input_number.sl_hallway_s2_min_brightness') | float(20),
               'multi_room_groups': (['Living Room'] if is_state('input_boolean.sl_hallway_s2_multi_living_room', 'on') else []) + (['Bedroom'] if is_state('input_boolean.sl_hallway_s2_multi_bedroom', 'on') else []) + (['Bathroom'] if is_state('input_boolean.sl_hallway_s2_multi_bathroom', 'on') else []) + (['Kitchen'] if is_state('input_boolean.sl_hallway_s2_multi_kitchen', 'on') else []) + (['Hallway'] if is_state('input_boolean.sl_hallway_s2_multi_hallway', 'on') else []),
-              'b1_short': states('input_select.sl_hallway_s2_b1_short'),
-              'b1_long': states('input_select.sl_hallway_s2_b1_long'),
-              'b2_short': states('input_select.sl_hallway_s2_b2_short'),
-              'b2_long': states('input_select.sl_hallway_s2_b2_long'),
-              'b3_short': states('input_select.sl_hallway_s2_b3_short'),
-              'b3_long': states('input_select.sl_hallway_s2_b3_long'),
-              'b4_short': states('input_select.sl_hallway_s2_b4_short'),
-              'b4_long': states('input_select.sl_hallway_s2_b4_long')
+              'b1_short': btn('sl_hallway_s2_b1_short'),
+              'b1_long': btn('sl_hallway_s2_b1_long'),
+              'b2_short': btn('sl_hallway_s2_b2_short'),
+              'b2_long': btn('sl_hallway_s2_b2_long'),
+              'b3_short': btn('sl_hallway_s2_b3_short'),
+              'b3_long': btn('sl_hallway_s2_b3_long'),
+              'b4_short': btn('sl_hallway_s2_b4_short'),
+              'b4_long': btn('sl_hallway_s2_b4_long')
             }
           } %}
           {{ {

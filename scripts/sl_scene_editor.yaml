@@ -1,69 +1,3 @@
-sl_preview_custom_scene:
-  alias: "SL: Preview Custom Scene (apply stored per-light snapshot)"
-  description: >
-    Applies a saved Custom Scene slot's per-light snapshot directly to the room's
-    bulbs so you can see it — each light gets its own state/brightness/color,
-    unlike sl_preview_scene which applies one uniform value to every light in
-    the room. Does NOT change any stored values.
-  mode: single
-  fields:
-    room:
-      description: "Room key (living_room, bedroom, bathroom, kitchen, hallway)"
-      required: true
-      selector:
-        select:
-          options: [living_room, bedroom, bathroom, kitchen, hallway]
-    slot:
-      description: "Custom scene slot"
-      required: true
-      selector:
-        select:
-          options: [custom1, custom2, custom3]
-  sequence:
-    - variables:
-        raw: "{{ states('input_text.sl_' ~ room ~ '_' ~ slot ~ '_lights') }}"
-        snapshot: "{{ (raw | from_json) if raw not in ['', 'unknown', 'unavailable', none] else {} }}"
-    - repeat:
-        for_each: "{{ snapshot.keys() | list }}"
-        sequence:
-          - variables:
-              light_key: "{{ repeat.item }}"
-              entry: "{{ snapshot[repeat.item] }}"
-          - choose:
-              - conditions:
-                  - condition: template
-                    value_template: "{{ entry.state == 'OFF' }}"
-                sequence:
-                  - service: light.turn_off
-                    target:
-                      entity_id: "light.{{ light_key }}"
-              - conditions:
-                  - condition: template
-                    value_template: "{{ 'color' in entry }}"
-                sequence:
-                  - service: light.turn_on
-                    target:
-                      entity_id: "light.{{ light_key }}"
-                    data:
-                      brightness: "{{ entry.brightness }}"
-                      xy_color: "{{ [entry.color.x, entry.color.y] }}"
-              - conditions:
-                  - condition: template
-                    value_template: "{{ 'color_temp' in entry }}"
-                sequence:
-                  - service: light.turn_on
-                    target:
-                      entity_id: "light.{{ light_key }}"
-                    data:
-                      brightness: "{{ entry.brightness }}"
-                      color_temp_kelvin: "{{ (1000000 / entry.color_temp) | int }}"
-            default:
-              - service: light.turn_on
-                target:
-                  entity_id: "light.{{ light_key }}"
-                data:
-                  brightness: "{{ entry.brightness }}"
-
 sl_preview_scene:
   alias: "SL: Preview Scene (apply stored values to lights)"
   description: "Turns on a room's lights at the currently stored scene values so you can see them. Does NOT change any stored values."
@@ -76,7 +10,7 @@ sl_preview_scene:
         select:
           options: [living_room, bedroom, bathroom, kitchen, hallway]
     window:
-      description: "Time window (morning, day, evening, night) or custom scene slot (custom1, custom2, custom3)"
+      description: "Time window (morning, day, evening, night)"
       required: true
       selector:
         text:
@@ -130,25 +64,24 @@ sl_preview_scene:
 sl_save_current_as_scene:
   alias: "SL: Save Current Light State as Scene"
   description: >
-    Saves light state to helpers and Z2M where applicable. For Custom Scenes with room=all,
-    also writes a persistent pack to /config/sl_custom_scenes.json (all lights per room) via
-    python_script.sl_custom_scenes_persist; use script.sl_apply_custom_scene_all_rooms to recall.
+    Saves the light state of a room (room=all: each room) as one of its 4 window scenes
+    (helpers and Z2M). Named scenes are in scripts/sl_scenes.yaml.
   mode: single
   fields:
     room:
-      description: "Room key, or all for whole-house custom scene (per-room helpers)"
+      description: "Room key, or all for each room"
       required: true
       selector:
         select:
           options: [all, living_room, bedroom, bathroom, kitchen, hallway]
     window:
-      description: "Time window (morning, day, evening, night) or custom scene name slug"
+      description: "Time window (morning, day, evening, night)"
       required: true
       selector:
         text:
   sequence:
     # Some Lovelace cards pass service data as literal "{{ ... }}" without evaluating it.
-    # Fall back to dashboard helpers so room=all and custom slugs work.
+    # Fall back to the room selector so room=all works.
     - variables:
         room_in: "{{ room }}"
         window_in: "{{ window | default('', true) }}"
@@ -163,7 +96,7 @@ sl_save_current_as_scene:
         sl_window: >-
           {% set w = window_in | string | trim %}
           {% if '{{' in w or w == '' or w in ['unknown', 'unavailable', 'none'] %}
-            {{ states('input_text.sl_custom_scene_name') | lower | replace(' ', '_') }}
+            invalid
           {% else %}
             {{ w | lower | replace(' ', '_') }}
           {% endif %}
@@ -173,17 +106,14 @@ sl_save_current_as_scene:
           bathroom: "light.bathroom_1"
           kitchen: "light.kitchen_1"
           hallway: "light.hallway_1"
+    - condition: template
+      value_template: "{{ sl_window in ['morning', 'day', 'evening', 'night'] }}"
     - choose:
-        # Custom Scenes tab: "All Rooms" → dashboard passes room=all; write real per-room helpers
+        # room=all: write the helpers of each room
         - conditions:
             - condition: template
               value_template: "{{ sl_room == 'all' }}"
           sequence:
-            # Full per-room light snapshots (persists across HA restart in /config/sl_custom_scenes.json)
-            - service: python_script.sl_custom_scenes_persist
-              data:
-                action: save_all_rooms_pack
-                slug: "{{ sl_window }}"
             # Standard time windows: mirror first-light values into helpers + Z2M
             - if:
                 - condition: template
