@@ -15,4 +15,14 @@ echo '[]' > "$CFG/automations.yaml"
 echo '[]' > "$CFG/scenes.yaml"
 echo '{}' > "$CFG/scripts.yaml"
 export HA_DB_URL="sqlite:///$CFG/ci.db" JELLYFIN_API_KEY=ci
-python3 -m homeassistant --script check_config --config "$CFG"
+OUT=$(mktemp)
+RC=0
+python3 -m homeassistant --script check_config --config "$CFG" >"$OUT" 2>&1 || RC=$?
+cat "$OUT"
+[ "$RC" -eq 0 ] || exit "$RC"
+# HA keeps the last value of a duplicate key and logs a warning at each load.
+# YAML merge keys (<<:) with overrides cause this. Use scalar anchors instead.
+if grep -q 'contains duplicate key' "$OUT"; then
+  echo "FAIL: duplicate YAML keys (see the warnings above)" >&2
+  exit 1
+fi
