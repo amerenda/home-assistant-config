@@ -324,7 +324,8 @@ views:
                   service: script.sl_scene_delete
                   confirmation:
                     text: Delete the selected scene? A button action that uses it then does nothing.
-          - type: conditional
+          - &sl_scene_new_button
+            type: conditional
             conditions:
               - entity: input_boolean.sl_show_save_scene
                 state: "off"
@@ -336,7 +337,8 @@ views:
               tap_action:
                 action: call-service
                 service: script.sl_scene_form_new
-          - type: conditional
+          - &sl_scene_save_form
+            type: conditional
             conditions:
               - entity: input_boolean.sl_show_save_scene
                 state: "on"
@@ -391,6 +393,259 @@ views:
                         service: input_boolean.turn_off
                         target:
                           entity_id: input_boolean.sl_show_save_scene
+
+  # ════════════════════════════════════════════════════════════
+  # Effects Tab (WO-0269): native Hue effect for each bulb
+  # A scene save keeps the effect and the speed of each bulb.
+  # ════════════════════════════════════════════════════════════
+  - title: Effects
+    path: effects
+    icon: mdi:auto-fix
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_select.sl_room_selector
+                name: Room
+          - type: markdown
+            content: >-
+              Set an effect, its speed and (color bulbs) its color. The effect runs on the bulb.
+              To keep it, save a scene below: the scene keeps the effect, the speed and the color of each checked bulb.
+              A window scene (Toggle Room on, Button 4 window step) stops the effect.
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Living Room"
+            card:
+              type: vertical-stack
+              cards:
+                - &sl_fx_living_room_1
+                  type: vertical-stack
+                  cards:
+                    - type: tile
+                      entity: select.living_room_1_effect
+                      name: Living Room
+                      icon: mdi:auto-fix
+                      vertical: false
+                      features_position: bottom
+                      features:
+                        - type: select-options
+                          options: &sl_fx_color [none, candle, fireplace, colorloop, sunset, sunrise, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant, breathe]
+                    - type: tile
+                      entity: number.living_room_1_effect_speed
+                      name: Living Room speed (0 slow, 1 fast)
+                      features_position: bottom
+                      features:
+                        - type: numeric-input
+                          style: slider
+                    - type: entities
+                      show_header_toggle: false
+                      entities:
+                        - entity: text.living_room_1_effect_color
+                          name: "Living Room effect color (hex, for example #FF7A1A)"
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Bedroom"
+            card:
+              type: vertical-stack
+              cards:
+                - &sl_fx_bedroom_1
+                  type: vertical-stack
+                  cards:
+                    - type: tile
+                      entity: select.bedroom_1_effect
+                      name: Bedroom 1
+                      icon: mdi:auto-fix
+                      vertical: false
+                      features_position: bottom
+                      features:
+                        - type: select-options
+                          options: *sl_fx_color
+                    - type: tile
+                      entity: number.bedroom_1_effect_speed
+                      name: Bedroom 1 speed (0 slow, 1 fast)
+                      features_position: bottom
+                      features:
+                        - type: numeric-input
+                          style: slider
+                    - type: entities
+                      show_header_toggle: false
+                      entities:
+                        - entity: text.bedroom_1_effect_color
+                          name: "Bedroom 1 effect color (hex, for example #FF7A1A)"
+                - &sl_fx_bedroom_2
+                  type: vertical-stack
+                  cards:
+                    - type: tile
+                      entity: select.bedroom_2_effect
+                      name: Bedroom 2
+                      icon: mdi:auto-fix
+                      vertical: false
+                      features_position: bottom
+                      features:
+                        - type: select-options
+                          options: *sl_fx_color
+                    - type: tile
+                      entity: number.bedroom_2_effect_speed
+                      name: Bedroom 2 speed (0 slow, 1 fast)
+                      features_position: bottom
+                      features:
+                        - type: numeric-input
+                          style: slider
+                    - type: entities
+                      show_header_toggle: false
+                      entities:
+                        - entity: text.bedroom_2_effect_color
+                          name: "Bedroom 2 effect color (hex, for example #FF7A1A)"
+                - &sl_fx_lamp_1
+                  type: vertical-stack
+                  cards:
+                    - type: tile
+                      entity: select.lamp_1_effect
+                      name: Bedroom Lamp
+                      icon: mdi:auto-fix
+                      vertical: false
+                      features_position: bottom
+                      features:
+                        - type: select-options
+                          options: *sl_fx_color
+                    - type: tile
+                      entity: number.lamp_1_effect_speed
+                      name: Bedroom Lamp speed (0 slow, 1 fast)
+                      features_position: bottom
+                      features:
+                        - type: numeric-input
+                          style: slider
+                    - type: entities
+                      show_header_toggle: false
+                      entities:
+                        - entity: text.lamp_1_effect_color
+                          name: "Bedroom Lamp effect color (hex, for example #FF7A1A)"
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Bathroom"
+            card:
+              type: vertical-stack
+              cards:
+                - &sl_fx_bathroom_1
+                  type: vertical-stack
+                  cards:
+                    - type: tile
+                      entity: select.bathroom_1_effect
+                      name: Bathroom
+                      icon: mdi:auto-fix
+                      vertical: false
+                      features_position: bottom
+                      features:
+                        - type: select-options
+                          options: *sl_fx_color
+                    - type: tile
+                      entity: number.bathroom_1_effect_speed
+                      name: Bathroom speed (0 slow, 1 fast)
+                      features_position: bottom
+                      features:
+                        - type: numeric-input
+                          style: slider
+                    - type: entities
+                      show_header_toggle: false
+                      entities:
+                        - entity: text.bathroom_1_effect_color
+                          name: "Bathroom effect color (hex, for example #FF7A1A)"
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Kitchen"
+            card:
+              type: vertical-stack
+              cards:
+                - &sl_fx_kitchen_1
+                  type: vertical-stack
+                  cards:
+                    - type: tile
+                      entity: select.kitchen_1_effect
+                      name: Kitchen 1
+                      icon: mdi:auto-fix
+                      vertical: false
+                      features_position: bottom
+                      features:
+                        - type: select-options
+                          options: &sl_fx_white [none, candle, sunset, sunrise, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant, breathe]
+                    - type: tile
+                      entity: number.kitchen_1_effect_speed
+                      name: Kitchen 1 speed (0 slow, 1 fast)
+                      features_position: bottom
+                      features:
+                        - type: numeric-input
+                          style: slider
+                - &sl_fx_kitchen_2
+                  type: vertical-stack
+                  cards:
+                    - type: tile
+                      entity: select.kitchen_2_effect
+                      name: Kitchen 2
+                      icon: mdi:auto-fix
+                      vertical: false
+                      features_position: bottom
+                      features:
+                        - type: select-options
+                          options: *sl_fx_white
+                    - type: tile
+                      entity: number.kitchen_2_effect_speed
+                      name: Kitchen 2 speed (0 slow, 1 fast)
+                      features_position: bottom
+                      features:
+                        - type: numeric-input
+                          style: slider
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Hallway"
+            card:
+              type: vertical-stack
+              cards:
+                - &sl_fx_hallway_1
+                  type: vertical-stack
+                  cards:
+                    - type: tile
+                      entity: select.hallway_1_effect
+                      name: Hallway
+                      icon: mdi:auto-fix
+                      vertical: false
+                      features_position: bottom
+                      features:
+                        - type: select-options
+                          options: *sl_fx_white
+                    - type: tile
+                      entity: number.hallway_1_effect_speed
+                      name: Hallway speed (0 slow, 1 fast)
+                      features_position: bottom
+                      features:
+                        - type: numeric-input
+                          style: slider
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "All Rooms"
+            card:
+              type: vertical-stack
+              cards:
+                - *sl_fx_living_room_1
+                - *sl_fx_bedroom_1
+                - *sl_fx_bedroom_2
+                - *sl_fx_lamp_1
+                - *sl_fx_bathroom_1
+                - *sl_fx_kitchen_1
+                - *sl_fx_kitchen_2
+                - *sl_fx_hallway_1
+          - type: custom:mushroom-title-card
+            title: Save as scene
+            subtitle: The scene keeps the effect of each checked bulb.
+          - *sl_scene_new_button
+          - *sl_scene_save_form
 
   - title: Settings
     path: schedule
