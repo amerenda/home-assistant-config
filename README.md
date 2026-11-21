@@ -33,6 +33,6 @@ custom component bumps (dean-tofu).
 
 ## Check locally
 
-    docker run --rm --entrypoint "" -v "$PWD:/repo:ro" ghcr.io/home-assistant/home-assistant:2026.7.0 sh /repo/ci/check.sh
+    docker run --rm --entrypoint "" -v "$PWD:/repo:ro" ghcr.io/home-assistant/home-assistant:2026.11.2 sh /repo/ci/check.sh
 
 Keep the image tag in `.github/workflows/check.yaml` equal to the live HA version. Roll back = revert the PR.
