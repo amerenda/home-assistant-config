@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # Keep in step with image.tag in dean-amer-dev/dean-tofu k3s/apps/prod/home-assistant/application.yaml
-      HA_IMAGE: ghcr.io/home-assistant/home-assistant:2026.7.0
+      HA_IMAGE: ghcr.io/home-assistant/home-assistant:2026.11.2
     steps:
       - uses: actions/checkout@v4
       - run: docker run --rm --entrypoint "" -v "$PWD:/repo:ro" "$HA_IMAGE" sh /repo/ci/check.sh
