@@ -1,0 +1,10 @@
+# Smart Lighting named scenes (WO-0263) - home room of the scene in the form.
+sl_scene_room:
+  name: "SL: Scene Home Room"
+  options:
+    - Living Room
+    - Bedroom
+    - Bathroom
+    - Kitchen
+    - Hallway
+  icon: mdi:floor-plan

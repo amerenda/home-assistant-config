@@ -1,0 +1,60 @@
+alias: "SL: Push Z2M config when a button action changes"
+id: sl_push_config_on_button_change
+description: >
+  A button action (input_text.sl_<switch>_b<n>_<short|long>, set through
+  select.<same id> on the Switches tab) reaches the Z2M extension only in
+  zigbee2mqtt/sl/config. Push the config at each change.
+mode: single
+trigger:
+  - platform: state
+    entity_id:
+      - input_text.sl_living_room_b1_short
+      - input_text.sl_living_room_b1_long
+      - input_text.sl_living_room_b2_short
+      - input_text.sl_living_room_b2_long
+      - input_text.sl_living_room_b3_short
+      - input_text.sl_living_room_b3_long
+      - input_text.sl_living_room_b4_short
+      - input_text.sl_living_room_b4_long
+      - input_text.sl_bedroom_b1_short
+      - input_text.sl_bedroom_b1_long
+      - input_text.sl_bedroom_b2_short
+      - input_text.sl_bedroom_b2_long
+      - input_text.sl_bedroom_b3_short
+      - input_text.sl_bedroom_b3_long
+      - input_text.sl_bedroom_b4_short
+      - input_text.sl_bedroom_b4_long
+      - input_text.sl_bathroom_b1_short
+      - input_text.sl_bathroom_b1_long
+      - input_text.sl_bathroom_b2_short
+      - input_text.sl_bathroom_b2_long
+      - input_text.sl_bathroom_b3_short
+      - input_text.sl_bathroom_b3_long
+      - input_text.sl_bathroom_b4_short
+      - input_text.sl_bathroom_b4_long
+      - input_text.sl_kitchen_b1_short
+      - input_text.sl_kitchen_b1_long
+      - input_text.sl_kitchen_b2_short
+      - input_text.sl_kitchen_b2_long
+      - input_text.sl_kitchen_b3_short
+      - input_text.sl_kitchen_b3_long
+      - input_text.sl_kitchen_b4_short
+      - input_text.sl_kitchen_b4_long
+      - input_text.sl_hallway_b1_short
+      - input_text.sl_hallway_b1_long
+      - input_text.sl_hallway_b2_short
+      - input_text.sl_hallway_b2_long
+      - input_text.sl_hallway_b3_short
+      - input_text.sl_hallway_b3_long
+      - input_text.sl_hallway_b4_short
+      - input_text.sl_hallway_b4_long
+      - input_text.sl_hallway_s2_b1_short
+      - input_text.sl_hallway_s2_b1_long
+      - input_text.sl_hallway_s2_b2_short
+      - input_text.sl_hallway_s2_b2_long
+      - input_text.sl_hallway_s2_b3_short
+      - input_text.sl_hallway_s2_b3_long
+      - input_text.sl_hallway_s2_b4_short
+      - input_text.sl_hallway_s2_b4_long
+action:
+  - service: script.sl_push_config

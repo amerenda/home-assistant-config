@@ -1,0 +1,248 @@
+# Smart Lighting named scenes (WO-0263). The Z2M extension owns the scenes:
+# sensor.sl_scenes (packages/core.yaml) shows zigbee2mqtt/sl/scenes, and the
+# scripts in scripts/sl_scenes.yaml send commands to zigbee2mqtt/sl/scene/<op>.
+template:
+  - select:
+      # Button actions. Each select stores its value in input_text.<same id>
+      # (helpers/input_text/sl_switch_buttons.yaml). Options: the fixed actions,
+      # "Scene: <name>" for each scene, and the stored value if it is not in the list.
+      - &sl_button_action
+        name: "SL: LR Button 1 Short"
+        unique_id: sl_living_room_b1_short_select
+        default_entity_id: select.sl_living_room_b1_short
+        icon: mdi:gesture-tap-button
+        state: >-
+          {% set v = states('input_text.' ~ this.entity_id.split('.')[1]) %}
+          {{ v if v not in ['', 'unknown', 'unavailable'] else 'Default' }}
+        options: >-
+          {% set ns = namespace(o=['Default', 'Toggle Room', 'Power Off Room', 'Power Off All', 'Brightness Up', 'Brightness Down', 'Brightness Max', 'Brightness Min', 'Cycle Scenes', 'Toggle All Rooms', 'Multi-Room Scene', 'Do Nothing']) %}
+          {% for s in state_attr('sensor.sl_scenes', 'scenes') or [] %}
+          {% set ns.o = ns.o + ['Scene: ' ~ s.name] %}
+          {% endfor %}
+          {% set v = states('input_text.' ~ this.entity_id.split('.')[1]) %}
+          {% if v not in ['', 'unknown', 'unavailable'] and v not in ns.o %}
+          {% set ns.o = ns.o + [v] %}
+          {% endif %}
+          {{ ns.o }}
+        select_option:
+          - action: input_text.set_value
+            target:
+              entity_id: "input_text.{{ this.entity_id.split('.')[1] }}"
+            data:
+              value: "{{ option }}"
+      - <<: *sl_button_action
+        name: "SL: LR Button 1 Long"
+        unique_id: sl_living_room_b1_long_select
+        default_entity_id: select.sl_living_room_b1_long
+      - <<: *sl_button_action
+        name: "SL: LR Button 2 Short"
+        unique_id: sl_living_room_b2_short_select
+        default_entity_id: select.sl_living_room_b2_short
+      - <<: *sl_button_action
+        name: "SL: LR Button 2 Long"
+        unique_id: sl_living_room_b2_long_select
+        default_entity_id: select.sl_living_room_b2_long
+      - <<: *sl_button_action
+        name: "SL: LR Button 3 Short"
+        unique_id: sl_living_room_b3_short_select
+        default_entity_id: select.sl_living_room_b3_short
+      - <<: *sl_button_action
+        name: "SL: LR Button 3 Long"
+        unique_id: sl_living_room_b3_long_select
+        default_entity_id: select.sl_living_room_b3_long
+      - <<: *sl_button_action
+        name: "SL: LR Button 4 Short"
+        unique_id: sl_living_room_b4_short_select
+        default_entity_id: select.sl_living_room_b4_short
+      - <<: *sl_button_action
+        name: "SL: LR Button 4 Long"
+        unique_id: sl_living_room_b4_long_select
+        default_entity_id: select.sl_living_room_b4_long
+      - <<: *sl_button_action
+        name: "SL: BR Button 1 Short"
+        unique_id: sl_bedroom_b1_short_select
+        default_entity_id: select.sl_bedroom_b1_short
+      - <<: *sl_button_action
+        name: "SL: BR Button 1 Long"
+        unique_id: sl_bedroom_b1_long_select
+        default_entity_id: select.sl_bedroom_b1_long
+      - <<: *sl_button_action
+        name: "SL: BR Button 2 Short"
+        unique_id: sl_bedroom_b2_short_select
+        default_entity_id: select.sl_bedroom_b2_short
+      - <<: *sl_button_action
+        name: "SL: BR Button 2 Long"
+        unique_id: sl_bedroom_b2_long_select
+        default_entity_id: select.sl_bedroom_b2_long
+      - <<: *sl_button_action
+        name: "SL: BR Button 3 Short"
+        unique_id: sl_bedroom_b3_short_select
+        default_entity_id: select.sl_bedroom_b3_short
+      - <<: *sl_button_action
+        name: "SL: BR Button 3 Long"
+        unique_id: sl_bedroom_b3_long_select
+        default_entity_id: select.sl_bedroom_b3_long
+      - <<: *sl_button_action
+        name: "SL: BR Button 4 Short"
+        unique_id: sl_bedroom_b4_short_select
+        default_entity_id: select.sl_bedroom_b4_short
+      - <<: *sl_button_action
+        name: "SL: BR Button 4 Long"
+        unique_id: sl_bedroom_b4_long_select
+        default_entity_id: select.sl_bedroom_b4_long
+      - <<: *sl_button_action
+        name: "SL: BA Button 1 Short"
+        unique_id: sl_bathroom_b1_short_select
+        default_entity_id: select.sl_bathroom_b1_short
+      - <<: *sl_button_action
+        name: "SL: BA Button 1 Long"
+        unique_id: sl_bathroom_b1_long_select
+        default_entity_id: select.sl_bathroom_b1_long
+      - <<: *sl_button_action
+        name: "SL: BA Button 2 Short"
+        unique_id: sl_bathroom_b2_short_select
+        default_entity_id: select.sl_bathroom_b2_short
+      - <<: *sl_button_action
+        name: "SL: BA Button 2 Long"
+        unique_id: sl_bathroom_b2_long_select
+        default_entity_id: select.sl_bathroom_b2_long
+      - <<: *sl_button_action
+        name: "SL: BA Button 3 Short"
+        unique_id: sl_bathroom_b3_short_select
+        default_entity_id: select.sl_bathroom_b3_short
+      - <<: *sl_button_action
+        name: "SL: BA Button 3 Long"
+        unique_id: sl_bathroom_b3_long_select
+        default_entity_id: select.sl_bathroom_b3_long
+      - <<: *sl_button_action
+        name: "SL: BA Button 4 Short"
+        unique_id: sl_bathroom_b4_short_select
+        default_entity_id: select.sl_bathroom_b4_short
+      - <<: *sl_button_action
+        name: "SL: BA Button 4 Long"
+        unique_id: sl_bathroom_b4_long_select
+        default_entity_id: select.sl_bathroom_b4_long
+      - <<: *sl_button_action
+        name: "SL: KI Button 1 Short"
+        unique_id: sl_kitchen_b1_short_select
+        default_entity_id: select.sl_kitchen_b1_short
+      - <<: *sl_button_action
+        name: "SL: KI Button 1 Long"
+        unique_id: sl_kitchen_b1_long_select
+        default_entity_id: select.sl_kitchen_b1_long
+      - <<: *sl_button_action
+        name: "SL: KI Button 2 Short"
+        unique_id: sl_kitchen_b2_short_select
+        default_entity_id: select.sl_kitchen_b2_short
+      - <<: *sl_button_action
+        name: "SL: KI Button 2 Long"
+        unique_id: sl_kitchen_b2_long_select
+        default_entity_id: select.sl_kitchen_b2_long
+      - <<: *sl_button_action
+        name: "SL: KI Button 3 Short"
+        unique_id: sl_kitchen_b3_short_select
+        default_entity_id: select.sl_kitchen_b3_short
+      - <<: *sl_button_action
+        name: "SL: KI Button 3 Long"
+        unique_id: sl_kitchen_b3_long_select
+        default_entity_id: select.sl_kitchen_b3_long
+      - <<: *sl_button_action
+        name: "SL: KI Button 4 Short"
+        unique_id: sl_kitchen_b4_short_select
+        default_entity_id: select.sl_kitchen_b4_short
+      - <<: *sl_button_action
+        name: "SL: KI Button 4 Long"
+        unique_id: sl_kitchen_b4_long_select
+        default_entity_id: select.sl_kitchen_b4_long
+      - <<: *sl_button_action
+        name: "SL: HL Button 1 Short"
+        unique_id: sl_hallway_b1_short_select
+        default_entity_id: select.sl_hallway_b1_short
+      - <<: *sl_button_action
+        name: "SL: HL Button 1 Long"
+        unique_id: sl_hallway_b1_long_select
+        default_entity_id: select.sl_hallway_b1_long
+      - <<: *sl_button_action
+        name: "SL: HL Button 2 Short"
+        unique_id: sl_hallway_b2_short_select
+        default_entity_id: select.sl_hallway_b2_short
+      - <<: *sl_button_action
+        name: "SL: HL Button 2 Long"
+        unique_id: sl_hallway_b2_long_select
+        default_entity_id: select.sl_hallway_b2_long
+      - <<: *sl_button_action
+        name: "SL: HL Button 3 Short"
+        unique_id: sl_hallway_b3_short_select
+        default_entity_id: select.sl_hallway_b3_short
+      - <<: *sl_button_action
+        name: "SL: HL Button 3 Long"
+        unique_id: sl_hallway_b3_long_select
+        default_entity_id: select.sl_hallway_b3_long
+      - <<: *sl_button_action
+        name: "SL: HL Button 4 Short"
+        unique_id: sl_hallway_b4_short_select
+        default_entity_id: select.sl_hallway_b4_short
+      - <<: *sl_button_action
+        name: "SL: HL Button 4 Long"
+        unique_id: sl_hallway_b4_long_select
+        default_entity_id: select.sl_hallway_b4_long
+      - <<: *sl_button_action
+        name: "SL: HL-S2 Button 1 Short"
+        unique_id: sl_hallway_s2_b1_short_select
+        default_entity_id: select.sl_hallway_s2_b1_short
+      - <<: *sl_button_action
+        name: "SL: HL-S2 Button 1 Long"
+        unique_id: sl_hallway_s2_b1_long_select
+        default_entity_id: select.sl_hallway_s2_b1_long
+      - <<: *sl_button_action
+        name: "SL: HL-S2 Button 2 Short"
+        unique_id: sl_hallway_s2_b2_short_select
+        default_entity_id: select.sl_hallway_s2_b2_short
+      - <<: *sl_button_action
+        name: "SL: HL-S2 Button 2 Long"
+        unique_id: sl_hallway_s2_b2_long_select
+        default_entity_id: select.sl_hallway_s2_b2_long
+      - <<: *sl_button_action
+        name: "SL: HL-S2 Button 3 Short"
+        unique_id: sl_hallway_s2_b3_short_select
+        default_entity_id: select.sl_hallway_s2_b3_short
+      - <<: *sl_button_action
+        name: "SL: HL-S2 Button 3 Long"
+        unique_id: sl_hallway_s2_b3_long_select
+        default_entity_id: select.sl_hallway_s2_b3_long
+      - <<: *sl_button_action
+        name: "SL: HL-S2 Button 4 Short"
+        unique_id: sl_hallway_s2_b4_short_select
+        default_entity_id: select.sl_hallway_s2_b4_short
+      - <<: *sl_button_action
+        name: "SL: HL-S2 Button 4 Long"
+        unique_id: sl_hallway_s2_b4_long_select
+        default_entity_id: select.sl_hallway_s2_b4_long
+
+      # Scene list of the Lights tab: the scenes with the home room of
+      # input_select.sl_room_selector (All Rooms: all scenes).
+      - name: "SL: Selected Scene"
+        unique_id: sl_scene_selected_select
+        default_entity_id: select.sl_scene_selected
+        icon: mdi:palette
+        state: >-
+          {% set room = states('input_select.sl_room_selector') %}
+          {% set ns = namespace(o=[]) %}
+          {% for s in state_attr('sensor.sl_scenes', 'scenes') or [] %}
+          {% if room == 'All Rooms' or s.room == room %}{% set ns.o = ns.o + [s.name] %}{% endif %}
+          {% endfor %}
+          {% set v = states('input_text.sl_scene_selected') %}
+          {{ v if v in ns.o else (ns.o[0] if ns.o else '(no scenes)') }}
+        options: >-
+          {% set room = states('input_select.sl_room_selector') %}
+          {% set ns = namespace(o=[]) %}
+          {% for s in state_attr('sensor.sl_scenes', 'scenes') or [] %}
+          {% if room == 'All Rooms' or s.room == room %}{% set ns.o = ns.o + [s.name] %}{% endif %}
+          {% endfor %}
+          {{ ns.o if ns.o else ['(no scenes)'] }}
+        select_option:
+          - action: input_text.set_value
+            target:
+              entity_id: input_text.sl_scene_selected
+            data:
+              value: "{{ option }}"
