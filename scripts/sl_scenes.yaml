@@ -97,7 +97,9 @@ sl_scene_save:
     Reads the live state of each checked bulb and sends one save command. A
     scene with the same name is replaced. If a checked bulb is unavailable,
     nothing is saved and a notification names the bulb. A running effect
-    (Effects tab) is saved with its speed; its color is the bulb color.
+    (Effects tab) is saved with the speed of its helper
+    input_number.sl_fx_speed_<bulb> (the bulb does not report a new speed);
+    its color is the bulb color.
   mode: single
   sequence:
     - variables:
@@ -126,7 +128,7 @@ sl_scene_save:
           {% set fx = state_attr(e, 'effect') %}
           {% if fx in scene_effects %}
           {% set v = dict(v, effect=fx) %}
-          {% set sp = states('number.' ~ b ~ '_effect_speed') | float(-1) %}
+          {% set sp = states('input_number.sl_fx_speed_' ~ b) | float(-1) %}
           {% if sp >= 0 and sp <= 1 %}
           {% set v = dict(v, effect_speed=sp | round(2)) %}
           {% endif %}
