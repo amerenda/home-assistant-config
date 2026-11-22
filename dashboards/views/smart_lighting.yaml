@@ -1,7 +1,8 @@
 title: Smart Lighting
 views:
   # ════════════════════════════════════════════════════════════
-  # Lights Tab (default): ad-hoc changes per bulb
+  # Lights Tab (default): set the lights of a room, back to the window scene,
+  # save the lights as a scene (WO-0274)
   # ════════════════════════════════════════════════════════════
   - title: Lights
     path: lights
@@ -9,334 +10,211 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          - type: entities
+          - &sl_room_dropdown
+            type: entities
             show_header_toggle: false
             entities:
               - entity: input_select.sl_room_selector
                 name: Room
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "Living Room"
-            card:
-              type: vertical-stack
-              cards:
-                - type: custom:hue-like-light-card
-                  entity: light.living_room_1
-                  title: Living Room
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "Bedroom"
-            card:
-              type: vertical-stack
-              cards:
-                - type: custom:hue-like-light-card
-                  entity: light.bedroom_1
-                  title: Bedroom 1
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-                - type: custom:hue-like-light-card
-                  entity: light.bedroom_2
-                  title: Bedroom 2
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-                - type: custom:hue-like-light-card
-                  entity: light.lamp_1
-                  title: Lamp
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "Bathroom"
-            card:
-              type: vertical-stack
-              cards:
-                - type: custom:hue-like-light-card
-                  entity: light.bathroom_1
-                  title: Bathroom
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "Kitchen"
-            card:
-              type: vertical-stack
-              cards:
-                - type: custom:hue-like-light-card
-                  entity: light.kitchen_1
-                  title: Kitchen 1
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-                - type: custom:hue-like-light-card
-                  entity: light.kitchen_2
-                  title: Kitchen 2
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "Hallway"
-            card:
-              type: vertical-stack
-              cards:
-                - type: custom:hue-like-light-card
-                  entity: light.hallway_1
-                  title: Hallway
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "All Rooms"
-            card:
-              type: vertical-stack
-              cards:
-                - type: custom:mushroom-title-card
-                  title: Living Room
-                - type: custom:hue-like-light-card
-                  entity: light.living_room_1
-                  title: Living Room
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-                - type: custom:mushroom-title-card
-                  title: Bedroom
-                - type: custom:hue-like-light-card
-                  entity: light.bedroom_1
-                  title: Bedroom 1
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-                - type: custom:hue-like-light-card
-                  entity: light.bedroom_2
-                  title: Bedroom 2
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-                - type: custom:hue-like-light-card
-                  entity: light.lamp_1
-                  title: Lamp
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-                - type: custom:mushroom-title-card
-                  title: Bathroom
-                - type: custom:hue-like-light-card
-                  entity: light.bathroom_1
-                  title: Bathroom
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-                - type: custom:mushroom-title-card
-                  title: Kitchen
-                - type: custom:hue-like-light-card
-                  entity: light.kitchen_1
-                  title: Kitchen 1
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-                - type: custom:hue-like-light-card
-                  entity: light.kitchen_2
-                  title: Kitchen 2
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-                - type: custom:mushroom-title-card
-                  title: Hallway
-                - type: custom:hue-like-light-card
-                  entity: light.hallway_1
-                  title: Hallway
-                  showSwitch: false
-                  scenes: []
-                  slider: default
-                  onClickAction: hue-screen
-                  offClickAction: hue-screen
-          # ── Scenes: the scenes of the selected room ──────────────
-          - type: custom:mushroom-title-card
-            title: Scenes
-            subtitle: Set the lights above, then save them as a named scene.
-          - type: markdown
-            content: |
-              {%- set room = states('input_select.sl_room_selector') %}
-              {%- set ns = namespace(n=0) %}
-              {%- for s in state_attr('sensor.sl_scenes', 'scenes') or [] %}
-              {%- if room == 'All Rooms' or s.room == room %}
-              {%- set ns.n = ns.n + 1 %}
-              - **{{ s.name }}**{{ ' (' ~ s.room ~ ')' if room == 'All Rooms' else '' }}: {{ s.lights | count }} bulbs, Button 4 cycle {{ 'on' if s.in_cycle else 'off' }}
-              {%- endif %}
-              {%- endfor %}
-              {%- if ns.n == 0 %}
-              No scenes for this room.
-              {%- endif %}
-              {%- set r = state_attr('sensor.sl_scenes', 'last_result') %}
-              {%- if r and not r.ok %}
-
-              **Last command failed:** {{ r.op }} '{{ r.name }}': {{ r.error }}
-              {%- endif %}
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state_not: "All Rooms"
-            card:
-              type: vertical-stack
-              cards:
-                - type: markdown
-                  content: "**Window scenes in the Button 4 cycle** (tap to change)"
-                - type: horizontal-stack
+          - &sl_room_lights
+            type: vertical-stack
+            cards:
+              - type: conditional
+                conditions:
+                  - entity: input_select.sl_room_selector
+                    state: "Living Room"
+                card:
+                  type: vertical-stack
                   cards:
-                    - type: custom:mushroom-template-card
-                      primary: Morning
-                      secondary: >
-                        {% set f = (state_attr('sensor.sl_scenes', 'window_cycle') or {}).get(states('input_select.sl_room_selector'), {}) %}
-                        {{ 'In cycle' if f.get('morning', true) else 'Not in cycle' }}
-                      icon: mdi:weather-sunset-up
-                      icon_color: >
-                        {% set f = (state_attr('sensor.sl_scenes', 'window_cycle') or {}).get(states('input_select.sl_room_selector'), {}) %}
-                        {{ 'amber' if f.get('morning', true) else 'disabled' }}
-                      layout: vertical
-                      tap_action:
-                        action: call-service
-                        service: script.sl_scene_window_cycle_toggle
-                        data:
-                          window: morning
-                    - type: custom:mushroom-template-card
-                      primary: Day
-                      secondary: >
-                        {% set f = (state_attr('sensor.sl_scenes', 'window_cycle') or {}).get(states('input_select.sl_room_selector'), {}) %}
-                        {{ 'In cycle' if f.get('day', true) else 'Not in cycle' }}
-                      icon: mdi:weather-sunny
-                      icon_color: >
-                        {% set f = (state_attr('sensor.sl_scenes', 'window_cycle') or {}).get(states('input_select.sl_room_selector'), {}) %}
-                        {{ 'amber' if f.get('day', true) else 'disabled' }}
-                      layout: vertical
-                      tap_action:
-                        action: call-service
-                        service: script.sl_scene_window_cycle_toggle
-                        data:
-                          window: day
-                    - type: custom:mushroom-template-card
-                      primary: Evening
-                      secondary: >
-                        {% set f = (state_attr('sensor.sl_scenes', 'window_cycle') or {}).get(states('input_select.sl_room_selector'), {}) %}
-                        {{ 'In cycle' if f.get('evening', true) else 'Not in cycle' }}
-                      icon: mdi:weather-sunset-down
-                      icon_color: >
-                        {% set f = (state_attr('sensor.sl_scenes', 'window_cycle') or {}).get(states('input_select.sl_room_selector'), {}) %}
-                        {{ 'amber' if f.get('evening', true) else 'disabled' }}
-                      layout: vertical
-                      tap_action:
-                        action: call-service
-                        service: script.sl_scene_window_cycle_toggle
-                        data:
-                          window: evening
-                    - type: custom:mushroom-template-card
-                      primary: Night
-                      secondary: >
-                        {% set f = (state_attr('sensor.sl_scenes', 'window_cycle') or {}).get(states('input_select.sl_room_selector'), {}) %}
-                        {{ 'In cycle' if f.get('night', true) else 'Not in cycle' }}
-                      icon: mdi:weather-night
-                      icon_color: >
-                        {% set f = (state_attr('sensor.sl_scenes', 'window_cycle') or {}).get(states('input_select.sl_room_selector'), {}) %}
-                        {{ 'amber' if f.get('night', true) else 'disabled' }}
-                      layout: vertical
-                      tap_action:
-                        action: call-service
-                        service: script.sl_scene_window_cycle_toggle
-                        data:
-                          window: night
-          - type: entities
-            show_header_toggle: false
-            entities:
-              - entity: select.sl_scene_selected
-                name: Scene
+                    - type: custom:hue-like-light-card
+                      entity: light.living_room_1
+                      title: Living Room
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+              - type: conditional
+                conditions:
+                  - entity: input_select.sl_room_selector
+                    state: "Bedroom"
+                card:
+                  type: vertical-stack
+                  cards:
+                    - type: custom:hue-like-light-card
+                      entity: light.bedroom_1
+                      title: Bedroom 1
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+                    - type: custom:hue-like-light-card
+                      entity: light.bedroom_2
+                      title: Bedroom 2
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+                    - type: custom:hue-like-light-card
+                      entity: light.lamp_1
+                      title: Lamp
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+              - type: conditional
+                conditions:
+                  - entity: input_select.sl_room_selector
+                    state: "Bathroom"
+                card:
+                  type: vertical-stack
+                  cards:
+                    - type: custom:hue-like-light-card
+                      entity: light.bathroom_1
+                      title: Bathroom
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+              - type: conditional
+                conditions:
+                  - entity: input_select.sl_room_selector
+                    state: "Kitchen"
+                card:
+                  type: vertical-stack
+                  cards:
+                    - type: custom:hue-like-light-card
+                      entity: light.kitchen_1
+                      title: Kitchen 1
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+                    - type: custom:hue-like-light-card
+                      entity: light.kitchen_2
+                      title: Kitchen 2
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+              - type: conditional
+                conditions:
+                  - entity: input_select.sl_room_selector
+                    state: "Hallway"
+                card:
+                  type: vertical-stack
+                  cards:
+                    - type: custom:hue-like-light-card
+                      entity: light.hallway_1
+                      title: Hallway
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+              - type: conditional
+                conditions:
+                  - entity: input_select.sl_room_selector
+                    state: "All Rooms"
+                card:
+                  type: vertical-stack
+                  cards:
+                    - type: custom:mushroom-title-card
+                      title: Living Room
+                    - type: custom:hue-like-light-card
+                      entity: light.living_room_1
+                      title: Living Room
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+                    - type: custom:mushroom-title-card
+                      title: Bedroom
+                    - type: custom:hue-like-light-card
+                      entity: light.bedroom_1
+                      title: Bedroom 1
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+                    - type: custom:hue-like-light-card
+                      entity: light.bedroom_2
+                      title: Bedroom 2
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+                    - type: custom:hue-like-light-card
+                      entity: light.lamp_1
+                      title: Lamp
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+                    - type: custom:mushroom-title-card
+                      title: Bathroom
+                    - type: custom:hue-like-light-card
+                      entity: light.bathroom_1
+                      title: Bathroom
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+                    - type: custom:mushroom-title-card
+                      title: Kitchen
+                    - type: custom:hue-like-light-card
+                      entity: light.kitchen_1
+                      title: Kitchen 1
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+                    - type: custom:hue-like-light-card
+                      entity: light.kitchen_2
+                      title: Kitchen 2
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
+                    - type: custom:mushroom-title-card
+                      title: Hallway
+                    - type: custom:hue-like-light-card
+                      entity: light.hallway_1
+                      title: Hallway
+                      showSwitch: false
+                      scenes: []
+                      slider: default
+                      onClickAction: hue-screen
+                      offClickAction: hue-screen
           - type: horizontal-stack
             cards:
               - type: button
-                name: Apply
-                icon: mdi:play
+                name: Back to window scene
+                icon: mdi:clock-time-four-outline
                 show_state: false
                 tap_action:
                   action: call-service
-                  service: script.sl_scene_apply
+                  service: script.sl_scene_back_to_window
               - type: button
-                name: Cycle on/off
-                icon: mdi:rotate-right
+                name: Save as scene
+                icon: mdi:content-save-plus
                 show_state: false
                 tap_action:
                   action: call-service
-                  service: script.sl_scene_toggle_cycle
-              - type: button
-                name: Edit
-                icon: mdi:pencil
-                show_state: false
-                tap_action:
-                  action: call-service
-                  service: script.sl_scene_load
-              - type: button
-                name: Delete
-                icon: mdi:delete
-                show_state: false
-                tap_action:
-                  action: call-service
-                  service: script.sl_scene_delete
-                  confirmation:
-                    text: Delete the selected scene? A button action that uses it then does nothing.
-          - &sl_scene_new_button
-            type: conditional
-            conditions:
-              - entity: input_boolean.sl_show_save_scene
-                state: "off"
-            card:
-              type: button
-              name: New scene from the current lights
-              icon: mdi:plus
-              show_state: false
-              tap_action:
-                action: call-service
-                service: script.sl_scene_form_new
+                  service: script.sl_scene_form_new
           - &sl_scene_save_form
             type: conditional
             conditions:
@@ -395,274 +273,395 @@ views:
                           entity_id: input_boolean.sl_show_save_scene
 
   # ════════════════════════════════════════════════════════════
-  # Effects Tab (WO-0269): native Hue effect for each bulb
-  # A scene save keeps the effect and the speed of each bulb.
+  # Scene Config Tab (WO-0274): the scenes of a room, with effects
+  # The window scenes ('<Room> <Window>') are scenes too: Edit, adjust, Save.
   # ════════════════════════════════════════════════════════════
-  - title: Effects
-    path: effects
-    icon: mdi:auto-fix
+  - title: Scene Config
+    path: scenes
+    icon: mdi:palette
     cards:
       - type: vertical-stack
         cards:
+          - *sl_room_dropdown
+          - type: markdown
+            content: |
+              {%- set room = states('input_select.sl_room_selector') %}
+              {%- set ns = namespace(n=0) %}
+              {%- for s in state_attr('sensor.sl_scenes', 'scenes') or [] %}
+              {%- if room == 'All Rooms' or s.room == room %}
+              {%- set ns.n = ns.n + 1 %}
+              - **{{ s.name }}**{{ ' (' ~ s.room ~ ')' if room == 'All Rooms' else '' }}: {{ s.lights | count }} bulbs, {{ 'window scene (always in the Button 4 cycle)' if s.window is defined else 'Button 4 cycle ' ~ ('on' if s.in_cycle else 'off') }}{{ ', effects' if s.lights.values() | selectattr('effect', 'defined') | list | count > 0 else '' }}
+              {%- endif %}
+              {%- endfor %}
+              {%- if ns.n == 0 %}
+              No scenes for this room.
+              {%- endif %}
+              {%- set r = state_attr('sensor.sl_scenes', 'last_result') %}
+              {%- if r and not r.ok %}
+
+              **Last command failed:** {{ r.op }} '{{ r.name }}': {{ r.error }}
+              {%- endif %}
           - type: entities
             show_header_toggle: false
             entities:
-              - entity: input_select.sl_room_selector
-                name: Room
+              - entity: select.sl_scene_selected
+                name: Scene
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Apply
+                icon: mdi:play
+                show_state: false
+                tap_action:
+                  action: call-service
+                  service: script.sl_scene_apply
+              - type: button
+                name: Cycle on/off
+                icon: mdi:rotate-right
+                show_state: false
+                tap_action:
+                  action: call-service
+                  service: script.sl_scene_toggle_cycle
+              - type: button
+                name: Edit
+                icon: mdi:pencil
+                show_state: false
+                tap_action:
+                  action: call-service
+                  service: script.sl_scene_load
+              - type: button
+                name: Delete
+                icon: mdi:delete
+                show_state: false
+                tap_action:
+                  action: call-service
+                  service: script.sl_scene_delete
+                  confirmation:
+                    text: Delete the selected scene? A button action that uses it then does nothing.
+          - &sl_scene_new_button
+            type: conditional
+            conditions:
+              - entity: input_boolean.sl_show_save_scene
+                state: "off"
+            card:
+              type: button
+              name: New scene from the current lights
+              icon: mdi:plus
+              show_state: false
+              tap_action:
+                action: call-service
+                service: script.sl_scene_form_new
           - type: markdown
             content: >-
-              Set an effect, its speed and (color bulbs) its color: tap the effect color tile for the color wheel. The effect runs on the bulb.
-              To keep it, save a scene below: the scene keeps the effect, the speed and the color of each checked bulb.
-              A window scene (Toggle Room on, Button 4 window step) stops the effect.
+              Edit applies the scene and opens the save form. Adjust the lights below,
+              then Save with the same name. A window scene ('<Room> <Window>') is used
+              from the next time that window turns the lights on.
+          - *sl_room_lights
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_boolean.sl_scene_effects
+                name: This scene has effects
           - type: conditional
             conditions:
-              - entity: input_select.sl_room_selector
-                state: "Living Room"
+              - entity: input_boolean.sl_scene_effects
+                state: "on"
             card:
               type: vertical-stack
               cards:
-                - &sl_fx_living_room_1
-                  type: vertical-stack
-                  cards:
-                    - type: tile
-                      entity: select.sl_fx_living_room_1
-                      name: Living Room
-                      icon: mdi:auto-fix
-                      vertical: false
-                      features_position: bottom
-                      features:
-                        - type: select-options
-                          options: &sl_fx_color [none, candle, fireplace, colorloop, sunset, sunrise, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant, breathe]
-                    - type: tile
-                      entity: input_number.sl_fx_speed_living_room_1
-                      name: Living Room speed (0 slow, 1 fast)
-                      features_position: bottom
-                      features:
-                        - type: numeric-input
-                          style: slider
-                    - type: tile
-                      entity: light.sl_fx_color_living_room_1
-                      name: Living Room effect color (tap for the color wheel)
-                      icon: mdi:palette
-                      tap_action:
-                        action: more-info
-                      icon_tap_action:
-                        action: more-info
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "Bedroom"
-            card:
-              type: vertical-stack
-              cards:
-                - &sl_fx_bedroom_1
-                  type: vertical-stack
-                  cards:
-                    - type: tile
-                      entity: select.sl_fx_bedroom_1
-                      name: Bedroom 1
-                      icon: mdi:auto-fix
-                      vertical: false
-                      features_position: bottom
-                      features:
-                        - type: select-options
-                          options: *sl_fx_color
-                    - type: tile
-                      entity: input_number.sl_fx_speed_bedroom_1
-                      name: Bedroom 1 speed (0 slow, 1 fast)
-                      features_position: bottom
-                      features:
-                        - type: numeric-input
-                          style: slider
-                    - type: tile
-                      entity: light.sl_fx_color_bedroom_1
-                      name: Bedroom 1 effect color (tap for the color wheel)
-                      icon: mdi:palette
-                      tap_action:
-                        action: more-info
-                      icon_tap_action:
-                        action: more-info
-                - &sl_fx_bedroom_2
-                  type: vertical-stack
-                  cards:
-                    - type: tile
-                      entity: select.sl_fx_bedroom_2
-                      name: Bedroom 2
-                      icon: mdi:auto-fix
-                      vertical: false
-                      features_position: bottom
-                      features:
-                        - type: select-options
-                          options: *sl_fx_color
-                    - type: tile
-                      entity: input_number.sl_fx_speed_bedroom_2
-                      name: Bedroom 2 speed (0 slow, 1 fast)
-                      features_position: bottom
-                      features:
-                        - type: numeric-input
-                          style: slider
-                    - type: tile
-                      entity: light.sl_fx_color_bedroom_2
-                      name: Bedroom 2 effect color (tap for the color wheel)
-                      icon: mdi:palette
-                      tap_action:
-                        action: more-info
-                      icon_tap_action:
-                        action: more-info
-                - &sl_fx_lamp_1
-                  type: vertical-stack
-                  cards:
-                    - type: tile
-                      entity: select.sl_fx_lamp_1
-                      name: Bedroom Lamp
-                      icon: mdi:auto-fix
-                      vertical: false
-                      features_position: bottom
-                      features:
-                        - type: select-options
-                          options: *sl_fx_color
-                    - type: tile
-                      entity: input_number.sl_fx_speed_lamp_1
-                      name: Bedroom Lamp speed (0 slow, 1 fast)
-                      features_position: bottom
-                      features:
-                        - type: numeric-input
-                          style: slider
-                    - type: tile
-                      entity: light.sl_fx_color_lamp_1
-                      name: Bedroom Lamp effect color (tap for the color wheel)
-                      icon: mdi:palette
-                      tap_action:
-                        action: more-info
-                      icon_tap_action:
-                        action: more-info
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "Bathroom"
-            card:
-              type: vertical-stack
-              cards:
-                - &sl_fx_bathroom_1
-                  type: vertical-stack
-                  cards:
-                    - type: tile
-                      entity: select.sl_fx_bathroom_1
-                      name: Bathroom
-                      icon: mdi:auto-fix
-                      vertical: false
-                      features_position: bottom
-                      features:
-                        - type: select-options
-                          options: *sl_fx_color
-                    - type: tile
-                      entity: input_number.sl_fx_speed_bathroom_1
-                      name: Bathroom speed (0 slow, 1 fast)
-                      features_position: bottom
-                      features:
-                        - type: numeric-input
-                          style: slider
-                    - type: tile
-                      entity: light.sl_fx_color_bathroom_1
-                      name: Bathroom effect color (tap for the color wheel)
-                      icon: mdi:palette
-                      tap_action:
-                        action: more-info
-                      icon_tap_action:
-                        action: more-info
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "Kitchen"
-            card:
-              type: vertical-stack
-              cards:
-                - &sl_fx_kitchen_1
-                  type: vertical-stack
-                  cards:
-                    - type: tile
-                      entity: select.sl_fx_kitchen_1
-                      name: Kitchen 1
-                      icon: mdi:auto-fix
-                      vertical: false
-                      features_position: bottom
-                      features:
-                        - type: select-options
-                          options: &sl_fx_white [none, candle, sunset, sunrise, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant, breathe]
-                    - type: tile
-                      entity: input_number.sl_fx_speed_kitchen_1
-                      name: Kitchen 1 speed (0 slow, 1 fast)
-                      features_position: bottom
-                      features:
-                        - type: numeric-input
-                          style: slider
-                - &sl_fx_kitchen_2
-                  type: vertical-stack
-                  cards:
-                    - type: tile
-                      entity: select.sl_fx_kitchen_2
-                      name: Kitchen 2
-                      icon: mdi:auto-fix
-                      vertical: false
-                      features_position: bottom
-                      features:
-                        - type: select-options
-                          options: *sl_fx_white
-                    - type: tile
-                      entity: input_number.sl_fx_speed_kitchen_2
-                      name: Kitchen 2 speed (0 slow, 1 fast)
-                      features_position: bottom
-                      features:
-                        - type: numeric-input
-                          style: slider
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "Hallway"
-            card:
-              type: vertical-stack
-              cards:
-                - &sl_fx_hallway_1
-                  type: vertical-stack
-                  cards:
-                    - type: tile
-                      entity: select.sl_fx_hallway_1
-                      name: Hallway
-                      icon: mdi:auto-fix
-                      vertical: false
-                      features_position: bottom
-                      features:
-                        - type: select-options
-                          options: *sl_fx_white
-                    - type: tile
-                      entity: input_number.sl_fx_speed_hallway_1
-                      name: Hallway speed (0 slow, 1 fast)
-                      features_position: bottom
-                      features:
-                        - type: numeric-input
-                          style: slider
-          - type: conditional
-            conditions:
-              - entity: input_select.sl_room_selector
-                state: "All Rooms"
-            card:
-              type: vertical-stack
-              cards:
-                - *sl_fx_living_room_1
-                - *sl_fx_bedroom_1
-                - *sl_fx_bedroom_2
-                - *sl_fx_lamp_1
-                - *sl_fx_bathroom_1
-                - *sl_fx_kitchen_1
-                - *sl_fx_kitchen_2
-                - *sl_fx_hallway_1
-          - type: custom:mushroom-title-card
-            title: Save as scene
-            subtitle: The scene keeps the effect of each checked bulb.
-          - *sl_scene_new_button
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Living Room"
+                  card:
+                    type: vertical-stack
+                    cards:
+                      - &sl_fx_living_room_1
+                        type: vertical-stack
+                        cards:
+                          - type: tile
+                            entity: select.sl_fx_living_room_1
+                            name: Living Room effect
+                            icon: mdi:auto-fix
+                            vertical: false
+                            features_position: bottom
+                            features:
+                              - type: select-options
+                                options: &sl_fx_color [none, candle, fireplace, colorloop, sunset, sunrise, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant, breathe]
+                          - type: tile
+                            entity: light.sl_fx_color_living_room_1
+                            name: Living Room color (tap for the color wheel)
+                            icon: mdi:palette
+                            tap_action:
+                              action: more-info
+                            icon_tap_action:
+                              action: more-info
+                          - type: tile
+                            entity: input_number.sl_fx_speed_living_room_1
+                            name: Living Room speed (0 slow, 1 fast)
+                            features_position: bottom
+                            features:
+                              - type: numeric-input
+                                style: slider
+                          - type: tile
+                            entity: light.living_room_1
+                            name: Living Room brightness
+                            features_position: bottom
+                            features:
+                              - type: light-brightness
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Bedroom"
+                  card:
+                    type: vertical-stack
+                    cards:
+                      - &sl_fx_bedroom_1
+                        type: vertical-stack
+                        cards:
+                          - type: tile
+                            entity: select.sl_fx_bedroom_1
+                            name: Bedroom 1 effect
+                            icon: mdi:auto-fix
+                            vertical: false
+                            features_position: bottom
+                            features:
+                              - type: select-options
+                                options: *sl_fx_color
+                          - type: tile
+                            entity: light.sl_fx_color_bedroom_1
+                            name: Bedroom 1 color (tap for the color wheel)
+                            icon: mdi:palette
+                            tap_action:
+                              action: more-info
+                            icon_tap_action:
+                              action: more-info
+                          - type: tile
+                            entity: input_number.sl_fx_speed_bedroom_1
+                            name: Bedroom 1 speed (0 slow, 1 fast)
+                            features_position: bottom
+                            features:
+                              - type: numeric-input
+                                style: slider
+                          - type: tile
+                            entity: light.bedroom_1
+                            name: Bedroom 1 brightness
+                            features_position: bottom
+                            features:
+                              - type: light-brightness
+                      - &sl_fx_bedroom_2
+                        type: vertical-stack
+                        cards:
+                          - type: tile
+                            entity: select.sl_fx_bedroom_2
+                            name: Bedroom 2 effect
+                            icon: mdi:auto-fix
+                            vertical: false
+                            features_position: bottom
+                            features:
+                              - type: select-options
+                                options: *sl_fx_color
+                          - type: tile
+                            entity: light.sl_fx_color_bedroom_2
+                            name: Bedroom 2 color (tap for the color wheel)
+                            icon: mdi:palette
+                            tap_action:
+                              action: more-info
+                            icon_tap_action:
+                              action: more-info
+                          - type: tile
+                            entity: input_number.sl_fx_speed_bedroom_2
+                            name: Bedroom 2 speed (0 slow, 1 fast)
+                            features_position: bottom
+                            features:
+                              - type: numeric-input
+                                style: slider
+                          - type: tile
+                            entity: light.bedroom_2
+                            name: Bedroom 2 brightness
+                            features_position: bottom
+                            features:
+                              - type: light-brightness
+                      - &sl_fx_lamp_1
+                        type: vertical-stack
+                        cards:
+                          - type: tile
+                            entity: select.sl_fx_lamp_1
+                            name: Bedroom Lamp effect
+                            icon: mdi:auto-fix
+                            vertical: false
+                            features_position: bottom
+                            features:
+                              - type: select-options
+                                options: *sl_fx_color
+                          - type: tile
+                            entity: light.sl_fx_color_lamp_1
+                            name: Bedroom Lamp color (tap for the color wheel)
+                            icon: mdi:palette
+                            tap_action:
+                              action: more-info
+                            icon_tap_action:
+                              action: more-info
+                          - type: tile
+                            entity: input_number.sl_fx_speed_lamp_1
+                            name: Bedroom Lamp speed (0 slow, 1 fast)
+                            features_position: bottom
+                            features:
+                              - type: numeric-input
+                                style: slider
+                          - type: tile
+                            entity: light.lamp_1
+                            name: Bedroom Lamp brightness
+                            features_position: bottom
+                            features:
+                              - type: light-brightness
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Bathroom"
+                  card:
+                    type: vertical-stack
+                    cards:
+                      - &sl_fx_bathroom_1
+                        type: vertical-stack
+                        cards:
+                          - type: tile
+                            entity: select.sl_fx_bathroom_1
+                            name: Bathroom effect
+                            icon: mdi:auto-fix
+                            vertical: false
+                            features_position: bottom
+                            features:
+                              - type: select-options
+                                options: *sl_fx_color
+                          - type: tile
+                            entity: light.sl_fx_color_bathroom_1
+                            name: Bathroom color (tap for the color wheel)
+                            icon: mdi:palette
+                            tap_action:
+                              action: more-info
+                            icon_tap_action:
+                              action: more-info
+                          - type: tile
+                            entity: input_number.sl_fx_speed_bathroom_1
+                            name: Bathroom speed (0 slow, 1 fast)
+                            features_position: bottom
+                            features:
+                              - type: numeric-input
+                                style: slider
+                          - type: tile
+                            entity: light.bathroom_1
+                            name: Bathroom brightness
+                            features_position: bottom
+                            features:
+                              - type: light-brightness
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Kitchen"
+                  card:
+                    type: vertical-stack
+                    cards:
+                      - &sl_fx_kitchen_1
+                        type: vertical-stack
+                        cards:
+                          - type: tile
+                            entity: select.sl_fx_kitchen_1
+                            name: Kitchen 1 effect
+                            icon: mdi:auto-fix
+                            vertical: false
+                            features_position: bottom
+                            features:
+                              - type: select-options
+                                options: &sl_fx_white [none, candle, sunset, sunrise, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant, breathe]
+                          - type: tile
+                            entity: input_number.sl_fx_speed_kitchen_1
+                            name: Kitchen 1 speed (0 slow, 1 fast)
+                            features_position: bottom
+                            features:
+                              - type: numeric-input
+                                style: slider
+                          - type: tile
+                            entity: light.kitchen_1
+                            name: Kitchen 1 brightness
+                            features_position: bottom
+                            features:
+                              - type: light-brightness
+                      - &sl_fx_kitchen_2
+                        type: vertical-stack
+                        cards:
+                          - type: tile
+                            entity: select.sl_fx_kitchen_2
+                            name: Kitchen 2 effect
+                            icon: mdi:auto-fix
+                            vertical: false
+                            features_position: bottom
+                            features:
+                              - type: select-options
+                                options: *sl_fx_white
+                          - type: tile
+                            entity: input_number.sl_fx_speed_kitchen_2
+                            name: Kitchen 2 speed (0 slow, 1 fast)
+                            features_position: bottom
+                            features:
+                              - type: numeric-input
+                                style: slider
+                          - type: tile
+                            entity: light.kitchen_2
+                            name: Kitchen 2 brightness
+                            features_position: bottom
+                            features:
+                              - type: light-brightness
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Hallway"
+                  card:
+                    type: vertical-stack
+                    cards:
+                      - &sl_fx_hallway_1
+                        type: vertical-stack
+                        cards:
+                          - type: tile
+                            entity: select.sl_fx_hallway_1
+                            name: Hallway effect
+                            icon: mdi:auto-fix
+                            vertical: false
+                            features_position: bottom
+                            features:
+                              - type: select-options
+                                options: *sl_fx_white
+                          - type: tile
+                            entity: input_number.sl_fx_speed_hallway_1
+                            name: Hallway speed (0 slow, 1 fast)
+                            features_position: bottom
+                            features:
+                              - type: numeric-input
+                                style: slider
+                          - type: tile
+                            entity: light.hallway_1
+                            name: Hallway brightness
+                            features_position: bottom
+                            features:
+                              - type: light-brightness
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "All Rooms"
+                  card:
+                    type: vertical-stack
+                    cards:
+                      - *sl_fx_living_room_1
+                      - *sl_fx_bedroom_1
+                      - *sl_fx_bedroom_2
+                      - *sl_fx_lamp_1
+                      - *sl_fx_bathroom_1
+                      - *sl_fx_kitchen_1
+                      - *sl_fx_kitchen_2
+                      - *sl_fx_hallway_1
           - *sl_scene_save_form
 
-  - title: Settings
+  - title: Smart Lighting Config
     path: schedule
     icon: mdi:cog
     cards:
@@ -898,627 +897,9 @@ views:
               name: Transition Duration (min)
 
   # ════════════════════════════════════════════════════════════
-  # Scene Editor Tab
-  # ════════════════════════════════════════════════════════════
-  - title: Scene Editor
-    path: scenes
-    icon: mdi:palette
-    cards:
-      - type: entities
-        show_header_toggle: false
-        entities:
-          - entity: input_select.sl_room_selector
-            name: Room
-
-      # ── Living Room ─────────────────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Living Room"
-        card:
-          type: vertical-stack
-          cards:
-            - type: custom:hue-like-light-card
-              entity: light.living_room_1
-              title: Light
-              showSwitch: false
-              slider: default
-              onClickAction: hue-screen
-              offClickAction: hue-screen
-            - type: custom:mushroom-title-card
-              title: Load Stored Scene
-              subtitle: Applies stored values to lights as a starting point
-            - type: horizontal-stack
-              cards:
-                - type: button
-                  name: Morning
-                  icon: mdi:weather-sunset-up
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: living_room
-                      window: morning
-                - type: button
-                  name: Day
-                  icon: mdi:weather-sunny
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: living_room
-                      window: day
-                - type: button
-                  name: Evening
-                  icon: mdi:weather-sunset-down
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: living_room
-                      window: evening
-                - type: button
-                  name: Night
-                  icon: mdi:weather-night
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: living_room
-                      window: night
-            - type: custom:mushroom-title-card
-              title: Save Current State
-            - type: horizontal-stack
-              cards:
-                - type: button
-                  name: As Morning
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: living_room
-                      window: morning
-                - type: button
-                  name: As Day
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: living_room
-                      window: day
-                - type: button
-                  name: As Evening
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: living_room
-                      window: evening
-                - type: button
-                  name: As Night
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: living_room
-                      window: night
-            - type: markdown
-              content: >
-                **Wall switch power-on only.** Captures current brightness/color as the bulb's
-                mains-power-on default — what the bulb wakes to when a wall switch cuts and
-                restores power. Has no effect on Hue dimmer button-1 (handled by Z2M scene recall)
-                or on scene windows.
-            - type: button
-              name: Save as Firmware Default (Wall Switch)
-              icon: mdi:electric-switch
-              show_state: false
-              tap_action:
-                action: call-service
-                service: script.set_bulb_defaults
-                data:
-                  room: living_room
-
-      # ── Bedroom ─────────────────────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Bedroom"
-        card:
-          type: vertical-stack
-          cards:
-            - type: custom:hue-like-light-card
-              entities:
-                - light.bedroom_1
-                - light.bedroom_2
-                - light.lamp_1
-              title: All Lights
-              showSwitch: false
-              slider: default
-              onClickAction: hue-screen
-              offClickAction: hue-screen
-            - type: custom:mushroom-title-card
-              title: Load Stored Scene
-              subtitle: Applies stored values to lights as a starting point
-            - type: horizontal-stack
-              cards:
-                - type: button
-                  name: Morning
-                  icon: mdi:weather-sunset-up
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: bedroom
-                      window: morning
-                - type: button
-                  name: Day
-                  icon: mdi:weather-sunny
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: bedroom
-                      window: day
-                - type: button
-                  name: Evening
-                  icon: mdi:weather-sunset-down
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: bedroom
-                      window: evening
-                - type: button
-                  name: Night
-                  icon: mdi:weather-night
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: bedroom
-                      window: night
-            - type: custom:mushroom-title-card
-              title: Save Current State
-            - type: horizontal-stack
-              cards:
-                - type: button
-                  name: As Morning
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: bedroom
-                      window: morning
-                - type: button
-                  name: As Day
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: bedroom
-                      window: day
-                - type: button
-                  name: As Evening
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: bedroom
-                      window: evening
-                - type: button
-                  name: As Night
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: bedroom
-                      window: night
-            - type: markdown
-              content: >
-                **Wall switch power-on only.** Captures current brightness/color as the bulb's
-                mains-power-on default — what the bulb wakes to when a wall switch cuts and
-                restores power. Has no effect on Hue dimmer button-1 (handled by Z2M scene recall)
-                or on scene windows.
-            - type: button
-              name: Save as Firmware Default (Wall Switch)
-              icon: mdi:electric-switch
-              show_state: false
-              tap_action:
-                action: call-service
-                service: script.set_bulb_defaults
-                data:
-                  room: bedroom
-
-      # ── Bathroom ────────────────────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Bathroom"
-        card:
-          type: vertical-stack
-          cards:
-            - type: custom:hue-like-light-card
-              entity: light.bathroom_1
-              title: Light
-              showSwitch: false
-              slider: default
-              onClickAction: hue-screen
-              offClickAction: hue-screen
-            - type: custom:mushroom-title-card
-              title: Load Stored Scene
-              subtitle: Applies stored values to lights as a starting point
-            - type: horizontal-stack
-              cards:
-                - type: button
-                  name: Morning
-                  icon: mdi:weather-sunset-up
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: bathroom
-                      window: morning
-                - type: button
-                  name: Day
-                  icon: mdi:weather-sunny
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: bathroom
-                      window: day
-                - type: button
-                  name: Evening
-                  icon: mdi:weather-sunset-down
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: bathroom
-                      window: evening
-                - type: button
-                  name: Night
-                  icon: mdi:weather-night
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: bathroom
-                      window: night
-            - type: custom:mushroom-title-card
-              title: Save Current State
-            - type: horizontal-stack
-              cards:
-                - type: button
-                  name: As Morning
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: bathroom
-                      window: morning
-                - type: button
-                  name: As Day
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: bathroom
-                      window: day
-                - type: button
-                  name: As Evening
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: bathroom
-                      window: evening
-                - type: button
-                  name: As Night
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: bathroom
-                      window: night
-            - type: markdown
-              content: >
-                **Wall switch power-on only.** Captures current brightness/color as the bulb's
-                mains-power-on default — what the bulb wakes to when a wall switch cuts and
-                restores power. Has no effect on Hue dimmer button-1 (handled by Z2M scene recall)
-                or on scene windows.
-            - type: button
-              name: Save as Firmware Default (Wall Switch)
-              icon: mdi:electric-switch
-              show_state: false
-              tap_action:
-                action: call-service
-                service: script.set_bulb_defaults
-                data:
-                  room: bathroom
-
-      # ── Kitchen ─────────────────────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Kitchen"
-        card:
-          type: vertical-stack
-          cards:
-            - type: custom:hue-like-light-card
-              entities:
-                - light.kitchen_1
-                - light.kitchen_2
-              title: All Lights
-              showSwitch: false
-              slider: default
-              onClickAction: hue-screen
-              offClickAction: hue-screen
-            - type: custom:mushroom-title-card
-              title: Load Stored Scene
-              subtitle: Applies stored values to lights as a starting point
-            - type: horizontal-stack
-              cards:
-                - type: button
-                  name: Morning
-                  icon: mdi:weather-sunset-up
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: kitchen
-                      window: morning
-                - type: button
-                  name: Day
-                  icon: mdi:weather-sunny
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: kitchen
-                      window: day
-                - type: button
-                  name: Evening
-                  icon: mdi:weather-sunset-down
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: kitchen
-                      window: evening
-                - type: button
-                  name: Night
-                  icon: mdi:weather-night
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: kitchen
-                      window: night
-            - type: custom:mushroom-title-card
-              title: Save Current State
-            - type: horizontal-stack
-              cards:
-                - type: button
-                  name: As Morning
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: kitchen
-                      window: morning
-                - type: button
-                  name: As Day
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: kitchen
-                      window: day
-                - type: button
-                  name: As Evening
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: kitchen
-                      window: evening
-                - type: button
-                  name: As Night
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: kitchen
-                      window: night
-            - type: markdown
-              content: >
-                **Wall switch power-on only.** Captures current brightness/color as the bulb's
-                mains-power-on default — what the bulb wakes to when a wall switch cuts and
-                restores power. Has no effect on Hue dimmer button-1 (handled by Z2M scene recall)
-                or on scene windows.
-            - type: button
-              name: Save as Firmware Default (Wall Switch)
-              icon: mdi:electric-switch
-              show_state: false
-              tap_action:
-                action: call-service
-                service: script.set_bulb_defaults
-                data:
-                  room: kitchen
-
-      # ── Hallway ─────────────────────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Hallway"
-        card:
-          type: vertical-stack
-          cards:
-            - type: custom:hue-like-light-card
-              entity: light.hallway_1
-              title: Light
-              showSwitch: false
-              slider: default
-              onClickAction: hue-screen
-              offClickAction: hue-screen
-            - type: custom:mushroom-title-card
-              title: Load Stored Scene
-              subtitle: Applies stored values to lights as a starting point
-            - type: horizontal-stack
-              cards:
-                - type: button
-                  name: Morning
-                  icon: mdi:weather-sunset-up
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: hallway
-                      window: morning
-                - type: button
-                  name: Day
-                  icon: mdi:weather-sunny
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: hallway
-                      window: day
-                - type: button
-                  name: Evening
-                  icon: mdi:weather-sunset-down
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: hallway
-                      window: evening
-                - type: button
-                  name: Night
-                  icon: mdi:weather-night
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_preview_scene
-                    data:
-                      room: hallway
-                      window: night
-            - type: custom:mushroom-title-card
-              title: Save Current State
-            - type: horizontal-stack
-              cards:
-                - type: button
-                  name: As Morning
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: hallway
-                      window: morning
-                - type: button
-                  name: As Day
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: hallway
-                      window: day
-                - type: button
-                  name: As Evening
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: hallway
-                      window: evening
-                - type: button
-                  name: As Night
-                  icon: mdi:content-save
-                  show_state: false
-                  tap_action:
-                    action: call-service
-                    service: script.sl_save_current_as_scene
-                    data:
-                      room: hallway
-                      window: night
-            - type: markdown
-              content: >
-                **Wall switch power-on only.** Captures current brightness/color as the bulb's
-                mains-power-on default — what the bulb wakes to when a wall switch cuts and
-                restores power. Has no effect on Hue dimmer button-1 (handled by Z2M scene recall)
-                or on scene windows.
-            - type: button
-              name: Save as Firmware Default (Wall Switch)
-              icon: mdi:electric-switch
-              show_state: false
-              tap_action:
-                action: call-service
-                service: script.set_bulb_defaults
-                data:
-                  room: hallway
-
-  # ════════════════════════════════════════════════════════════
   # Switch Config Tab
   # ════════════════════════════════════════════════════════════
-  - title: Switches
+  - title: Button Config
     path: switches
     icon: mdi:light-switch
     cards:
@@ -1533,7 +914,99 @@ views:
           **Button 1 (top):** Short = toggle on/off, Long = power off all
           **Button 2:** Short = brightness up, Long = brightness max
           **Button 3:** Short = brightness down, Long = brightness min
-          **Button 4 (bottom):** Short = cycle scenes (the window scenes and the scenes of this room with the cycle flag on; set them on the Lights tab), Long = toggles all lights on/off by default. Any button can be set below to a named scene ("Scene: <name>").
+          **Button 4 (bottom):** Short = cycle scenes (the 4 window scenes, then the scenes of this room with the cycle flag on; set them on the Scene Config tab), Long = toggles all lights on/off by default. Any button can be set below to a named scene ("Scene: <name>").
+          **Window scenes:** each window of a room uses its own window scene ('<Room> <Window>', Default), or the scene that you select here. Only the bulbs of the room are used, with no effect.
+
+      # ── Window scene slots (WO-0274) ────────────────────────
+      - type: conditional
+        conditions:
+          - entity: input_select.sl_room_selector
+            state: "Living Room"
+        card:
+          type: entities
+          title: Living Room window scenes
+          show_header_toggle: false
+          entities:
+            - entity: select.sl_living_room_slot_morning
+              name: Morning scene
+            - entity: select.sl_living_room_slot_day
+              name: Day scene
+            - entity: select.sl_living_room_slot_evening
+              name: Evening scene
+            - entity: select.sl_living_room_slot_night
+              name: Night scene
+
+      - type: conditional
+        conditions:
+          - entity: input_select.sl_room_selector
+            state: "Bedroom"
+        card:
+          type: entities
+          title: Bedroom window scenes
+          show_header_toggle: false
+          entities:
+            - entity: select.sl_bedroom_slot_morning
+              name: Morning scene
+            - entity: select.sl_bedroom_slot_day
+              name: Day scene
+            - entity: select.sl_bedroom_slot_evening
+              name: Evening scene
+            - entity: select.sl_bedroom_slot_night
+              name: Night scene
+
+      - type: conditional
+        conditions:
+          - entity: input_select.sl_room_selector
+            state: "Bathroom"
+        card:
+          type: entities
+          title: Bathroom window scenes
+          show_header_toggle: false
+          entities:
+            - entity: select.sl_bathroom_slot_morning
+              name: Morning scene
+            - entity: select.sl_bathroom_slot_day
+              name: Day scene
+            - entity: select.sl_bathroom_slot_evening
+              name: Evening scene
+            - entity: select.sl_bathroom_slot_night
+              name: Night scene
+
+      - type: conditional
+        conditions:
+          - entity: input_select.sl_room_selector
+            state: "Kitchen"
+        card:
+          type: entities
+          title: Kitchen window scenes
+          show_header_toggle: false
+          entities:
+            - entity: select.sl_kitchen_slot_morning
+              name: Morning scene
+            - entity: select.sl_kitchen_slot_day
+              name: Day scene
+            - entity: select.sl_kitchen_slot_evening
+              name: Evening scene
+            - entity: select.sl_kitchen_slot_night
+              name: Night scene
+
+      - type: conditional
+        conditions:
+          - entity: input_select.sl_room_selector
+            state: "Hallway"
+        card:
+          type: entities
+          title: Hallway window scenes
+          show_header_toggle: false
+          entities:
+            - entity: select.sl_hallway_slot_morning
+              name: Morning scene
+            - entity: select.sl_hallway_slot_day
+              name: Day scene
+            - entity: select.sl_hallway_slot_evening
+              name: Evening scene
+            - entity: select.sl_hallway_slot_night
+              name: Night scene
 
       # ── Living Room ─────────────────────────────────────────
       - type: conditional
