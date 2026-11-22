@@ -1,10 +1,11 @@
-alias: "SL: Push Z2M config when a button action or a window scene slot changes"
+alias: "SL: Push Z2M config when a button action, a window scene slot or a multi-room room changes"
 id: sl_push_config_on_button_change
 description: >
   A button action (input_text.sl_<switch>_b<n>_<short|long>, set through
   select.<same id> on the Switches tab) reaches the Z2M extension only in
   zigbee2mqtt/sl/config. Push the config at each change. The same for a window
-  scene slot (input_text.sl_<room>_slot_<window>, WO-0274).
+  scene slot (input_text.sl_<room>_slot_<window>, WO-0274) and for a
+  multi-room room (input_boolean.sl_<switch>_multi_<room>, WO-0277).
 mode: single
 trigger:
   - platform: state
@@ -77,5 +78,35 @@ trigger:
       - input_text.sl_hallway_slot_day
       - input_text.sl_hallway_slot_evening
       - input_text.sl_hallway_slot_night
+      - input_boolean.sl_living_room_multi_living_room
+      - input_boolean.sl_living_room_multi_bedroom
+      - input_boolean.sl_living_room_multi_bathroom
+      - input_boolean.sl_living_room_multi_kitchen
+      - input_boolean.sl_living_room_multi_hallway
+      - input_boolean.sl_bedroom_multi_living_room
+      - input_boolean.sl_bedroom_multi_bedroom
+      - input_boolean.sl_bedroom_multi_bathroom
+      - input_boolean.sl_bedroom_multi_kitchen
+      - input_boolean.sl_bedroom_multi_hallway
+      - input_boolean.sl_bathroom_multi_living_room
+      - input_boolean.sl_bathroom_multi_bedroom
+      - input_boolean.sl_bathroom_multi_bathroom
+      - input_boolean.sl_bathroom_multi_kitchen
+      - input_boolean.sl_bathroom_multi_hallway
+      - input_boolean.sl_kitchen_multi_living_room
+      - input_boolean.sl_kitchen_multi_bedroom
+      - input_boolean.sl_kitchen_multi_bathroom
+      - input_boolean.sl_kitchen_multi_kitchen
+      - input_boolean.sl_kitchen_multi_hallway
+      - input_boolean.sl_hallway_multi_living_room
+      - input_boolean.sl_hallway_multi_bedroom
+      - input_boolean.sl_hallway_multi_bathroom
+      - input_boolean.sl_hallway_multi_kitchen
+      - input_boolean.sl_hallway_multi_hallway
+      - input_boolean.sl_hallway_s2_multi_living_room
+      - input_boolean.sl_hallway_s2_multi_bedroom
+      - input_boolean.sl_hallway_s2_multi_bathroom
+      - input_boolean.sl_hallway_s2_multi_kitchen
+      - input_boolean.sl_hallway_s2_multi_hallway
 action:
   - service: script.sl_push_config
