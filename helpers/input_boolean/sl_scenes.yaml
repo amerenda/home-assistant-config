@@ -26,3 +26,6 @@ sl_scene_bulb_kitchen_2:
 sl_scene_bulb_hallway_1:
   name: "SL: Scene Bulb Hallway"
   icon: mdi:lightbulb-outline
+sl_scene_effects:
+  name: "SL: Scene Has Effects"
+  icon: mdi:auto-fix

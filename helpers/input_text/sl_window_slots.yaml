@@ -1,0 +1,104 @@
+# Window scene slots (WO-0274). The scene that is the window scene of a room
+# for one window; empty = Default (the room's own window scene '<Room> <Window>').
+# Set through select.<same id> (packages/sl_window_slots.yaml) on the Button
+# Config tab. No initial: the value stays after an HA restart.
+sl_living_room_slot_morning:
+  name: "SL: Living Room Morning Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_living_room_slot_day:
+  name: "SL: Living Room Day Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_living_room_slot_evening:
+  name: "SL: Living Room Evening Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_living_room_slot_night:
+  name: "SL: Living Room Night Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_bedroom_slot_morning:
+  name: "SL: Bedroom Morning Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_bedroom_slot_day:
+  name: "SL: Bedroom Day Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_bedroom_slot_evening:
+  name: "SL: Bedroom Evening Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_bedroom_slot_night:
+  name: "SL: Bedroom Night Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_bathroom_slot_morning:
+  name: "SL: Bathroom Morning Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_bathroom_slot_day:
+  name: "SL: Bathroom Day Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_bathroom_slot_evening:
+  name: "SL: Bathroom Evening Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_bathroom_slot_night:
+  name: "SL: Bathroom Night Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_kitchen_slot_morning:
+  name: "SL: Kitchen Morning Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_kitchen_slot_day:
+  name: "SL: Kitchen Day Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_kitchen_slot_evening:
+  name: "SL: Kitchen Evening Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_kitchen_slot_night:
+  name: "SL: Kitchen Night Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_hallway_slot_morning:
+  name: "SL: Hallway Morning Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_hallway_slot_day:
+  name: "SL: Hallway Day Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_hallway_slot_evening:
+  name: "SL: Hallway Evening Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline
+sl_hallway_slot_night:
+  name: "SL: Hallway Night Scene Slot"
+  min: 0
+  max: 40
+  icon: mdi:clock-time-four-outline

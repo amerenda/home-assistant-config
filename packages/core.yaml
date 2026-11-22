@@ -116,7 +116,7 @@ mqtt:
       json_attributes_template: "{{ value_json | tojson }}"
       icon: mdi:sync
     # Named light scenes, published retained by the Z2M extension (WO-0263).
-    # State = number of scenes. Attributes: scenes, window_cycle, last_result.
+    # State = number of scenes. Attributes: scenes, last_result.
     - name: "SL: Scenes"
       unique_id: sl_scenes
       state_topic: "zigbee2mqtt/sl/scenes"
