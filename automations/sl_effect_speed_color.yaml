@@ -1,0 +1,41 @@
+alias: "SL: Effect speed or color to the bulb"
+id: sl_effect_speed_color
+description: >
+  WO-0269. When an effect speed slider or an effect color field on the Effects
+  tab changes, send the value to that bulb (zigbee2mqtt/<bulb>/set). A running
+  effect keeps running with the new speed or color. Not at HA start (restore).
+mode: queued
+trigger:
+  - platform: state
+    entity_id:
+      - input_number.sl_fx_speed_living_room_1
+      - input_number.sl_fx_speed_bedroom_1
+      - input_number.sl_fx_speed_bedroom_2
+      - input_number.sl_fx_speed_lamp_1
+      - input_number.sl_fx_speed_bathroom_1
+      - input_number.sl_fx_speed_kitchen_1
+      - input_number.sl_fx_speed_kitchen_2
+      - input_number.sl_fx_speed_hallway_1
+      - input_text.sl_fx_color_living_room_1
+      - input_text.sl_fx_color_bedroom_1
+      - input_text.sl_fx_color_bedroom_2
+      - input_text.sl_fx_color_lamp_1
+      - input_text.sl_fx_color_bathroom_1
+condition:
+  - condition: template
+    value_template: >-
+      {{ trigger.from_state is not none
+         and trigger.from_state.state not in ['unknown', 'unavailable']
+         and trigger.to_state.state not in ['unknown', 'unavailable', ''] }}
+action:
+  - variables:
+      object_id: "{{ trigger.entity_id.split('.')[1] }}"
+      is_speed: "{{ trigger.entity_id.startswith('input_number.') }}"
+      bulb: "{{ object_id[12:] }}"
+      payload: >-
+        {{ {'effect_speed': trigger.to_state.state | float(0)} if is_speed
+           else {'effect_color': trigger.to_state.state} }}
+  - action: mqtt.publish
+    data:
+      topic: "zigbee2mqtt/{{ bulb }}/set"
+      payload: "{{ payload | tojson }}"

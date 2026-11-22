@@ -1,0 +1,106 @@
+# Smart Lighting effects (WO-0269). One effect dropdown for each bulb.
+# State: the effect that light.<bulb> reports (a hidden or no effect: none).
+# Select: send the effect, then (color bulbs) the effect color and the speed
+# from the helpers (helpers/input_number|input_text/sl_effects.yaml), in the
+# order that the live test proved (WO-0272). Not the Z2M select entities:
+# Z2M creates them disabled. Do not use YAML merge keys (<<:).
+template:
+  - select:
+      - name: "SL: Living Room Effect"
+        unique_id: sl_fx_living_room_1_select
+        default_entity_id: select.sl_fx_living_room_1
+        icon: mdi:auto-fix
+        state: &sl_fx_state >-
+          {% set fx = state_attr('light.' ~ this.entity_id.split('.')[1][6:], 'effect') %}
+          {% set hidden = ['none', 'blink', 'okay', 'channel_change', 'finish_effect', 'stop_effect', 'stop_hue_effect'] %}
+          {{ fx if fx is string and fx not in hidden else 'none' }}
+        options: &sl_fx_options >-
+          {% set b = this.entity_id.split('.')[1][6:] %}
+          {% set white = ['kitchen_1', 'kitchen_2', 'hallway_1'] %}
+          {{ ['none'] + (['candle', 'sunset', 'sunrise', 'sparkle', 'opal', 'glisten', 'underwater', 'cosmos', 'sunbeam', 'enchant', 'breathe'] if b in white else ['candle', 'fireplace', 'colorloop', 'sunset', 'sunrise', 'sparkle', 'opal', 'glisten', 'underwater', 'cosmos', 'sunbeam', 'enchant', 'breathe']) }}
+        select_option: &sl_fx_select
+          - variables:
+              bulb: "{{ this.entity_id.split('.')[1][6:] }}"
+              topic: "zigbee2mqtt/{{ this.entity_id.split('.')[1][6:] }}/set"
+              color: "{{ states('input_text.sl_fx_color_' ~ this.entity_id.split('.')[1][6:]) }}"
+              speed: "{{ states('input_number.sl_fx_speed_' ~ this.entity_id.split('.')[1][6:]) }}"
+          - if:
+              - condition: template
+                value_template: "{{ option == 'none' }}"
+            then:
+              - action: mqtt.publish
+                data:
+                  topic: "{{ topic }}"
+                  payload: '{"effect": "none"}'
+            else:
+              - action: mqtt.publish
+                data:
+                  topic: "{{ topic }}"
+                  payload: "{{ {'state': 'ON', 'effect': option} | tojson }}"
+              - if:
+                  - condition: template
+                    value_template: "{{ color is match('^#[0-9A-Fa-f]{6}$') }}"
+                then:
+                  - delay: {milliseconds: 500}
+                  - action: mqtt.publish
+                    data:
+                      topic: "{{ topic }}"
+                      payload: "{{ {'effect_color': color} | tojson }}"
+              - if:
+                  - condition: template
+                    value_template: "{{ speed not in ['unknown', 'unavailable'] }}"
+                then:
+                  - delay: {milliseconds: 500}
+                  - action: mqtt.publish
+                    data:
+                      topic: "{{ topic }}"
+                      payload: "{{ {'effect_speed': speed | float(0.5)} | tojson }}"
+      - name: "SL: Bedroom 1 Effect"
+        unique_id: sl_fx_bedroom_1_select
+        default_entity_id: select.sl_fx_bedroom_1
+        icon: mdi:auto-fix
+        state: *sl_fx_state
+        options: *sl_fx_options
+        select_option: *sl_fx_select
+      - name: "SL: Bedroom 2 Effect"
+        unique_id: sl_fx_bedroom_2_select
+        default_entity_id: select.sl_fx_bedroom_2
+        icon: mdi:auto-fix
+        state: *sl_fx_state
+        options: *sl_fx_options
+        select_option: *sl_fx_select
+      - name: "SL: Bedroom Lamp Effect"
+        unique_id: sl_fx_lamp_1_select
+        default_entity_id: select.sl_fx_lamp_1
+        icon: mdi:auto-fix
+        state: *sl_fx_state
+        options: *sl_fx_options
+        select_option: *sl_fx_select
+      - name: "SL: Bathroom Effect"
+        unique_id: sl_fx_bathroom_1_select
+        default_entity_id: select.sl_fx_bathroom_1
+        icon: mdi:auto-fix
+        state: *sl_fx_state
+        options: *sl_fx_options
+        select_option: *sl_fx_select
+      - name: "SL: Kitchen 1 Effect"
+        unique_id: sl_fx_kitchen_1_select
+        default_entity_id: select.sl_fx_kitchen_1
+        icon: mdi:auto-fix
+        state: *sl_fx_state
+        options: *sl_fx_options
+        select_option: *sl_fx_select
+      - name: "SL: Kitchen 2 Effect"
+        unique_id: sl_fx_kitchen_2_select
+        default_entity_id: select.sl_fx_kitchen_2
+        icon: mdi:auto-fix
+        state: *sl_fx_state
+        options: *sl_fx_options
+        select_option: *sl_fx_select
+      - name: "SL: Hallway Effect"
+        unique_id: sl_fx_hallway_1_select
+        default_entity_id: select.sl_fx_hallway_1
+        icon: mdi:auto-fix
+        state: *sl_fx_state
+        options: *sl_fx_options
+        select_option: *sl_fx_select
