@@ -61,6 +61,12 @@ sl_push_config:
             {%- set v = states('input_text.' ~ id) -%}
             {{- v if v not in ['', 'unknown', 'unavailable'] else 'Default' -}}
           {%- endmacro -%}
+          {# Window scene slot (WO-0274): the scene name in
+             input_text.sl_<room>_slot_<window>, or Default when empty. #}
+          {%- macro slot(room_key, window) -%}
+            {%- set v = states('input_text.sl_' ~ room_key ~ '_slot_' ~ window) -%}
+            {{- v if v not in ['', 'unknown', 'unavailable'] else 'Default' -}}
+          {%- endmacro -%}
           {% macro room_config(room_key, room_name, lights) %}
             {% set spo = false if is_guest else is_state('input_boolean.sl_' ~ room_key ~ '_smart_power_on', 'on') %}
             {% set auto_t = is_state('input_boolean.sl_' ~ room_key ~ '_auto_transition', 'on') %}
@@ -73,6 +79,12 @@ sl_push_config:
               "auto_transition": {{ auto_t | tojson }},
               "transition_secs": {{ trans_secs }},
               "motion_night": {{ motion_night | tojson }},
+              "window_slots": {
+                "morning": {{ slot(room_key, 'morning') | tojson }},
+                "day": {{ slot(room_key, 'day') | tojson }},
+                "evening": {{ slot(room_key, 'evening') | tojson }},
+                "night": {{ slot(room_key, 'night') | tojson }}
+              },
               "scenes": {
                 "morning": {{ scene(room_key, 'morning') | from_json | tojson }},
                 "day": {{ scene(room_key, 'day') | from_json | tojson }},
