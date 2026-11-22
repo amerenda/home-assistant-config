@@ -1,0 +1,155 @@
+# Window scene slots (WO-0274). One select for each room and window. Options:
+# Default (the room's own window scene) and each scene that is not a window
+# scene. The value is stored in input_text.<same id>; sl_push_config sends it
+# as rooms.<Room>.window_slots.<window>. Do not use YAML merge keys (<<:).
+template:
+  - select:
+      - name: "SL: Living Room Morning Scene"
+        unique_id: sl_living_room_slot_morning_select
+        default_entity_id: select.sl_living_room_slot_morning
+        icon: mdi:clock-time-four-outline
+        state: &sl_slot_state >-
+          {% set v = states('input_text.' ~ this.entity_id.split('.')[1]) %}
+          {% set names = (state_attr('sensor.sl_scenes', 'scenes') or []) | rejectattr('window', 'defined') | map(attribute='name') | list %}
+          {{ v if v in names else 'Default' }}
+        options: &sl_slot_options >-
+          {{ ['Default'] + ((state_attr('sensor.sl_scenes', 'scenes') or []) | rejectattr('window', 'defined') | map(attribute='name') | list) }}
+        select_option: &sl_slot_select
+          - action: input_text.set_value
+            target:
+              entity_id: "input_text.{{ this.entity_id.split('.')[1] }}"
+            data:
+              value: "{{ '' if option == 'Default' else option }}"
+      - name: "SL: Living Room Day Scene"
+        unique_id: sl_living_room_slot_day_select
+        default_entity_id: select.sl_living_room_slot_day
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Living Room Evening Scene"
+        unique_id: sl_living_room_slot_evening_select
+        default_entity_id: select.sl_living_room_slot_evening
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Living Room Night Scene"
+        unique_id: sl_living_room_slot_night_select
+        default_entity_id: select.sl_living_room_slot_night
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Bedroom Morning Scene"
+        unique_id: sl_bedroom_slot_morning_select
+        default_entity_id: select.sl_bedroom_slot_morning
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Bedroom Day Scene"
+        unique_id: sl_bedroom_slot_day_select
+        default_entity_id: select.sl_bedroom_slot_day
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Bedroom Evening Scene"
+        unique_id: sl_bedroom_slot_evening_select
+        default_entity_id: select.sl_bedroom_slot_evening
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Bedroom Night Scene"
+        unique_id: sl_bedroom_slot_night_select
+        default_entity_id: select.sl_bedroom_slot_night
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Bathroom Morning Scene"
+        unique_id: sl_bathroom_slot_morning_select
+        default_entity_id: select.sl_bathroom_slot_morning
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Bathroom Day Scene"
+        unique_id: sl_bathroom_slot_day_select
+        default_entity_id: select.sl_bathroom_slot_day
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Bathroom Evening Scene"
+        unique_id: sl_bathroom_slot_evening_select
+        default_entity_id: select.sl_bathroom_slot_evening
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Bathroom Night Scene"
+        unique_id: sl_bathroom_slot_night_select
+        default_entity_id: select.sl_bathroom_slot_night
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Kitchen Morning Scene"
+        unique_id: sl_kitchen_slot_morning_select
+        default_entity_id: select.sl_kitchen_slot_morning
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Kitchen Day Scene"
+        unique_id: sl_kitchen_slot_day_select
+        default_entity_id: select.sl_kitchen_slot_day
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Kitchen Evening Scene"
+        unique_id: sl_kitchen_slot_evening_select
+        default_entity_id: select.sl_kitchen_slot_evening
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Kitchen Night Scene"
+        unique_id: sl_kitchen_slot_night_select
+        default_entity_id: select.sl_kitchen_slot_night
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Hallway Morning Scene"
+        unique_id: sl_hallway_slot_morning_select
+        default_entity_id: select.sl_hallway_slot_morning
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Hallway Day Scene"
+        unique_id: sl_hallway_slot_day_select
+        default_entity_id: select.sl_hallway_slot_day
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Hallway Evening Scene"
+        unique_id: sl_hallway_slot_evening_select
+        default_entity_id: select.sl_hallway_slot_evening
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select
+      - name: "SL: Hallway Night Scene"
+        unique_id: sl_hallway_slot_night_select
+        default_entity_id: select.sl_hallway_slot_night
+        icon: mdi:clock-time-four-outline
+        state: *sl_slot_state
+        options: *sl_slot_options
+        select_option: *sl_slot_select

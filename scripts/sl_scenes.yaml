@@ -37,7 +37,9 @@ sl_scene_form_new:
             option: "{{ room }}"
     - action: input_boolean.turn_off
       target:
-        entity_id: input_boolean.sl_scene_in_cycle
+        entity_id:
+          - input_boolean.sl_scene_in_cycle
+          - input_boolean.sl_scene_effects
     - repeat:
         for_each: "{{ all_bulbs }}"
         sequence:
@@ -81,6 +83,9 @@ sl_scene_load:
     - action: "input_boolean.turn_{{ 'on' if scene.in_cycle else 'off' }}"
       target:
         entity_id: input_boolean.sl_scene_in_cycle
+    - action: "input_boolean.turn_{{ 'on' if scene.lights.values() | selectattr('effect', 'defined') | list | count > 0 else 'off' }}"
+      target:
+        entity_id: input_boolean.sl_scene_effects
     - repeat:
         for_each: "{{ all_bulbs }}"
         sequence:
@@ -96,8 +101,8 @@ sl_scene_save:
   description: >
     Reads the live state of each checked bulb and sends one save command. A
     scene with the same name is replaced. If a checked bulb is unavailable,
-    nothing is saved and a notification names the bulb. A running effect
-    (Effects tab) is saved with the speed of its helper
+    nothing is saved and a notification names the bulb. With the effects
+    toggle on (Scene Config tab), a running effect is saved with the speed of its helper
     input_number.sl_fx_speed_<bulb> (the bulb does not report a new speed);
     its color is the bulb color.
   mode: single
@@ -105,6 +110,8 @@ sl_scene_save:
     - variables:
         all_bulbs: [living_room_1, bedroom_1, bedroom_2, lamp_1, bathroom_1, kitchen_1, kitchen_2, hallway_1]
         # Effects that a scene can keep (WO-0269). Same list as SCENE_EFFECTS in smart-lighting.js.
+        # The effects toggle on the Scene Config tab: off = save no effect.
+        with_effects: "{{ is_state('input_boolean.sl_scene_effects', 'on') }}"
         scene_effects: [candle, fireplace, colorloop, sunset, sunrise, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant, breathe]
         snapshot: >-
           {% set ns = namespace(lights={}, missing=[]) %}
@@ -126,7 +133,7 @@ sl_scene_save:
           {% set v = dict(v, color={'x': xy[0] | round(4), 'y': xy[1] | round(4)}) %}
           {% endif %}
           {% set fx = state_attr(e, 'effect') %}
-          {% if fx in scene_effects %}
+          {% if with_effects and fx in scene_effects %}
           {% set v = dict(v, effect=fx) %}
           {% set sp = states('input_number.sl_fx_speed_' ~ b) | float(-1) %}
           {% if sp >= 0 and sp <= 1 %}
@@ -203,25 +210,15 @@ sl_scene_toggle_cycle:
         topic: zigbee2mqtt/sl/scene/update
         payload: "{{ {'name': name, 'in_cycle': not scene.in_cycle} | tojson }}"
 
-sl_scene_window_cycle_toggle:
-  alias: "SL: Scene - cycle flag on or off for a window scene"
-  description: "Window scene of the room in input_select.sl_room_selector. Not for All Rooms."
+sl_scene_back_to_window:
+  alias: "SL: Back to the window scene"
+  description: >
+    WO-0274. The selected room (All Rooms: each room) gets its current window
+    scene, as the dimmer On button does. The Z2M extension does it
+    (zigbee2mqtt/sl/scene/window).
   mode: single
-  fields:
-    window:
-      description: "morning, day, evening or night"
-      required: true
-      selector:
-        select:
-          options: [morning, day, evening, night]
   sequence:
-    - variables:
-        room: "{{ states('input_select.sl_room_selector') }}"
-        flags: "{{ (state_attr('sensor.sl_scenes', 'window_cycle') or {}).get(room, {}) }}"
-        current: "{{ flags.get(window, true) }}"
-    - condition: template
-      value_template: "{{ room != 'All Rooms' and window in ['morning', 'day', 'evening', 'night'] }}"
     - action: mqtt.publish
       data:
-        topic: zigbee2mqtt/sl/scene/update
-        payload: "{{ {'room': room, 'window': window, 'in_cycle': not current} | tojson }}"
+        topic: zigbee2mqtt/sl/scene/window
+        payload: "{{ {'room': states('input_select.sl_room_selector')} | tojson }}"

@@ -1,9 +1,10 @@
-alias: "SL: Push Z2M config when a button action changes"
+alias: "SL: Push Z2M config when a button action or a window scene slot changes"
 id: sl_push_config_on_button_change
 description: >
   A button action (input_text.sl_<switch>_b<n>_<short|long>, set through
   select.<same id> on the Switches tab) reaches the Z2M extension only in
-  zigbee2mqtt/sl/config. Push the config at each change.
+  zigbee2mqtt/sl/config. Push the config at each change. The same for a window
+  scene slot (input_text.sl_<room>_slot_<window>, WO-0274).
 mode: single
 trigger:
   - platform: state
@@ -56,5 +57,25 @@ trigger:
       - input_text.sl_hallway_s2_b3_long
       - input_text.sl_hallway_s2_b4_short
       - input_text.sl_hallway_s2_b4_long
+      - input_text.sl_living_room_slot_morning
+      - input_text.sl_living_room_slot_day
+      - input_text.sl_living_room_slot_evening
+      - input_text.sl_living_room_slot_night
+      - input_text.sl_bedroom_slot_morning
+      - input_text.sl_bedroom_slot_day
+      - input_text.sl_bedroom_slot_evening
+      - input_text.sl_bedroom_slot_night
+      - input_text.sl_bathroom_slot_morning
+      - input_text.sl_bathroom_slot_day
+      - input_text.sl_bathroom_slot_evening
+      - input_text.sl_bathroom_slot_night
+      - input_text.sl_kitchen_slot_morning
+      - input_text.sl_kitchen_slot_day
+      - input_text.sl_kitchen_slot_evening
+      - input_text.sl_kitchen_slot_night
+      - input_text.sl_hallway_slot_morning
+      - input_text.sl_hallway_slot_day
+      - input_text.sl_hallway_slot_evening
+      - input_text.sl_hallway_slot_night
 action:
   - service: script.sl_push_config
