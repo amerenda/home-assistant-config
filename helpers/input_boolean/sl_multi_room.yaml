@@ -1,5 +1,6 @@
 # Smart Lighting v2 — Multi-room config
-# Per switch: which rooms to include when "Multi-Room Scene" action triggers
+# Per switch: the rooms of the "Toggle Multi-Room" action (WO-0277). A change
+# pushes the config (automations/sl_push_config_on_button_change.yaml).
 # The switch's own room is included by default (toggle off to exclude)
 
 # Living Room switch includes:
