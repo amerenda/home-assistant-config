@@ -1025,7 +1025,7 @@ views:
             - entity: input_number.sl_living_room_min_brightness
               name: Minimum Brightness (long dim)
             - type: section
-              label: Multi-Room
+              label: Multi-Room (the rooms of the Toggle Multi-Room action)
             - entity: input_boolean.sl_living_room_multi_living_room
               name: Living Room
             - entity: input_boolean.sl_living_room_multi_bedroom
@@ -1054,7 +1054,7 @@ views:
             - entity: input_number.sl_bedroom_min_brightness
               name: Minimum Brightness (long dim)
             - type: section
-              label: Multi-Room
+              label: Multi-Room (the rooms of the Toggle Multi-Room action)
             - entity: input_boolean.sl_bedroom_multi_living_room
               name: Living Room
             - entity: input_boolean.sl_bedroom_multi_bedroom
@@ -1083,7 +1083,7 @@ views:
             - entity: input_number.sl_bathroom_min_brightness
               name: Minimum Brightness (long dim)
             - type: section
-              label: Multi-Room
+              label: Multi-Room (the rooms of the Toggle Multi-Room action)
             - entity: input_boolean.sl_bathroom_multi_living_room
               name: Living Room
             - entity: input_boolean.sl_bathroom_multi_bedroom
@@ -1112,7 +1112,7 @@ views:
             - entity: input_number.sl_kitchen_min_brightness
               name: Minimum Brightness (long dim)
             - type: section
-              label: Multi-Room
+              label: Multi-Room (the rooms of the Toggle Multi-Room action)
             - entity: input_boolean.sl_kitchen_multi_living_room
               name: Living Room
             - entity: input_boolean.sl_kitchen_multi_bedroom
@@ -1155,7 +1155,7 @@ views:
             - entity: input_number.sl_hallway_min_brightness
               name: Minimum Brightness (long dim)
             - type: section
-              label: Multi-Room
+              label: Multi-Room (the rooms of the Toggle Multi-Room action)
             - entity: input_boolean.sl_hallway_multi_living_room
               name: Living Room
             - entity: input_boolean.sl_hallway_multi_bedroom
@@ -1186,7 +1186,7 @@ views:
             - entity: input_number.sl_hallway_s2_min_brightness
               name: Minimum Brightness (long dim)
             - type: section
-              label: Multi-Room
+              label: Multi-Room (the rooms of the Toggle Multi-Room action)
             - entity: input_boolean.sl_hallway_s2_multi_living_room
               name: Living Room
             - entity: input_boolean.sl_hallway_s2_multi_bedroom
