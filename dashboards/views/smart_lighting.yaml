@@ -411,7 +411,7 @@ views:
                 name: Room
           - type: markdown
             content: >-
-              Set an effect, its speed and (color bulbs) its color. The effect runs on the bulb.
+              Set an effect, its speed and (color bulbs) its color: tap the effect color tile for the color wheel. The effect runs on the bulb.
               To keep it, save a scene below: the scene keeps the effect, the speed and the color of each checked bulb.
               A window scene (Toggle Room on, Button 4 window step) stops the effect.
           - type: conditional
@@ -440,11 +440,14 @@ views:
                       features:
                         - type: numeric-input
                           style: slider
-                    - type: entities
-                      show_header_toggle: false
-                      entities:
-                        - entity: input_text.sl_fx_color_living_room_1
-                          name: "Living Room effect color (hex, for example #FF7A1A)"
+                    - type: tile
+                      entity: light.sl_fx_color_living_room_1
+                      name: Living Room effect color (tap for the color wheel)
+                      icon: mdi:palette
+                      tap_action:
+                        action: more-info
+                      icon_tap_action:
+                        action: more-info
           - type: conditional
             conditions:
               - entity: input_select.sl_room_selector
@@ -471,11 +474,14 @@ views:
                       features:
                         - type: numeric-input
                           style: slider
-                    - type: entities
-                      show_header_toggle: false
-                      entities:
-                        - entity: input_text.sl_fx_color_bedroom_1
-                          name: "Bedroom 1 effect color (hex, for example #FF7A1A)"
+                    - type: tile
+                      entity: light.sl_fx_color_bedroom_1
+                      name: Bedroom 1 effect color (tap for the color wheel)
+                      icon: mdi:palette
+                      tap_action:
+                        action: more-info
+                      icon_tap_action:
+                        action: more-info
                 - &sl_fx_bedroom_2
                   type: vertical-stack
                   cards:
@@ -495,11 +501,14 @@ views:
                       features:
                         - type: numeric-input
                           style: slider
-                    - type: entities
-                      show_header_toggle: false
-                      entities:
-                        - entity: input_text.sl_fx_color_bedroom_2
-                          name: "Bedroom 2 effect color (hex, for example #FF7A1A)"
+                    - type: tile
+                      entity: light.sl_fx_color_bedroom_2
+                      name: Bedroom 2 effect color (tap for the color wheel)
+                      icon: mdi:palette
+                      tap_action:
+                        action: more-info
+                      icon_tap_action:
+                        action: more-info
                 - &sl_fx_lamp_1
                   type: vertical-stack
                   cards:
@@ -519,11 +528,14 @@ views:
                       features:
                         - type: numeric-input
                           style: slider
-                    - type: entities
-                      show_header_toggle: false
-                      entities:
-                        - entity: input_text.sl_fx_color_lamp_1
-                          name: "Bedroom Lamp effect color (hex, for example #FF7A1A)"
+                    - type: tile
+                      entity: light.sl_fx_color_lamp_1
+                      name: Bedroom Lamp effect color (tap for the color wheel)
+                      icon: mdi:palette
+                      tap_action:
+                        action: more-info
+                      icon_tap_action:
+                        action: more-info
           - type: conditional
             conditions:
               - entity: input_select.sl_room_selector
@@ -550,11 +562,14 @@ views:
                       features:
                         - type: numeric-input
                           style: slider
-                    - type: entities
-                      show_header_toggle: false
-                      entities:
-                        - entity: input_text.sl_fx_color_bathroom_1
-                          name: "Bathroom effect color (hex, for example #FF7A1A)"
+                    - type: tile
+                      entity: light.sl_fx_color_bathroom_1
+                      name: Bathroom effect color (tap for the color wheel)
+                      icon: mdi:palette
+                      tap_action:
+                        action: more-info
+                      icon_tap_action:
+                        action: more-info
           - type: conditional
             conditions:
               - entity: input_select.sl_room_selector
