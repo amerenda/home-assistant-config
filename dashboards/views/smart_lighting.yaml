@@ -425,7 +425,7 @@ views:
                   type: vertical-stack
                   cards:
                     - type: tile
-                      entity: select.living_room_1_effect
+                      entity: select.sl_fx_living_room_1
                       name: Living Room
                       icon: mdi:auto-fix
                       vertical: false
@@ -434,7 +434,7 @@ views:
                         - type: select-options
                           options: &sl_fx_color [none, candle, fireplace, colorloop, sunset, sunrise, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant, breathe]
                     - type: tile
-                      entity: number.living_room_1_effect_speed
+                      entity: input_number.sl_fx_speed_living_room_1
                       name: Living Room speed (0 slow, 1 fast)
                       features_position: bottom
                       features:
@@ -443,7 +443,7 @@ views:
                     - type: entities
                       show_header_toggle: false
                       entities:
-                        - entity: text.living_room_1_effect_color
+                        - entity: input_text.sl_fx_color_living_room_1
                           name: "Living Room effect color (hex, for example #FF7A1A)"
           - type: conditional
             conditions:
@@ -456,7 +456,7 @@ views:
                   type: vertical-stack
                   cards:
                     - type: tile
-                      entity: select.bedroom_1_effect
+                      entity: select.sl_fx_bedroom_1
                       name: Bedroom 1
                       icon: mdi:auto-fix
                       vertical: false
@@ -465,7 +465,7 @@ views:
                         - type: select-options
                           options: *sl_fx_color
                     - type: tile
-                      entity: number.bedroom_1_effect_speed
+                      entity: input_number.sl_fx_speed_bedroom_1
                       name: Bedroom 1 speed (0 slow, 1 fast)
                       features_position: bottom
                       features:
@@ -474,13 +474,13 @@ views:
                     - type: entities
                       show_header_toggle: false
                       entities:
-                        - entity: text.bedroom_1_effect_color
+                        - entity: input_text.sl_fx_color_bedroom_1
                           name: "Bedroom 1 effect color (hex, for example #FF7A1A)"
                 - &sl_fx_bedroom_2
                   type: vertical-stack
                   cards:
                     - type: tile
-                      entity: select.bedroom_2_effect
+                      entity: select.sl_fx_bedroom_2
                       name: Bedroom 2
                       icon: mdi:auto-fix
                       vertical: false
@@ -489,7 +489,7 @@ views:
                         - type: select-options
                           options: *sl_fx_color
                     - type: tile
-                      entity: number.bedroom_2_effect_speed
+                      entity: input_number.sl_fx_speed_bedroom_2
                       name: Bedroom 2 speed (0 slow, 1 fast)
                       features_position: bottom
                       features:
@@ -498,13 +498,13 @@ views:
                     - type: entities
                       show_header_toggle: false
                       entities:
-                        - entity: text.bedroom_2_effect_color
+                        - entity: input_text.sl_fx_color_bedroom_2
                           name: "Bedroom 2 effect color (hex, for example #FF7A1A)"
                 - &sl_fx_lamp_1
                   type: vertical-stack
                   cards:
                     - type: tile
-                      entity: select.lamp_1_effect
+                      entity: select.sl_fx_lamp_1
                       name: Bedroom Lamp
                       icon: mdi:auto-fix
                       vertical: false
@@ -513,7 +513,7 @@ views:
                         - type: select-options
                           options: *sl_fx_color
                     - type: tile
-                      entity: number.lamp_1_effect_speed
+                      entity: input_number.sl_fx_speed_lamp_1
                       name: Bedroom Lamp speed (0 slow, 1 fast)
                       features_position: bottom
                       features:
@@ -522,7 +522,7 @@ views:
                     - type: entities
                       show_header_toggle: false
                       entities:
-                        - entity: text.lamp_1_effect_color
+                        - entity: input_text.sl_fx_color_lamp_1
                           name: "Bedroom Lamp effect color (hex, for example #FF7A1A)"
           - type: conditional
             conditions:
@@ -535,7 +535,7 @@ views:
                   type: vertical-stack
                   cards:
                     - type: tile
-                      entity: select.bathroom_1_effect
+                      entity: select.sl_fx_bathroom_1
                       name: Bathroom
                       icon: mdi:auto-fix
                       vertical: false
@@ -544,7 +544,7 @@ views:
                         - type: select-options
                           options: *sl_fx_color
                     - type: tile
-                      entity: number.bathroom_1_effect_speed
+                      entity: input_number.sl_fx_speed_bathroom_1
                       name: Bathroom speed (0 slow, 1 fast)
                       features_position: bottom
                       features:
@@ -553,7 +553,7 @@ views:
                     - type: entities
                       show_header_toggle: false
                       entities:
-                        - entity: text.bathroom_1_effect_color
+                        - entity: input_text.sl_fx_color_bathroom_1
                           name: "Bathroom effect color (hex, for example #FF7A1A)"
           - type: conditional
             conditions:
@@ -566,7 +566,7 @@ views:
                   type: vertical-stack
                   cards:
                     - type: tile
-                      entity: select.kitchen_1_effect
+                      entity: select.sl_fx_kitchen_1
                       name: Kitchen 1
                       icon: mdi:auto-fix
                       vertical: false
@@ -575,7 +575,7 @@ views:
                         - type: select-options
                           options: &sl_fx_white [none, candle, sunset, sunrise, sparkle, opal, glisten, underwater, cosmos, sunbeam, enchant, breathe]
                     - type: tile
-                      entity: number.kitchen_1_effect_speed
+                      entity: input_number.sl_fx_speed_kitchen_1
                       name: Kitchen 1 speed (0 slow, 1 fast)
                       features_position: bottom
                       features:
@@ -585,7 +585,7 @@ views:
                   type: vertical-stack
                   cards:
                     - type: tile
-                      entity: select.kitchen_2_effect
+                      entity: select.sl_fx_kitchen_2
                       name: Kitchen 2
                       icon: mdi:auto-fix
                       vertical: false
@@ -594,7 +594,7 @@ views:
                         - type: select-options
                           options: *sl_fx_white
                     - type: tile
-                      entity: number.kitchen_2_effect_speed
+                      entity: input_number.sl_fx_speed_kitchen_2
                       name: Kitchen 2 speed (0 slow, 1 fast)
                       features_position: bottom
                       features:
@@ -611,7 +611,7 @@ views:
                   type: vertical-stack
                   cards:
                     - type: tile
-                      entity: select.hallway_1_effect
+                      entity: select.sl_fx_hallway_1
                       name: Hallway
                       icon: mdi:auto-fix
                       vertical: false
@@ -620,7 +620,7 @@ views:
                         - type: select-options
                           options: *sl_fx_white
                     - type: tile
-                      entity: number.hallway_1_effect_speed
+                      entity: input_number.sl_fx_speed_hallway_1
                       name: Hallway speed (0 slow, 1 fast)
                       features_position: bottom
                       features:
