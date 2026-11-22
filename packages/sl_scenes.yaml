@@ -31,7 +31,7 @@ template:
           {% set rooms = {'living_room': 'Living Room', 'bedroom': 'Bedroom', 'bathroom': 'Bathroom', 'kitchen': 'Kitchen', 'hallway': 'Hallway', 'hallway_s2': 'Hallway'} %}
           {% set room = rooms.get(prefix, '') %}
           {% set defaults = {'b1_short': 'Toggle Room', 'b1_long': 'Power Off All', 'b2_short': 'Brightness Up', 'b2_long': 'Brightness Max', 'b3_short': 'Brightness Down', 'b3_long': 'Brightness Min', 'b4_short': 'Cycle Scenes', 'b4_long': 'Toggle All Rooms'} %}
-          {% set ns = namespace(o=['Default (' ~ defaults.get(key, 'none') ~ ')', 'Toggle Room', 'Power Off Room', 'Power Off All', 'Brightness Up', 'Brightness Down', 'Brightness Max', 'Brightness Min', 'Cycle Scenes', 'Toggle All Rooms', 'Multi-Room Scene', 'Do Nothing']) %}
+          {% set ns = namespace(o=['Default (' ~ defaults.get(key, 'none') ~ ')', 'Toggle Room', 'Power Off Room', 'Power Off All', 'Brightness Up', 'Brightness Down', 'Brightness Max', 'Brightness Min', 'Cycle Scenes', 'Toggle All Rooms', 'Toggle Multi-Room', 'Do Nothing']) %}
           {% for s in state_attr('sensor.sl_scenes', 'scenes') or [] %}
           {% if s.room == room and s.window is not defined %}
           {% set ns.o = ns.o + ['Scene: ' ~ s.name] %}
