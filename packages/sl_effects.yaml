@@ -104,3 +104,63 @@ template:
         state: *sl_fx_state
         options: *sl_fx_options
         select_option: *sl_fx_select
+  # Effect color wheel (WO-0273): one light for each color bulb. It is not a
+  # bulb: it shows and sets input_text.sl_fx_color_<bulb>. A change goes to the
+  # bulb as effect_color (automations/sl_effect_speed_color.yaml), so a running
+  # effect keeps running. A normal color change on the bulb stops the effect.
+  - light:
+      - name: "SL: Living Room Effect Color"
+        unique_id: sl_fx_color_living_room_1_light
+        default_entity_id: light.sl_fx_color_living_room_1
+        icon: mdi:palette
+        state: &sl_fx_wheel_state "{{ true }}"
+        rgb: &sl_fx_wheel_rgb >-
+          {%- set h = states('input_text.sl_fx_color_' ~ this.entity_id.split('.')[1][12:]) -%}
+          {%- if h is match('^#[0-9A-Fa-f]{6}$') -%}
+          ({{ h[1:3] | int(base=16) }}, {{ h[3:5] | int(base=16) }}, {{ h[5:7] | int(base=16) }})
+          {%- else -%}(255, 122, 26){%- endif -%}
+        turn_on: &sl_fx_wheel_noop
+          - delay: 0
+        turn_off: *sl_fx_wheel_noop
+        set_rgb: &sl_fx_wheel_set
+          - action: input_text.set_value
+            target:
+              entity_id: "input_text.sl_fx_color_{{ this.entity_id.split('.')[1][12:] }}"
+            data:
+              value: "{{ '#%02X%02X%02X' | format(r, g, b) }}"
+      - name: "SL: Bedroom 1 Effect Color"
+        unique_id: sl_fx_color_bedroom_1_light
+        default_entity_id: light.sl_fx_color_bedroom_1
+        icon: mdi:palette
+        state: *sl_fx_wheel_state
+        rgb: *sl_fx_wheel_rgb
+        turn_on: *sl_fx_wheel_noop
+        turn_off: *sl_fx_wheel_noop
+        set_rgb: *sl_fx_wheel_set
+      - name: "SL: Bedroom 2 Effect Color"
+        unique_id: sl_fx_color_bedroom_2_light
+        default_entity_id: light.sl_fx_color_bedroom_2
+        icon: mdi:palette
+        state: *sl_fx_wheel_state
+        rgb: *sl_fx_wheel_rgb
+        turn_on: *sl_fx_wheel_noop
+        turn_off: *sl_fx_wheel_noop
+        set_rgb: *sl_fx_wheel_set
+      - name: "SL: Bedroom Lamp Effect Color"
+        unique_id: sl_fx_color_lamp_1_light
+        default_entity_id: light.sl_fx_color_lamp_1
+        icon: mdi:palette
+        state: *sl_fx_wheel_state
+        rgb: *sl_fx_wheel_rgb
+        turn_on: *sl_fx_wheel_noop
+        turn_off: *sl_fx_wheel_noop
+        set_rgb: *sl_fx_wheel_set
+      - name: "SL: Bathroom Effect Color"
+        unique_id: sl_fx_color_bathroom_1_light
+        default_entity_id: light.sl_fx_color_bathroom_1
+        icon: mdi:palette
+        state: *sl_fx_wheel_state
+        rgb: *sl_fx_wheel_rgb
+        turn_on: *sl_fx_wheel_noop
+        turn_off: *sl_fx_wheel_noop
+        set_rgb: *sl_fx_wheel_set
