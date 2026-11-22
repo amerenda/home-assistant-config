@@ -1,0 +1,61 @@
+# Smart Lighting effects (WO-0269). Effect speed for each bulb, 0 slow - 1 fast.
+# HA keeps the last value (no initial). automations/sl_effect_speed_color.yaml
+# sends a change to the bulb; script.sl_scene_save reads it into the scene.
+# Not the Z2M number entities: Z2M creates them disabled, and the bulb does
+# not report a new speed.
+sl_fx_speed_living_room_1:
+  name: "SL: Living Room Effect Speed"
+  min: 0
+  max: 1
+  step: 0.05
+  mode: slider
+  icon: mdi:speedometer
+sl_fx_speed_bedroom_1:
+  name: "SL: Bedroom 1 Effect Speed"
+  min: 0
+  max: 1
+  step: 0.05
+  mode: slider
+  icon: mdi:speedometer
+sl_fx_speed_bedroom_2:
+  name: "SL: Bedroom 2 Effect Speed"
+  min: 0
+  max: 1
+  step: 0.05
+  mode: slider
+  icon: mdi:speedometer
+sl_fx_speed_lamp_1:
+  name: "SL: Bedroom Lamp Effect Speed"
+  min: 0
+  max: 1
+  step: 0.05
+  mode: slider
+  icon: mdi:speedometer
+sl_fx_speed_bathroom_1:
+  name: "SL: Bathroom Effect Speed"
+  min: 0
+  max: 1
+  step: 0.05
+  mode: slider
+  icon: mdi:speedometer
+sl_fx_speed_kitchen_1:
+  name: "SL: Kitchen 1 Effect Speed"
+  min: 0
+  max: 1
+  step: 0.05
+  mode: slider
+  icon: mdi:speedometer
+sl_fx_speed_kitchen_2:
+  name: "SL: Kitchen 2 Effect Speed"
+  min: 0
+  max: 1
+  step: 0.05
+  mode: slider
+  icon: mdi:speedometer
+sl_fx_speed_hallway_1:
+  name: "SL: Hallway Effect Speed"
+  min: 0
+  max: 1
+  step: 0.05
+  mode: slider
+  icon: mdi:speedometer

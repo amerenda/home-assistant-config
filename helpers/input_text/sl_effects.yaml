@@ -1,0 +1,33 @@
+# Smart Lighting effects (WO-0269). Effect color for each color bulb, hex
+# (#RRGGBB). automations/sl_effect_speed_color.yaml sends a change to the
+# bulb. The bulb reports it as its normal color, so a scene save keeps it.
+sl_fx_color_living_room_1:
+  name: "SL: Living Room Effect Color"
+  min: 0
+  max: 7
+  pattern: "^(#[0-9A-Fa-f]{6})?$"
+  icon: mdi:palette
+sl_fx_color_bedroom_1:
+  name: "SL: Bedroom 1 Effect Color"
+  min: 0
+  max: 7
+  pattern: "^(#[0-9A-Fa-f]{6})?$"
+  icon: mdi:palette
+sl_fx_color_bedroom_2:
+  name: "SL: Bedroom 2 Effect Color"
+  min: 0
+  max: 7
+  pattern: "^(#[0-9A-Fa-f]{6})?$"
+  icon: mdi:palette
+sl_fx_color_lamp_1:
+  name: "SL: Bedroom Lamp Effect Color"
+  min: 0
+  max: 7
+  pattern: "^(#[0-9A-Fa-f]{6})?$"
+  icon: mdi:palette
+sl_fx_color_bathroom_1:
+  name: "SL: Bathroom Effect Color"
+  min: 0
+  max: 7
+  pattern: "^(#[0-9A-Fa-f]{6})?$"
+  icon: mdi:palette
