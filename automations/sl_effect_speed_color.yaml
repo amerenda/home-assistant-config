@@ -4,6 +4,8 @@ description: >
   WO-0269. When an effect speed slider or an effect color field on the Effects
   tab changes, send the value to that bulb (zigbee2mqtt/<bulb>/set). A running
   effect keeps running with the new speed or color. Not at HA start (restore).
+  WO-0303: a new color starts the effect again at full brightness, so the
+  brightness that the bulb had goes after it.
 mode: queued
 trigger:
   - platform: state
@@ -32,6 +34,7 @@ action:
       object_id: "{{ trigger.entity_id.split('.')[1] }}"
       is_speed: "{{ trigger.entity_id.startswith('input_number.') }}"
       bulb: "{{ object_id[12:] }}"
+      bri: "{{ state_attr('light.' ~ object_id[12:], 'brightness') }}"
       payload: >-
         {{ {'effect_speed': trigger.to_state.state | float(0)} if is_speed
            else {'effect_color': trigger.to_state.state} }}
@@ -39,3 +42,12 @@ action:
     data:
       topic: "zigbee2mqtt/{{ bulb }}/set"
       payload: "{{ payload | tojson }}"
+  - if:
+      - condition: template
+        value_template: "{{ not is_speed and is_state('light.' ~ bulb, 'on') and bri is number }}"
+    then:
+      - delay: {milliseconds: 300}
+      - action: mqtt.publish
+        data:
+          topic: "zigbee2mqtt/{{ bulb }}/set"
+          payload: "{{ {'brightness': bri | int} | tojson }}"
