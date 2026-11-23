@@ -9,6 +9,18 @@ sl_house_mode:
   initial: Home
   icon: mdi:home-account
 
+# WO-0257: with Smart Lighting off (input_boolean.sl_enabled), each room uses
+# the scene of this window all day, with no window changes. No initial: the
+# value stays after an HA restart. Day first, so a new helper starts on Day.
+sl_off_window:
+  name: "SL: Window When Smart Lighting Is Off"
+  options:
+    - Day
+    - Morning
+    - Evening
+    - Night
+  icon: mdi:weather-sunny
+
 sl_scene_window:
   name: "SL: Scene Window"
   options:
