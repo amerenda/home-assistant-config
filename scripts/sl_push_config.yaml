@@ -203,6 +203,7 @@ sl_push_config:
             'day_assignments': day_assignments,
             'house_mode': house_mode,
             'sl_enabled': is_state('input_boolean.sl_enabled', 'on'),
+            'off_window': states('input_select.sl_off_window') | lower,
             'rooms': rooms,
             'switches': switches
           } | tojson }}
