@@ -5,7 +5,8 @@ description: >
   tab changes, send the value to that bulb (zigbee2mqtt/<bulb>/set). A running
   effect keeps running with the new speed or color. Not at HA start (restore).
   WO-0303: a new color starts the effect again at full brightness, so the
-  brightness that the bulb had goes after it.
+  brightness that the bulb had goes after the next state report of the bulb
+  (Z2M runs two messages to one bulb at the same time).
 mode: queued
 trigger:
   - platform: state
@@ -35,6 +36,7 @@ action:
       is_speed: "{{ trigger.entity_id.startswith('input_number.') }}"
       bulb: "{{ object_id[12:] }}"
       bri: "{{ state_attr('light.' ~ object_id[12:], 'brightness') }}"
+      sent_at: "{{ now().timestamp() }}"
       payload: >-
         {{ {'effect_speed': trigger.to_state.state | float(0)} if is_speed
            else {'effect_color': trigger.to_state.state} }}
@@ -46,7 +48,11 @@ action:
       - condition: template
         value_template: "{{ not is_speed and is_state('light.' ~ bulb, 'on') and bri is number }}"
     then:
-      - delay: {milliseconds: 300}
+      - wait_for_trigger:
+          - trigger: template
+            value_template: "{{ states['light.' ~ bulb].last_updated.timestamp() > sent_at | float(0) }}"
+        timeout: {seconds: 3}
+        continue_on_timeout: true
       - action: mqtt.publish
         data:
           topic: "zigbee2mqtt/{{ bulb }}/set"
