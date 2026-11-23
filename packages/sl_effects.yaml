@@ -1,9 +1,11 @@
 # Smart Lighting effects (WO-0269). One effect dropdown for each bulb.
 # State: the effect that light.<bulb> reports (a hidden or no effect: none).
-# Select: send the effect and the speed, then (color bulbs) the effect color
-# from the helpers (helpers/input_number|input_text/sl_effects.yaml), then the
-# brightness that the bulb had: each effect start sets full brightness (live
-# test WO-0303). Not the Z2M select entities:
+# Select: one message {color, effect, effect_speed}, color first, from the
+# helpers (helpers/input_number|input_text/sl_effects.yaml): Z2M sets the color,
+# then starts the effect with it. Each effect start sets full brightness, so
+# the brightness that the bulb had goes after the bulb reports the effect (Z2M
+# runs two messages to one bulb at the same time). Live tests WO-0303.
+# Not the Z2M select entities:
 # Z2M creates them disabled. Do not use YAML merge keys (<<:).
 template:
   - select:
@@ -39,22 +41,19 @@ template:
                 data:
                   topic: "{{ topic }}"
                   payload: >-
-                    {{ ({'effect': option, 'effect_speed': speed | float(0.5)}
-                        if speed not in ['unknown', 'unavailable'] else {'effect': option}) | tojson }}
-              - if:
-                  - condition: template
-                    value_template: "{{ color is match('^#[0-9A-Fa-f]{6}$') }}"
-                then:
-                  - delay: {milliseconds: 300}
-                  - action: mqtt.publish
-                    data:
-                      topic: "{{ topic }}"
-                      payload: "{{ {'effect_color': color} | tojson }}"
+                    {% set m = {'color': {'hex': color}} if color is match('^#[0-9A-Fa-f]{6}$') else {} %}
+                    {% set m = dict(m, effect=option) %}
+                    {% if speed not in ['unknown', 'unavailable'] %}{% set m = dict(m, effect_speed=speed | float(0.5)) %}{% endif %}
+                    {{ m | to_json }}
               - if:
                   - condition: template
                     value_template: "{{ bri is number }}"
                 then:
-                  - delay: {milliseconds: 300}
+                  - wait_for_trigger:
+                      - trigger: template
+                        value_template: "{{ state_attr('light.' ~ bulb, 'effect') == option }}"
+                    timeout: {seconds: 3}
+                    continue_on_timeout: true
                   - action: mqtt.publish
                     data:
                       topic: "{{ topic }}"
