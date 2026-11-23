@@ -1,7 +1,9 @@
 # Bedroom AC night mode. Triggers on the lighting window (sensor.sl_current_window), never on clock
 # times, so it follows schedule edits and later sunset-based windows.
-# Night + bedroom lights off + AC on -> sound off, display off, fan to the chosen level, optional
-# night temperature. Morning window -> undo (fan and temperature back to what they were).
+# Night + bedroom lights off + AC on -> sound off, fan to the chosen level, optional
+# night temperature. Morning window -> undo (sound on, fan and temperature back to what they were).
+# The AC display follows the bedroom lights at any time (WO-0307): lights off -> display off,
+# lights on -> display on. Only bedroom_ac_display_follows_lights switches the display.
 
 input_boolean:
   bedroom_ac_night_enabled:
@@ -90,10 +92,6 @@ automation:
         target:
           entity_id: switch.151732607639365_sound
         continue_on_error: true
-      - action: switch.turn_off
-        target:
-          entity_id: switch.151732607639365_screen_display
-        continue_on_error: true
       - action: climate.set_fan_mode
         target:
           entity_id: "{{ ac }}"
@@ -114,7 +112,7 @@ automation:
 
   - id: bedroom_ac_night_off
     alias: "Bedroom AC: night mode off (morning)"
-    description: Morning window -> sound and display back on, fan and temperature back to what they were before night mode.
+    description: Morning window -> sound back on, fan and temperature back to what they were before night mode. The display follows the lights (bedroom_ac_display_follows_lights).
     mode: single
     triggers:
       - trigger: state
@@ -144,12 +142,55 @@ automation:
             continue_on_error: true
       - action: switch.turn_on
         target:
-          entity_id: switch.151732607639365_screen_display
-        continue_on_error: true
-      - action: switch.turn_on
-        target:
           entity_id: switch.151732607639365_sound
         continue_on_error: true
       - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.bedroom_ac_night_active
+
+  - id: bedroom_ac_display_follows_lights
+    alias: "Bedroom AC: display follows the bedroom lights"
+    description: >-
+      WO-0307. Bedroom lights off -> AC display off; lights on -> display on. Any time of day and
+      any source of the change. Also when the AC turns on and at HA start. With the sound on, the
+      sound goes off around the display command, so it does not beep.
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: light.bedroom
+        to: ["on", "off"]
+      - trigger: state
+        entity_id: climate.151732607639365_climate
+        from: "off"
+      - trigger: homeassistant
+        event: start
+    conditions:
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: climate.151732607639365_climate
+            state: ["off", "unavailable", "unknown"]
+      - condition: template
+        value_template: >-
+          {{ states('light.bedroom') in ['on', 'off']
+             and states('switch.151732607639365_screen_display') != states('light.bedroom') }}
+    actions:
+      - variables:
+          want: "{{ states('light.bedroom') }}"
+          sound_on: "{{ is_state('switch.151732607639365_sound', 'on') }}"
+      - if: "{{ sound_on }}"
+        then:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.151732607639365_sound
+            continue_on_error: true
+      - action: "switch.turn_{{ want }}"
+        target:
+          entity_id: switch.151732607639365_screen_display
+        continue_on_error: true
+      - if: "{{ sound_on }}"
+        then:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.151732607639365_sound
+            continue_on_error: true
