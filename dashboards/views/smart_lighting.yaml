@@ -669,7 +669,9 @@ views:
       - type: entities
         entities:
           - entity: input_boolean.sl_enabled
-            name: Smart Lighting
+            name: Smart Lighting (off = no time windows)
+          - entity: input_select.sl_off_window
+            name: Window when Smart Lighting is off
           - entity: sensor.sl_current_window
             name: Current Window
           - entity: input_select.sl_house_mode
