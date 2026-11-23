@@ -42,7 +42,7 @@ input_text:
 automation:
   - id: bedroom_ac_night_on
     alias: "Bedroom AC: night mode on"
-    description: Night window, bedroom lights off and the AC running -> quiet the AC. Re-checked when any of the three changes.
+    description: Night window, bedroom lights off and the AC running -> quiet the AC. Re-checked when any of the three changes. No wait after the lights go off (WO-0306).
     mode: single
     triggers:
       - trigger: state
@@ -51,8 +51,6 @@ automation:
       - trigger: state
         entity_id: light.bedroom
         to: "off"
-        for:
-          minutes: 1
       - trigger: state
         entity_id: climate.151732607639365_climate
         from: "off"
