@@ -3,9 +3,13 @@ id: sl_push_config_on_sl_enabled
 description: >
   smart-lighting.js reads sl_enabled only from retained zigbee2mqtt/sl/config.
   Toggling input_boolean.sl_enabled in HA does not update MQTT until sl_push_config runs.
+  The same for input_select.sl_off_window (WO-0257: the window that each room
+  uses all day with Smart Lighting off).
 mode: single
 trigger:
   - platform: state
-    entity_id: input_boolean.sl_enabled
+    entity_id:
+      - input_boolean.sl_enabled
+      - input_select.sl_off_window
 action:
   - service: script.sl_push_config
