@@ -1,9 +1,10 @@
 # Smart Lighting effects (WO-0269). One effect dropdown for each bulb.
 # State: the effect that light.<bulb> reports (a hidden or no effect: none).
-# Select: send the effect and the speed, then (color bulbs) the effect color
-# from the helpers (helpers/input_number|input_text/sl_effects.yaml), then the
-# brightness that the bulb had: each effect start sets full brightness (live
-# test WO-0303). Not the Z2M select entities:
+# Select: zigbee2mqtt/sl/scene/effect {bulb, effect, effect_speed, color,
+# brightness} with the speed and color helpers (helpers/input_number|input_text/
+# sl_effects.yaml) and the brightness that the bulb has. The Z2M extension
+# starts the effect with one Hue command, as for a scene (no bright flash,
+# WO-0303). Not the Z2M select entities:
 # Z2M creates them disabled. Do not use YAML merge keys (<<:).
 template:
   - select:
@@ -37,28 +38,13 @@ template:
             else:
               - action: mqtt.publish
                 data:
-                  topic: "{{ topic }}"
+                  topic: zigbee2mqtt/sl/scene/effect
                   payload: >-
-                    {{ ({'effect': option, 'effect_speed': speed | float(0.5)}
-                        if speed not in ['unknown', 'unavailable'] else {'effect': option}) | tojson }}
-              - if:
-                  - condition: template
-                    value_template: "{{ color is match('^#[0-9A-Fa-f]{6}$') }}"
-                then:
-                  - delay: {milliseconds: 300}
-                  - action: mqtt.publish
-                    data:
-                      topic: "{{ topic }}"
-                      payload: "{{ {'effect_color': color} | tojson }}"
-              - if:
-                  - condition: template
-                    value_template: "{{ bri is number }}"
-                then:
-                  - delay: {milliseconds: 300}
-                  - action: mqtt.publish
-                    data:
-                      topic: "{{ topic }}"
-                      payload: "{{ {'brightness': bri | int} | tojson }}"
+                    {% set m = {'bulb': bulb, 'effect': option} %}
+                    {% if speed not in ['unknown', 'unavailable'] %}{% set m = dict(m, effect_speed=speed | float(0.5)) %}{% endif %}
+                    {% if color is match('^#[0-9A-Fa-f]{6}$') %}{% set m = dict(m, color=color) %}{% endif %}
+                    {% if bri is number %}{% set m = dict(m, brightness=bri | int) %}{% endif %}
+                    {{ m | to_json }}
       - name: "SL: Bedroom 1 Effect"
         unique_id: sl_fx_bedroom_1_select
         default_entity_id: select.sl_fx_bedroom_1
