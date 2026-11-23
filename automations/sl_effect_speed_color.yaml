@@ -4,9 +4,9 @@ description: >
   WO-0269. When an effect speed slider or an effect color field on the Effects
   tab changes, send the value to that bulb (zigbee2mqtt/<bulb>/set). A running
   effect keeps running with the new speed or color. Not at HA start (restore).
-  WO-0303: a new color starts the effect again at full brightness, so the
-  brightness that the bulb had goes after the next state report of the bulb
-  (Z2M runs two messages to one bulb at the same time).
+  WO-0303: a new color for a running effect goes to the Z2M extension
+  (zigbee2mqtt/sl/scene/effect), which starts the effect again with the new
+  color at the brightness that the bulb has (one Hue command, no bright flash).
 mode: queued
 trigger:
   - platform: state
@@ -36,24 +36,28 @@ action:
       is_speed: "{{ trigger.entity_id.startswith('input_number.') }}"
       bulb: "{{ object_id[12:] }}"
       bri: "{{ state_attr('light.' ~ object_id[12:], 'brightness') }}"
-      sent_at: "{{ now().timestamp() }}"
+      fx: "{{ state_attr('light.' ~ object_id[12:], 'effect') }}"
+      fx_running: >-
+        {{ fx is string and fx not in ['none', 'blink', 'okay', 'channel_change', 'breathe',
+           'finish_effect', 'stop_effect', 'stop_hue_effect'] }}
       payload: >-
         {{ {'effect_speed': trigger.to_state.state | float(0)} if is_speed
            else {'effect_color': trigger.to_state.state} }}
-  - action: mqtt.publish
-    data:
-      topic: "zigbee2mqtt/{{ bulb }}/set"
-      payload: "{{ payload | tojson }}"
   - if:
       - condition: template
-        value_template: "{{ not is_speed and is_state('light.' ~ bulb, 'on') and bri is number }}"
+        value_template: "{{ not is_speed and fx_running }}"
     then:
-      - wait_for_trigger:
-          - trigger: template
-            value_template: "{{ states['light.' ~ bulb].last_updated.timestamp() > sent_at | float(0) }}"
-        timeout: {seconds: 3}
-        continue_on_timeout: true
+      - action: mqtt.publish
+        data:
+          topic: zigbee2mqtt/sl/scene/effect
+          payload: >-
+            {% set m = {'bulb': bulb, 'effect': fx, 'color': trigger.to_state.state} %}
+            {% set speed = states('input_number.sl_fx_speed_' ~ bulb) %}
+            {% if speed not in ['unknown', 'unavailable'] %}{% set m = dict(m, effect_speed=speed | float(0.5)) %}{% endif %}
+            {% if bri is number %}{% set m = dict(m, brightness=bri | int) %}{% endif %}
+            {{ m | to_json }}
+    else:
       - action: mqtt.publish
         data:
           topic: "zigbee2mqtt/{{ bulb }}/set"
-          payload: "{{ {'brightness': bri | int} | tojson }}"
+          payload: "{{ payload | tojson }}"
