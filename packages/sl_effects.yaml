@@ -1,8 +1,9 @@
 # Smart Lighting effects (WO-0269). One effect dropdown for each bulb.
 # State: the effect that light.<bulb> reports (a hidden or no effect: none).
-# Select: send the effect, then (color bulbs) the effect color and the speed
-# from the helpers (helpers/input_number|input_text/sl_effects.yaml), in the
-# order that the live test proved (WO-0272). Not the Z2M select entities:
+# Select: send the effect and the speed, then (color bulbs) the effect color
+# from the helpers (helpers/input_number|input_text/sl_effects.yaml), then the
+# brightness that the bulb had: each effect start sets full brightness (live
+# test WO-0303). Not the Z2M select entities:
 # Z2M creates them disabled. Do not use YAML merge keys (<<:).
 template:
   - select:
@@ -24,6 +25,7 @@ template:
               topic: "zigbee2mqtt/{{ this.entity_id.split('.')[1][6:] }}/set"
               color: "{{ states('input_text.sl_fx_color_' ~ this.entity_id.split('.')[1][6:]) }}"
               speed: "{{ states('input_number.sl_fx_speed_' ~ this.entity_id.split('.')[1][6:]) }}"
+              bri: "{{ state_attr('light.' ~ this.entity_id.split('.')[1][6:], 'brightness') }}"
           - if:
               - condition: template
                 value_template: "{{ option == 'none' }}"
@@ -36,25 +38,27 @@ template:
               - action: mqtt.publish
                 data:
                   topic: "{{ topic }}"
-                  payload: "{{ {'state': 'ON', 'effect': option} | tojson }}"
+                  payload: >-
+                    {{ ({'effect': option, 'effect_speed': speed | float(0.5)}
+                        if speed not in ['unknown', 'unavailable'] else {'effect': option}) | tojson }}
               - if:
                   - condition: template
                     value_template: "{{ color is match('^#[0-9A-Fa-f]{6}$') }}"
                 then:
-                  - delay: {milliseconds: 500}
+                  - delay: {milliseconds: 300}
                   - action: mqtt.publish
                     data:
                       topic: "{{ topic }}"
                       payload: "{{ {'effect_color': color} | tojson }}"
               - if:
                   - condition: template
-                    value_template: "{{ speed not in ['unknown', 'unavailable'] }}"
+                    value_template: "{{ bri is number }}"
                 then:
-                  - delay: {milliseconds: 500}
+                  - delay: {milliseconds: 300}
                   - action: mqtt.publish
                     data:
                       topic: "{{ topic }}"
-                      payload: "{{ {'effect_speed': speed | float(0.5)} | tojson }}"
+                      payload: "{{ {'brightness': bri | int} | tojson }}"
       - name: "SL: Bedroom 1 Effect"
         unique_id: sl_fx_bedroom_1_select
         default_entity_id: select.sl_fx_bedroom_1
