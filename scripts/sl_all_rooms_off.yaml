@@ -1,16 +1,13 @@
 sl_all_rooms_off:
   alias: "SL: All Rooms Off"
-  description: "Turn off all rooms unconditionally — no toggle, never turns lights on"
+  description: >
+    WO-0322. Every room turns off. It never turns a light on. The Z2M
+    extension does it with the same code as a dimmer button
+    (zigbee2mqtt/sl/scene/room, action "Power Off All"). Every HA light on and
+    off goes through this command; do not add a light.turn_on path here.
   mode: single
   sequence:
-    - repeat:
-        for_each:
-          - living_room
-          - bedroom
-          - bathroom
-          - kitchen
-          - hallway
-        sequence:
-          - service: script.sl_room_off
-            data:
-              room: "{{ repeat.item }}"
+    - action: mqtt.publish
+      data:
+        topic: zigbee2mqtt/sl/scene/room
+        payload: "{{ {'action': 'Power Off All'} | tojson }}"
