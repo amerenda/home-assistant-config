@@ -1,172 +1,20 @@
 sl_room_on:
   alias: "SL: Room On"
-  description: "Activate the correct scene for a room based on current time window, schedule, and house mode"
+  description: >
+    WO-0322. The room gets its current window scene (window slot or own window
+    scene), as the dimmer On button does, with the extension mode gating. The
+    Z2M extension does it with the same code as a dimmer button
+    (zigbee2mqtt/sl/scene/room, action "Room On"). Every HA light on and off
+    goes through this command; do not add a light.turn_on path here.
   mode: parallel
-  max: 10
   fields:
     room:
-      description: "Room identifier matching scene naming convention (e.g., living_room)"
+      description: "Room key (living_room, bedroom, bathroom, kitchen, hallway)"
       required: true
       selector:
         text:
-    override:
-      description: "Skip scene selection (explicit brightness/color was requested)"
-      required: false
-      default: false
-      selector:
-        boolean:
-    is_window_transition:
-      description: "Called from a time window boundary (enables smooth transition if configured)"
-      required: false
-      default: false
-      selector:
-        boolean:
   sequence:
-    # Check master toggle
-    - condition: state
-      entity_id: input_boolean.sl_enabled
-      state: "on"
-
-    - variables:
-        room_override: "input_boolean.sl_{{ room }}_override"
-        is_override: "{{ override | default(false) | bool }}"
-
-    # If override requested, set the flag and stop
-    - if:
-        - condition: template
-          value_template: "{{ is_override }}"
-      then:
-        - service: input_boolean.turn_on
-          target:
-            entity_id: "{{ room_override }}"
-        - stop: "Override active — skipping scene selection"
-
-    # Clear any stale override — a manual sl_room_on call always applies the scene.
-    # Override gets stuck ON when set via the SL dashboard but cleared only by sl_room_off.
-    # Turning lights off via the HA area card skips sl_room_off, leaving override ON and
-    # blocking the next switch press. Always clear here so switches reliably turn lights on.
-    - service: input_boolean.turn_off
-      target:
-        entity_id: "{{ room_override }}"
-
-    # Determine scene to activate
-    - variables:
-        house_mode: "{{ states('input_select.sl_house_mode') }}"
-        window: "{{ states('sensor.sl_current_window') }}"
-        # Optional user-defined custom HA scene per room/window
-        use_custom_scene: "{{ is_state('input_boolean.sl_' ~ room ~ '_override_scenes', 'on') }}"
-        custom_scene: "{{ states('input_select.sl_' ~ room ~ '_' ~ window ~ '_scene') if use_custom_scene else '' }}"
-        custom_scene_valid: "{{ use_custom_scene and custom_scene not in ['unknown', 'unavailable', ''] and custom_scene in (states.scene | map(attribute='entity_id') | list) }}"
-        # Scene values from helpers (single source of truth)
-        brightness: "{{ states('input_number.sl_' ~ room ~ '_' ~ window ~ '_brightness') | int(200) }}"
-        ct_state: "{{ states('input_number.sl_' ~ room ~ '_' ~ window ~ '_color_temp') }}"
-        cx: "{{ states('input_number.sl_' ~ room ~ '_' ~ window ~ '_color_x') | float(0) }}"
-        cy: "{{ states('input_number.sl_' ~ room ~ '_' ~ window ~ '_color_y') | float(0) }}"
-        use_xy: "{{ cx > 0 and cy > 0 }}"
-        has_ct: "{{ not use_xy and ct_state not in ['unknown', 'unavailable', ''] and ct_state | int(0) > 0 }}"
-        ct_kelvin: "{{ (1000000 / ct_state | int) | int if has_ct else 0 }}"
-        smooth_enabled: "{{ is_state('input_boolean.sl_' ~ room ~ '_smooth_transition', 'on') }}"
-        transition_secs: "{{ (states('input_number.sl_' ~ room ~ '_smooth_transition_duration') | float(60)) * 60 | int if smooth_enabled else 0 }}"
-
-    - choose:
-        # Away mode — don't turn on lights
-        - conditions:
-            - condition: template
-              value_template: "{{ house_mode == 'Away' }}"
-          sequence:
-            - service: light.turn_off
-              target:
-                entity_id: "light.{{ room }}"
-            - stop: "Away mode — lights off"
-
-        # Sleep mode — only rooms with motion enabled for night
-        - conditions:
-            - condition: template
-              value_template: "{{ house_mode == 'Sleep' }}"
-          sequence:
-            - condition: template
-              value_template: "{{ is_state('input_boolean.sl_' ~ room ~ '_motion_night', 'on') }}"
-            - choose:
-                - conditions:
-                    - condition: template
-                      value_template: "{{ custom_scene_valid }}"
-                  sequence:
-                    - service: scene.turn_on
-                      target:
-                        entity_id: "{{ custom_scene }}"
-                      data:
-                        transition: "{{ transition_secs }}"
-                - conditions:
-                    - condition: template
-                      value_template: "{{ use_xy }}"
-                  sequence:
-                    - service: light.turn_on
-                      target:
-                        entity_id: "light.{{ room }}"
-                      data:
-                        brightness: "{{ brightness }}"
-                        xy_color: "{{ [cx, cy] }}"
-                        transition: "{{ transition_secs }}"
-                - conditions:
-                    - condition: template
-                      value_template: "{{ has_ct }}"
-                  sequence:
-                    - service: light.turn_on
-                      target:
-                        entity_id: "light.{{ room }}"
-                      data:
-                        brightness: "{{ brightness }}"
-                        color_temp_kelvin: "{{ ct_kelvin }}"
-                        transition: "{{ transition_secs }}"
-              default:
-                - service: light.turn_on
-                  target:
-                    entity_id: "light.{{ room }}"
-                  data:
-                    brightness: "{{ brightness }}"
-                    transition: "{{ transition_secs }}"
-
-        # Home or Guest mode — normal operation
-        - conditions:
-            - condition: template
-              value_template: "{{ house_mode in ['Home', 'Guest'] }}"
-          sequence:
-            - choose:
-                - conditions:
-                    - condition: template
-                      value_template: "{{ custom_scene_valid }}"
-                  sequence:
-                    - service: scene.turn_on
-                      target:
-                        entity_id: "{{ custom_scene }}"
-                      data:
-                        transition: "{{ transition_secs }}"
-                - conditions:
-                    - condition: template
-                      value_template: "{{ use_xy }}"
-                  sequence:
-                    - service: light.turn_on
-                      target:
-                        entity_id: "light.{{ room }}"
-                      data:
-                        brightness: "{{ brightness }}"
-                        xy_color: "{{ [cx, cy] }}"
-                        transition: "{{ transition_secs }}"
-                - conditions:
-                    - condition: template
-                      value_template: "{{ has_ct }}"
-                  sequence:
-                    - service: light.turn_on
-                      target:
-                        entity_id: "light.{{ room }}"
-                      data:
-                        brightness: "{{ brightness }}"
-                        color_temp_kelvin: "{{ ct_kelvin }}"
-                        transition: "{{ transition_secs }}"
-              default:
-                - service: light.turn_on
-                  target:
-                    entity_id: "light.{{ room }}"
-                  data:
-                    brightness: "{{ brightness }}"
-                    transition: "{{ transition_secs }}"
+    - action: mqtt.publish
+      data:
+        topic: zigbee2mqtt/sl/scene/room
+        payload: "{{ {'room': room | replace('_', ' ') | title, 'action': 'Room On'} | tojson }}"

@@ -25,11 +25,3 @@ sl_living_room_smooth_transition:
   icon: mdi:blur-linear
   initial: true
 
-sl_living_room_override:
-  name: "SL: Living Room — Override Active"
-  icon: mdi:lightbulb-alert
-
-sl_living_room_override_scenes:
-  name: "SL: Living Room — Override Window Scenes"
-  icon: mdi:palette-outline
-
