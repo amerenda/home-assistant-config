@@ -127,40 +127,44 @@ strategy:
           service: script.sl_toggle_all
       - type: horizontal-stack
         cards:
-          - type: button
-            name: Morning
+          - type: custom:mushroom-template-card
+            primary: Morning
             icon: mdi:weather-sunset-up
-            show_state: false
+            color: "{{ '#FFB74D' if is_state('sensor.sl_current_window', 'morning') else 'disabled' }}"
+            vertical: true
             tap_action:
-              action: call-service
-              service: script.sl_all_rooms_scene
+              action: perform-action
+              perform_action: script.sl_all_rooms_scene
               data:
                 window: morning
-          - type: button
-            name: Day
+          - type: custom:mushroom-template-card
+            primary: Day
             icon: mdi:weather-sunny
-            show_state: false
+            color: "{{ '#FFB74D' if is_state('sensor.sl_current_window', 'day') else 'disabled' }}"
+            vertical: true
             tap_action:
-              action: call-service
-              service: script.sl_all_rooms_scene
+              action: perform-action
+              perform_action: script.sl_all_rooms_scene
               data:
                 window: day
-          - type: button
-            name: Evening
+          - type: custom:mushroom-template-card
+            primary: Evening
             icon: mdi:weather-sunset-down
-            show_state: false
+            color: "{{ '#FFB74D' if is_state('sensor.sl_current_window', 'evening') else 'disabled' }}"
+            vertical: true
             tap_action:
-              action: call-service
-              service: script.sl_all_rooms_scene
+              action: perform-action
+              perform_action: script.sl_all_rooms_scene
               data:
                 window: evening
-          - type: button
-            name: Night
+          - type: custom:mushroom-template-card
+            primary: Night
             icon: mdi:weather-night
-            show_state: false
+            color: "{{ '#FFB74D' if is_state('sensor.sl_current_window', 'night') else 'disabled' }}"
+            vertical: true
             tap_action:
-              action: call-service
-              service: script.sl_all_rooms_scene
+              action: perform-action
+              perform_action: script.sl_all_rooms_scene
               data:
                 window: night
 
