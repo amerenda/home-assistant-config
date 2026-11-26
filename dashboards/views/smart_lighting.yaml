@@ -283,24 +283,6 @@ views:
       - type: vertical-stack
         cards:
           - *sl_room_dropdown
-          - type: markdown
-            content: |
-              {%- set room = states('input_select.sl_room_selector') %}
-              {%- set ns = namespace(n=0) %}
-              {%- for s in state_attr('sensor.sl_scenes', 'scenes') or [] %}
-              {%- if room == 'All Rooms' or s.room == room %}
-              {%- set ns.n = ns.n + 1 %}
-              - **{{ s.name }}**{{ ' (' ~ s.room ~ ')' if room == 'All Rooms' else '' }}: {{ s.lights | count }} bulbs, {{ 'window scene (always in the Button 4 cycle)' if s.window is defined else 'Button 4 cycle ' ~ ('on' if s.in_cycle else 'off') }}{{ ', effects' if s.lights.values() | selectattr('effect', 'defined') | list | count > 0 else '' }}
-              {%- endif %}
-              {%- endfor %}
-              {%- if ns.n == 0 %}
-              No scenes for this room.
-              {%- endif %}
-              {%- set r = state_attr('sensor.sl_scenes', 'last_result') %}
-              {%- if r and not r.ok %}
-
-              **Last command failed:** {{ r.op }} '{{ r.name }}': {{ r.error }}
-              {%- endif %}
           - type: entities
             show_header_toggle: false
             entities:
