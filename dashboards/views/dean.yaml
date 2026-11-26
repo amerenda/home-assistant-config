@@ -22,6 +22,77 @@ strategy:
         hidden: true
       sensor.151732607639365_indoor_humidity:
         hidden: true
+      # Living Room AC: diagnostics and settings (the thermostat card stays)
+      sensor.151732605151026_error_code:
+        hidden: true
+      sensor.151732605151026_pmv:
+        hidden: true
+      sensor.151732605151026_outdoor_temperature:
+        hidden: true
+      sensor.151732605151026_realtime_power:
+        hidden: true
+      sensor.151732605151026_current_energy_consumption:
+        hidden: true
+      sensor.151732605151026_total_energy_consumption:
+        hidden: true
+      switch.151732605151026_eco_mode:
+        hidden: true
+      switch.151732605151026_screen_display:
+        hidden: true
+      switch.151732605151026_swing_vertical:
+        hidden: true
+      number.151732605151026_fan_speed:
+        hidden: true
+      fan.151732605151026_fresh_air:
+        hidden: true
+      binary_sensor.151732605151026_full_dust:
+        hidden: true
+      # Bedroom AC: diagnostics and settings (the thermostat card stays)
+      sensor.151732607639365_compressor_power:
+        hidden: true
+      sensor.151732607639365_error_code:
+        hidden: true
+      sensor.151732607639365_indoor_fan_speed:
+        hidden: true
+      sensor.151732607639365_outdoor_temperature:
+        hidden: true
+      sensor.151732607639365_realtime_power:
+        hidden: true
+      sensor.151732607639365_current_energy_consumption:
+        hidden: true
+      sensor.151732607639365_total_energy_consumption:
+        hidden: true
+      switch.151732607639365_comfort_mode:
+        hidden: true
+      switch.151732607639365_degerming:
+        hidden: true
+      switch.151732607639365_dry:
+        hidden: true
+      switch.151732607639365_eco_mode:
+        hidden: true
+      switch.151732607639365_power:
+        hidden: true
+      switch.151732607639365_screen_display:
+        hidden: true
+      switch.151732607639365_sleep_mode:
+        hidden: true
+      switch.151732607639365_sound:
+        hidden: true
+      switch.151732607639365_swing_vertical:
+        hidden: true
+      fan.151732607639365_fresh_air:
+        hidden: true
+      binary_sensor.151732607639365_full_dust:
+        hidden: true
+      binary_sensor.151732607639365_water_pump_running:
+        hidden: true
+      # PTZ presets are in the Camera Controls card of each room
+      select.living_room_living_room_ptz_preset:
+        hidden: true
+      select.bedroom_ptz_preset:
+        hidden: true
+      select.kitchen_ptz_preset:
+        hidden: true
       # Hide PTZ and guard buttons, sirens, and motion/animal sensors for bedroom, living room and kitchen when unavailable
       # Bedroom entities
       button.bedroom_guard_go_to:
@@ -98,6 +169,11 @@ strategy:
     domains:
       _:
         hide_unavailable_entities: true
+      default:
+        hidden_domains:
+          - calendar
+          - todo
+          - remote
 
     # Quick access cards (between greeting and area cards)
     # Extra cards (below area cards)
@@ -246,9 +322,9 @@ strategy:
                   - entity_id: binary_sensor.living_room_motion
                   - entity_id: binary_sensor.living_room_baby_crying
                   - entity_id: binary_sensor.living_room_person
+                  - entity_id: select.living_room_living_room_ptz_preset
                 exclude:
                   - state: "unavailable"
-                  - state: "unknown"
       kitchen:
         name: Kitchen
         icon: mdi:silverware-fork-knife
@@ -290,9 +366,9 @@ strategy:
                   - entity_id: binary_sensor.kitchen_motion
                   - entity_id: binary_sensor.kitchen_baby_crying
                   - entity_id: binary_sensor.kitchen_person
+                  - entity_id: select.kitchen_ptz_preset
                 exclude:
                   - state: "unavailable"
-                  - state: "unknown"
       bathroom:
         name: Bathroom
         icon: mdi:shower
@@ -351,9 +427,9 @@ strategy:
                   - entity_id: binary_sensor.bedroom_motion
                   - entity_id: binary_sensor.bedroom_baby_crying
                   - entity_id: binary_sensor.bedroom_person
+                  - entity_id: select.bedroom_ptz_preset
                 exclude:
                   - state: "unavailable"
-                  - state: "unknown"
       hallway:
         name: Hallway
         icon: mdi:door-open
