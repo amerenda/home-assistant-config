@@ -3,115 +3,129 @@ views:
   - title: Home & Away
     path: home-away
     icon: mdi:home-account
-    cards:
-      # ── Status ─────────────────────────────────────────────
-      - type: entities
-        title: Presence
-        show_header_toggle: false
-        entities:
-          - entity: person.alex_merenda
-            name: Alex
-          - entity: person.eirill
-            name: Eirill
-          - entity: binary_sensor.anyone_home
-            name: Anyone Home (drives all automations)
-          - entity: climate.151732605151026_climate
-            name: AC
-
-      # ── Master switch ───────────────────────────────────────
-      - type: entities
-        entities:
-          - entity: input_boolean.ha_automation_enabled
-            name: Automations Active
-
-      # ── Security cameras ───────────────────────────────────
-      - type: vertical-stack
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
         cards:
-          - type: glance
-            title: Security Cameras
-            show_state: true
-            state_color: true
-            entities:
-              - entity: switch.living_room_privacy_mode
-                name: Living Room
-                tap_action:
-                  action: none
-              - entity: switch.bedroom_privacy_mode
-                name: Bedroom
-                tap_action:
-                  action: none
-              - entity: switch.kitchen_privacy_mode
-                name: Kitchen
-                tap_action:
-                  action: none
-          - type: horizontal-stack
-            cards:
-              - type: button
-                name: Cameras On
-                icon: mdi:cctv
-                show_state: false
-                tap_action:
-                  action: perform-action
-                  perform_action: script.cameras_manual_on
-                  confirmation:
-                    text: Turn the cameras on? They stay on until the next arrival or departure.
-              - type: button
-                name: Cameras Off
-                icon: mdi:cctv-off
-                show_state: false
-                tap_action:
-                  action: perform-action
-                  perform_action: script.cameras_manual_off
+          - type: heading
+            heading: Presence
+            icon: mdi:home-account
           - type: entities
+            title: Presence
             show_header_toggle: false
             entities:
-              - entity: input_boolean.camera_manual_override
-                name: Manual override (off = automations in control)
-              - entity: input_boolean.master_automation_pause
-                name: Pause security automations (cameras manual, lights keep running)
+              - entity: person.alex_merenda
+                name: Alex
+              - entity: person.eirill
+                name: Eirill
+              - entity: binary_sensor.anyone_home
+                name: Anyone Home (drives all automations)
+              - entity: climate.151732605151026_climate
+                name: AC
 
-      # ── On arrival ─────────────────────────────────────────
-      - type: entities
-        title: On Arrival
-        show_header_toggle: false
-        entities:
-          - type: section
-            label: Welcome Lights (only if no one else is home)
-          - entity: input_boolean.ha_arrive_hallway
-            name: Hallway
-          - entity: input_boolean.ha_arrive_living_room
-            name: Living Room
-          - entity: input_boolean.ha_arrive_kitchen
-            name: Kitchen
-          - entity: input_boolean.ha_arrive_bedroom
-            name: Bedroom
-          - entity: input_boolean.ha_arrive_bathroom
-            name: Bathroom
-          - type: section
-            label: Climate
-          - entity: input_boolean.ha_ac_home
-            name: Set AC to home temp
+          # ── Master switch ───────────────────────────────────────
+          - type: entities
+            entities:
+              - entity: input_boolean.ha_automation_enabled
+                name: Automations Active
 
-      # ── On departure ───────────────────────────────────────
-      - type: entities
-        title: When Everyone Leaves
-        show_header_toggle: false
-        entities:
-          - type: section
-            label: Lights
-          - entity: input_boolean.ha_leave_lights_off
-            name: Turn off all lights
-          - type: section
-            label: Climate
-          - entity: input_boolean.ha_ac_away
-            name: Set AC to away temp
+      - type: grid
+        cards:
+          - type: heading
+            heading: Cameras
+            icon: mdi:cctv
+          - type: vertical-stack
+            cards:
+              - type: glance
+                title: Security Cameras
+                show_state: true
+                state_color: true
+                entities:
+                  - entity: switch.living_room_privacy_mode
+                    name: Living Room
+                    tap_action:
+                      action: none
+                  - entity: switch.bedroom_privacy_mode
+                    name: Bedroom
+                    tap_action:
+                      action: none
+                  - entity: switch.kitchen_privacy_mode
+                    name: Kitchen
+                    tap_action:
+                      action: none
+              - type: horizontal-stack
+                cards:
+                  - type: button
+                    name: Cameras On
+                    icon: mdi:cctv
+                    show_state: false
+                    tap_action:
+                      action: perform-action
+                      perform_action: script.cameras_manual_on
+                      confirmation:
+                        text: Turn the cameras on? They stay on until the next arrival or departure.
+                  - type: button
+                    name: Cameras Off
+                    icon: mdi:cctv-off
+                    show_state: false
+                    tap_action:
+                      action: perform-action
+                      perform_action: script.cameras_manual_off
+              - type: entities
+                show_header_toggle: false
+                entities:
+                  - entity: input_boolean.camera_manual_override
+                    name: Manual override (off = automations in control)
+                  - entity: input_boolean.master_automation_pause
+                    name: Pause security automations (cameras manual, lights keep running)
 
-      # ── AC targets ─────────────────────────────────────────
-      - type: entities
-        title: AC Temperature Targets
-        show_header_toggle: false
-        entities:
-          - entity: input_number.ha_ac_home_temp
-            name: Home temp (approach / arrival)
-          - entity: input_number.ha_ac_away_temp
-            name: Away temp (everyone leaves)
+      - type: grid
+        cards:
+          - type: heading
+            heading: Arrival and departure
+            icon: mdi:door-open
+          - type: entities
+            title: On Arrival
+            show_header_toggle: false
+            entities:
+              - type: section
+                label: Welcome Lights (only if no one else is home)
+              - entity: input_boolean.ha_arrive_hallway
+                name: Hallway
+              - entity: input_boolean.ha_arrive_living_room
+                name: Living Room
+              - entity: input_boolean.ha_arrive_kitchen
+                name: Kitchen
+              - entity: input_boolean.ha_arrive_bedroom
+                name: Bedroom
+              - entity: input_boolean.ha_arrive_bathroom
+                name: Bathroom
+              - type: section
+                label: Climate
+              - entity: input_boolean.ha_ac_home
+                name: Set AC to home temp
+
+          # ── On departure ───────────────────────────────────────
+          - type: entities
+            title: When Everyone Leaves
+            show_header_toggle: false
+            entities:
+              - type: section
+                label: Lights
+              - entity: input_boolean.ha_leave_lights_off
+                name: Turn off all lights
+              - type: section
+                label: Climate
+              - entity: input_boolean.ha_ac_away
+                name: Set AC to away temp
+
+          # ── AC targets ─────────────────────────────────────────
+          - type: entities
+            title: AC Temperature Targets
+            show_header_toggle: false
+            entities:
+              - entity: input_number.ha_ac_home_temp
+                name: Home temp (approach / arrival)
+              - entity: input_number.ha_ac_away_temp
+                name: Away temp (everyone leaves)
