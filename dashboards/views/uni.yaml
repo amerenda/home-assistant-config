@@ -12,6 +12,8 @@ views:
 
           # Current Room / Last Seen
           - type: custom:mushroom-template-card
+            grid_options:
+              columns: full
             primary: >
               {% set loc = states('input_text.event_image_location') %}
               {% if loc in ['unknown', 'unavailable', ''] %}
