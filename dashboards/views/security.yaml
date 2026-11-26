@@ -21,16 +21,11 @@ views:
                 entity: camera.kitchen_fluent
 
       - type: grid
-        columns: 2
         cards:
           - type: heading
             heading: Last Human Detected
             heading_style: title
             icon: mdi:account-alert
-          - type: heading
-            heading: Last Pet Detected
-            heading_style: title
-            icon: mdi:paw
           - type: markdown
             content: >
               {% set loc = states('input_text.intruder_image_location') %}
@@ -43,6 +38,13 @@ views:
               {% else %}
                 *No human detected while away.*
               {% endif %}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Last Pet Detected
+            heading_style: title
+            icon: mdi:paw
           - type: markdown
             content: >
               {% set loc = states('input_text.event_image_location') %}
