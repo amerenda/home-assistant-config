@@ -86,6 +86,11 @@ strategy:
         hidden: true
       binary_sensor.151732607639365_water_pump_running:
         hidden: true
+      # Home Assistant Voice satellites (device ids: Living Room, Kitchen)
+      0e01ef821c0b956cae80a43b24c76490:
+        hidden: true
+      f1c82485d12b63c3ea6847a1ca666682:
+        hidden: true
       # PTZ presets are in the Camera Controls card of each room
       select.living_room_living_room_ptz_preset:
         hidden: true
