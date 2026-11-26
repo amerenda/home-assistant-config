@@ -183,6 +183,28 @@ sl_scene_apply:
         topic: zigbee2mqtt/sl/scene/apply
         payload: "{{ {'name': states('select.sl_scene_selected')} | tojson }}"
 
+sl_scene_apply_name:
+  alias: "SL: Scene - apply a scene by name"
+  description: >
+    Applies the named scene. The scene buttons of the Dean dashboard room
+    views call it.
+  mode: queued
+  fields:
+    name:
+      description: "Scene name, as in sensor.sl_scenes"
+      required: true
+      selector:
+        text:
+  sequence:
+    - condition: template
+      value_template: >-
+        {{ (state_attr('sensor.sl_scenes', 'scenes') or [])
+           | selectattr('name', 'eq', name) | list | count > 0 }}
+    - action: mqtt.publish
+      data:
+        topic: zigbee2mqtt/sl/scene/apply
+        payload: "{{ {'name': name} | tojson }}"
+
 sl_scene_delete:
   alias: "SL: Scene - delete the selected scene"
   mode: single
