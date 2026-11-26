@@ -7,9 +7,14 @@ views:
   - title: Lights
     path: lights
     icon: mdi:lightbulb-group
-    cards:
-      - type: vertical-stack
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
         cards:
+          - type: heading
+            heading: Room
+            icon: mdi:lightbulb-group
           - &sl_room_dropdown
             type: entities
             show_header_toggle: false
@@ -199,6 +204,11 @@ views:
                       slider: default
                       onClickAction: hue-screen
                       offClickAction: hue-screen
+      - type: grid
+        cards:
+          - type: heading
+            heading: Scenes
+            icon: mdi:palette
           - type: horizontal-stack
             cards:
               - type: button
@@ -279,9 +289,14 @@ views:
   - title: Scene Config
     path: scenes
     icon: mdi:palette
-    cards:
-      - type: vertical-stack
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
         cards:
+          - type: heading
+            heading: Scene
+            icon: mdi:palette
           - *sl_room_dropdown
           - type: entities
             show_header_toggle: false
@@ -321,6 +336,8 @@ views:
                   confirmation:
                     text: Delete the selected scene? A button action that uses it then does nothing.
           - &sl_scene_new_button
+            grid_options:
+              columns: full
             type: conditional
             conditions:
               - entity: input_boolean.sl_show_save_scene
@@ -338,6 +355,12 @@ views:
               Edit applies the scene and opens the save form. Adjust the lights below,
               then Save with the same name. A window scene ('<Room> <Window>') is used
               from the next time that window turns the lights on.
+          - *sl_scene_save_form
+      - type: grid
+        cards:
+          - type: heading
+            heading: Lights and effects
+            icon: mdi:lightbulb-on
           - *sl_room_lights
           - type: entities
             show_header_toggle: false
@@ -641,244 +664,262 @@ views:
                       - *sl_fx_kitchen_1
                       - *sl_fx_kitchen_2
                       - *sl_fx_hallway_1
-          - *sl_scene_save_form
 
   - title: Smart Lighting Config
     path: schedule
     icon: mdi:cog
-    cards:
-      # ── Top Bar ────────────────────────────────────────────
-      - type: entities
-        entities:
-          - entity: input_boolean.sl_enabled
-            name: Smart Lighting (off = no time windows)
-          - entity: input_select.sl_off_window
-            name: Window when Smart Lighting is off
-          - entity: sensor.sl_current_window
-            name: Current Window
-          - entity: input_select.sl_house_mode
-            name: House Mode
-          - entity: sensor.sl_z2m_sync_status
-            name: Z2M Sync
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Status
+            icon: mdi:information-outline
+          # ── Top Bar ────────────────────────────────────────────
+          - type: entities
+            entities:
+              - entity: input_boolean.sl_enabled
+                name: Smart Lighting (off = no time windows)
+              - entity: input_select.sl_off_window
+                name: Window when Smart Lighting is off
+              - entity: sensor.sl_current_window
+                name: Current Window
+              - entity: input_select.sl_house_mode
+                name: House Mode
+              - entity: sensor.sl_z2m_sync_status
+                name: Z2M Sync
 
-      # ── Schedule (collapsible) ─────────────────────────────
-      - type: entities
-        entities:
-          - entity: input_boolean.sl_show_schedule
-            name: Edit Schedule
-            icon: mdi:clock-edit-outline
+      - type: grid
+        cards:
+          - type: heading
+            heading: Schedule
+            icon: mdi:clock-outline
+          # ── Schedule (collapsible) ─────────────────────────────
+          - type: entities
+            entities:
+              - entity: input_boolean.sl_show_schedule
+                name: Edit Schedule
+                icon: mdi:clock-edit-outline
 
-      - type: conditional
-        conditions:
-          - entity: input_boolean.sl_show_schedule
-            state: "on"
-        card:
-          type: vertical-stack
-          cards:
-            # Day → Profile assignment
-            - type: entities
-              title: Day Profiles
+          - type: conditional
+            conditions:
+              - entity: input_boolean.sl_show_schedule
+                state: "on"
+            card:
+              type: vertical-stack
+              cards:
+                # Day → Profile assignment
+                - type: entities
+                  title: Day Profiles
+                  show_header_toggle: false
+                  entities:
+                    - entity: input_select.sl_profile_monday
+                      name: Monday
+                    - entity: input_select.sl_profile_tuesday
+                      name: Tuesday
+                    - entity: input_select.sl_profile_wednesday
+                      name: Wednesday
+                    - entity: input_select.sl_profile_thursday
+                      name: Thursday
+                    - entity: input_select.sl_profile_friday
+                      name: Friday
+                    - entity: input_select.sl_profile_saturday
+                      name: Saturday
+                    - entity: input_select.sl_profile_sunday
+                      name: Sunday
+                # Profile schedules
+                - type: entities
+                  title: "Weekday Profile"
+                  show_header_toggle: false
+                  entities:
+                    - entity: input_datetime.sl_morning_start_weekday
+                      name: Morning
+                    - entity: input_datetime.sl_day_start_weekday
+                      name: Day
+                    - entity: input_datetime.sl_evening_start_weekday
+                      name: Evening
+                    - entity: input_datetime.sl_night_start_weekday
+                      name: Night
+                - type: entities
+                  title: "Friday Profile"
+                  show_header_toggle: false
+                  entities:
+                    - entity: input_datetime.sl_morning_start_friday
+                      name: Morning
+                    - entity: input_datetime.sl_day_start_friday
+                      name: Day
+                    - entity: input_datetime.sl_evening_start_friday
+                      name: Evening
+                    - entity: input_datetime.sl_night_start_friday
+                      name: Night
+                - type: entities
+                  title: "Saturday Profile"
+                  show_header_toggle: false
+                  entities:
+                    - entity: input_datetime.sl_morning_start_saturday
+                      name: Morning
+                    - entity: input_datetime.sl_day_start_saturday
+                      name: Day
+                    - entity: input_datetime.sl_evening_start_saturday
+                      name: Evening
+                    - entity: input_datetime.sl_night_start_saturday
+                      name: Night
+                - type: entities
+                  title: "Sunday Profile"
+                  show_header_toggle: false
+                  entities:
+                    - entity: input_datetime.sl_morning_start_sunday
+                      name: Morning
+                    - entity: input_datetime.sl_day_start_sunday
+                      name: Day
+                    - entity: input_datetime.sl_evening_start_sunday
+                      name: Evening
+                    - entity: input_datetime.sl_night_start_sunday
+                      name: Night
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Room settings
+            icon: mdi:home-lightbulb
+          # ── Room Selector ──────────────────────────────────────
+          - type: entities
+            title: Room Settings
+            entities:
+              - entity: input_select.sl_room_selector
+                name: Room
+
+          - type: button
+            grid_options:
+              columns: full
+            name: Apply Changes (Push Config to Z2M)
+            icon: mdi:upload-network-outline
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.sl_push_config
+
+          # ── Room Settings: Bathroom ────────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Bathroom"
+            card:
+              type: entities
               show_header_toggle: false
               entities:
-                - entity: input_select.sl_profile_monday
-                  name: Monday
-                - entity: input_select.sl_profile_tuesday
-                  name: Tuesday
-                - entity: input_select.sl_profile_wednesday
-                  name: Wednesday
-                - entity: input_select.sl_profile_thursday
-                  name: Thursday
-                - entity: input_select.sl_profile_friday
-                  name: Friday
-                - entity: input_select.sl_profile_saturday
-                  name: Saturday
-                - entity: input_select.sl_profile_sunday
-                  name: Sunday
-            # Profile schedules
-            - type: entities
-              title: "Weekday Profile"
+                - type: section
+                  label: "Motion (Sleep Mode)"
+                - entity: input_boolean.sl_bathroom_motion_night
+                  name: Allow wall-switch power-on at night
+                - type: section
+                  label: Settings
+                - entity: input_boolean.sl_bathroom_smart_power_on
+                  name: Smart Wall Switch
+                - entity: input_boolean.sl_bathroom_auto_transition
+                  name: Auto Transition
+                - entity: input_boolean.sl_bathroom_smooth_transition
+                  name: Smooth Transition
+                - entity: input_number.sl_bathroom_smooth_transition_duration
+                  name: Transition Duration (min)
+
+          # ── Room Settings: Bedroom ─────────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Bedroom"
+            card:
+              type: entities
               show_header_toggle: false
               entities:
-                - entity: input_datetime.sl_morning_start_weekday
-                  name: Morning
-                - entity: input_datetime.sl_day_start_weekday
-                  name: Day
-                - entity: input_datetime.sl_evening_start_weekday
-                  name: Evening
-                - entity: input_datetime.sl_night_start_weekday
-                  name: Night
-            - type: entities
-              title: "Friday Profile"
+                - type: section
+                  label: "Motion (Sleep Mode)"
+                - entity: input_boolean.sl_bedroom_motion_night
+                  name: Allow wall-switch power-on at night
+                - type: section
+                  label: Settings
+                - entity: input_boolean.sl_bedroom_smart_power_on
+                  name: Smart Wall Switch
+                - entity: input_boolean.sl_bedroom_auto_transition
+                  name: Auto Transition
+                - entity: input_boolean.sl_bedroom_smooth_transition
+                  name: Smooth Transition
+                - entity: input_number.sl_bedroom_smooth_transition_duration
+                  name: Transition Duration (min)
+
+
+          # ── Room Settings: Hallway ─────────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Hallway"
+            card:
+              type: entities
               show_header_toggle: false
               entities:
-                - entity: input_datetime.sl_morning_start_friday
-                  name: Morning
-                - entity: input_datetime.sl_day_start_friday
-                  name: Day
-                - entity: input_datetime.sl_evening_start_friday
-                  name: Evening
-                - entity: input_datetime.sl_night_start_friday
-                  name: Night
-            - type: entities
-              title: "Saturday Profile"
+                - type: section
+                  label: "Motion (Sleep Mode)"
+                - entity: input_boolean.sl_hallway_motion_night
+                  name: Allow wall-switch power-on at night
+                - type: section
+                  label: Settings
+                - entity: input_boolean.sl_hallway_smart_power_on
+                  name: Smart Wall Switch
+                - entity: input_boolean.sl_hallway_auto_transition
+                  name: Auto Transition
+                - entity: input_boolean.sl_hallway_smooth_transition
+                  name: Smooth Transition
+                - entity: input_number.sl_hallway_smooth_transition_duration
+                  name: Transition Duration (min)
+
+          # ── Room Settings: Kitchen ─────────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Kitchen"
+            card:
+              type: entities
               show_header_toggle: false
               entities:
-                - entity: input_datetime.sl_morning_start_saturday
-                  name: Morning
-                - entity: input_datetime.sl_day_start_saturday
-                  name: Day
-                - entity: input_datetime.sl_evening_start_saturday
-                  name: Evening
-                - entity: input_datetime.sl_night_start_saturday
-                  name: Night
-            - type: entities
-              title: "Sunday Profile"
+                - type: section
+                  label: "Motion (Sleep Mode)"
+                - entity: input_boolean.sl_kitchen_motion_night
+                  name: Allow wall-switch power-on at night
+                - type: section
+                  label: Settings
+                - entity: input_boolean.sl_kitchen_smart_power_on
+                  name: Smart Wall Switch
+                - entity: input_boolean.sl_kitchen_auto_transition
+                  name: Auto Transition
+                - entity: input_boolean.sl_kitchen_smooth_transition
+                  name: Smooth Transition
+                - entity: input_number.sl_kitchen_smooth_transition_duration
+                  name: Transition Duration (min)
+
+          # ── Room Settings: Living Room ─────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Living Room"
+            card:
+              type: entities
               show_header_toggle: false
               entities:
-                - entity: input_datetime.sl_morning_start_sunday
-                  name: Morning
-                - entity: input_datetime.sl_day_start_sunday
-                  name: Day
-                - entity: input_datetime.sl_evening_start_sunday
-                  name: Evening
-                - entity: input_datetime.sl_night_start_sunday
-                  name: Night
-
-      # ── Room Selector ──────────────────────────────────────
-      - type: entities
-        title: Room Settings
-        entities:
-          - entity: input_select.sl_room_selector
-            name: Room
-
-      - type: button
-        name: Apply Changes (Push Config to Z2M)
-        icon: mdi:upload-network-outline
-        show_state: false
-        tap_action:
-          action: call-service
-          service: script.sl_push_config
-
-      # ── Room Settings: Bathroom ────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Bathroom"
-        card:
-          type: entities
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: "Motion (Sleep Mode)"
-            - entity: input_boolean.sl_bathroom_motion_night
-              name: Allow wall-switch power-on at night
-            - type: section
-              label: Settings
-            - entity: input_boolean.sl_bathroom_smart_power_on
-              name: Smart Wall Switch
-            - entity: input_boolean.sl_bathroom_auto_transition
-              name: Auto Transition
-            - entity: input_boolean.sl_bathroom_smooth_transition
-              name: Smooth Transition
-            - entity: input_number.sl_bathroom_smooth_transition_duration
-              name: Transition Duration (min)
-
-      # ── Room Settings: Bedroom ─────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Bedroom"
-        card:
-          type: entities
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: "Motion (Sleep Mode)"
-            - entity: input_boolean.sl_bedroom_motion_night
-              name: Allow wall-switch power-on at night
-            - type: section
-              label: Settings
-            - entity: input_boolean.sl_bedroom_smart_power_on
-              name: Smart Wall Switch
-            - entity: input_boolean.sl_bedroom_auto_transition
-              name: Auto Transition
-            - entity: input_boolean.sl_bedroom_smooth_transition
-              name: Smooth Transition
-            - entity: input_number.sl_bedroom_smooth_transition_duration
-              name: Transition Duration (min)
-
-
-      # ── Room Settings: Hallway ─────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Hallway"
-        card:
-          type: entities
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: "Motion (Sleep Mode)"
-            - entity: input_boolean.sl_hallway_motion_night
-              name: Allow wall-switch power-on at night
-            - type: section
-              label: Settings
-            - entity: input_boolean.sl_hallway_smart_power_on
-              name: Smart Wall Switch
-            - entity: input_boolean.sl_hallway_auto_transition
-              name: Auto Transition
-            - entity: input_boolean.sl_hallway_smooth_transition
-              name: Smooth Transition
-            - entity: input_number.sl_hallway_smooth_transition_duration
-              name: Transition Duration (min)
-
-      # ── Room Settings: Kitchen ─────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Kitchen"
-        card:
-          type: entities
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: "Motion (Sleep Mode)"
-            - entity: input_boolean.sl_kitchen_motion_night
-              name: Allow wall-switch power-on at night
-            - type: section
-              label: Settings
-            - entity: input_boolean.sl_kitchen_smart_power_on
-              name: Smart Wall Switch
-            - entity: input_boolean.sl_kitchen_auto_transition
-              name: Auto Transition
-            - entity: input_boolean.sl_kitchen_smooth_transition
-              name: Smooth Transition
-            - entity: input_number.sl_kitchen_smooth_transition_duration
-              name: Transition Duration (min)
-
-      # ── Room Settings: Living Room ─────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Living Room"
-        card:
-          type: entities
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: "Motion (Sleep Mode)"
-            - entity: input_boolean.sl_living_room_motion_night
-              name: Allow wall-switch power-on at night
-            - type: section
-              label: Settings
-            - entity: input_boolean.sl_living_room_smart_power_on
-              name: Smart Wall Switch
-            - entity: input_boolean.sl_living_room_auto_transition
-              name: Auto Transition
-            - entity: input_boolean.sl_living_room_smooth_transition
-              name: Smooth Transition
-            - entity: input_number.sl_living_room_smooth_transition_duration
-              name: Transition Duration (min)
+                - type: section
+                  label: "Motion (Sleep Mode)"
+                - entity: input_boolean.sl_living_room_motion_night
+                  name: Allow wall-switch power-on at night
+                - type: section
+                  label: Settings
+                - entity: input_boolean.sl_living_room_smart_power_on
+                  name: Smart Wall Switch
+                - entity: input_boolean.sl_living_room_auto_transition
+                  name: Auto Transition
+                - entity: input_boolean.sl_living_room_smooth_transition
+                  name: Smooth Transition
+                - entity: input_number.sl_living_room_smooth_transition_duration
+                  name: Transition Duration (min)
 
   # ════════════════════════════════════════════════════════════
   # Switch Config Tab
@@ -886,525 +927,542 @@ views:
   - title: Button Config
     path: switches
     icon: mdi:light-switch
-    cards:
-      - type: entities
-        show_header_toggle: false
-        entities:
-          - entity: input_select.sl_room_selector
-            name: Room
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Room
+            icon: mdi:light-switch
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_select.sl_room_selector
+                name: Room
 
-      - type: markdown
-        content: |
-          **Button 1 (top):** Short = toggle on/off, Long = power off all
-          **Button 2:** Short = brightness up, Long = brightness max
-          **Button 3:** Short = brightness down, Long = brightness min
-          **Button 4 (bottom):** Short = cycle scenes (the 4 window scenes, then the scenes of this room with the cycle flag on; set them on the Scene Config tab), Long = toggles all lights on/off by default. Any button can be set below to a named scene ("Scene: <name>").
-          **Window scenes:** each window of a room uses its own window scene ('<Room> <Window>', Default), or the scene that you select here. Only the bulbs of the room are used, with no effect.
+          - type: markdown
+            content: |
+              **Button 1 (top):** Short = toggle on/off, Long = power off all
+              **Button 2:** Short = brightness up, Long = brightness max
+              **Button 3:** Short = brightness down, Long = brightness min
+              **Button 4 (bottom):** Short = cycle scenes (the 4 window scenes, then the scenes of this room with the cycle flag on; set them on the Scene Config tab), Long = toggles all lights on/off by default. Any button can be set below to a named scene ("Scene: <name>").
+              **Window scenes:** each window of a room uses its own window scene ('<Room> <Window>', Default), or the scene that you select here. Only the bulbs of the room are used, with no effect.
 
-      # ── Window scene slots (WO-0274) ────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Living Room"
-        card:
-          type: entities
-          title: Living Room window scenes
-          show_header_toggle: false
-          entities:
-            - entity: select.sl_living_room_slot_morning
-              name: Morning scene
-            - entity: select.sl_living_room_slot_day
-              name: Day scene
-            - entity: select.sl_living_room_slot_evening
-              name: Evening scene
-            - entity: select.sl_living_room_slot_night
-              name: Night scene
+      - type: grid
+        cards:
+          - type: heading
+            heading: Window scenes and switch
+            icon: mdi:tune
+          # ── Window scene slots (WO-0274) ────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Living Room"
+            card:
+              type: entities
+              title: Living Room window scenes
+              show_header_toggle: false
+              entities:
+                - entity: select.sl_living_room_slot_morning
+                  name: Morning scene
+                - entity: select.sl_living_room_slot_day
+                  name: Day scene
+                - entity: select.sl_living_room_slot_evening
+                  name: Evening scene
+                - entity: select.sl_living_room_slot_night
+                  name: Night scene
 
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Bedroom"
-        card:
-          type: entities
-          title: Bedroom window scenes
-          show_header_toggle: false
-          entities:
-            - entity: select.sl_bedroom_slot_morning
-              name: Morning scene
-            - entity: select.sl_bedroom_slot_day
-              name: Day scene
-            - entity: select.sl_bedroom_slot_evening
-              name: Evening scene
-            - entity: select.sl_bedroom_slot_night
-              name: Night scene
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Bedroom"
+            card:
+              type: entities
+              title: Bedroom window scenes
+              show_header_toggle: false
+              entities:
+                - entity: select.sl_bedroom_slot_morning
+                  name: Morning scene
+                - entity: select.sl_bedroom_slot_day
+                  name: Day scene
+                - entity: select.sl_bedroom_slot_evening
+                  name: Evening scene
+                - entity: select.sl_bedroom_slot_night
+                  name: Night scene
 
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Bathroom"
-        card:
-          type: entities
-          title: Bathroom window scenes
-          show_header_toggle: false
-          entities:
-            - entity: select.sl_bathroom_slot_morning
-              name: Morning scene
-            - entity: select.sl_bathroom_slot_day
-              name: Day scene
-            - entity: select.sl_bathroom_slot_evening
-              name: Evening scene
-            - entity: select.sl_bathroom_slot_night
-              name: Night scene
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Bathroom"
+            card:
+              type: entities
+              title: Bathroom window scenes
+              show_header_toggle: false
+              entities:
+                - entity: select.sl_bathroom_slot_morning
+                  name: Morning scene
+                - entity: select.sl_bathroom_slot_day
+                  name: Day scene
+                - entity: select.sl_bathroom_slot_evening
+                  name: Evening scene
+                - entity: select.sl_bathroom_slot_night
+                  name: Night scene
 
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Kitchen"
-        card:
-          type: entities
-          title: Kitchen window scenes
-          show_header_toggle: false
-          entities:
-            - entity: select.sl_kitchen_slot_morning
-              name: Morning scene
-            - entity: select.sl_kitchen_slot_day
-              name: Day scene
-            - entity: select.sl_kitchen_slot_evening
-              name: Evening scene
-            - entity: select.sl_kitchen_slot_night
-              name: Night scene
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Kitchen"
+            card:
+              type: entities
+              title: Kitchen window scenes
+              show_header_toggle: false
+              entities:
+                - entity: select.sl_kitchen_slot_morning
+                  name: Morning scene
+                - entity: select.sl_kitchen_slot_day
+                  name: Day scene
+                - entity: select.sl_kitchen_slot_evening
+                  name: Evening scene
+                - entity: select.sl_kitchen_slot_night
+                  name: Night scene
 
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Hallway"
-        card:
-          type: entities
-          title: Hallway window scenes
-          show_header_toggle: false
-          entities:
-            - entity: select.sl_hallway_slot_morning
-              name: Morning scene
-            - entity: select.sl_hallway_slot_day
-              name: Day scene
-            - entity: select.sl_hallway_slot_evening
-              name: Evening scene
-            - entity: select.sl_hallway_slot_night
-              name: Night scene
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Hallway"
+            card:
+              type: entities
+              title: Hallway window scenes
+              show_header_toggle: false
+              entities:
+                - entity: select.sl_hallway_slot_morning
+                  name: Morning scene
+                - entity: select.sl_hallway_slot_day
+                  name: Day scene
+                - entity: select.sl_hallway_slot_evening
+                  name: Evening scene
+                - entity: select.sl_hallway_slot_night
+                  name: Night scene
 
-      # ── Living Room ─────────────────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Living Room"
-        card:
-          type: entities
-          title: living_room_s_1
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: Brightness Controls
-            - entity: input_number.sl_living_room_brightness_step
-              name: Brightness Step (per press)
-            - entity: input_number.sl_living_room_min_brightness
-              name: Minimum Brightness (long dim)
-            - type: section
-              label: Multi-Room (the rooms of the Toggle Multi-Room action)
-            - entity: input_boolean.sl_living_room_multi_living_room
-              name: Living Room
-            - entity: input_boolean.sl_living_room_multi_bedroom
-              name: Bedroom
-            - entity: input_boolean.sl_living_room_multi_bathroom
-              name: Bathroom
-            - entity: input_boolean.sl_living_room_multi_kitchen
-              name: Kitchen
-            - entity: input_boolean.sl_living_room_multi_hallway
-              name: Hallway
+          # ── Living Room ─────────────────────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Living Room"
+            card:
+              type: entities
+              title: living_room_s_1
+              show_header_toggle: false
+              entities:
+                - type: section
+                  label: Brightness Controls
+                - entity: input_number.sl_living_room_brightness_step
+                  name: Brightness Step (per press)
+                - entity: input_number.sl_living_room_min_brightness
+                  name: Minimum Brightness (long dim)
+                - type: section
+                  label: Multi-Room (the rooms of the Toggle Multi-Room action)
+                - entity: input_boolean.sl_living_room_multi_living_room
+                  name: Living Room
+                - entity: input_boolean.sl_living_room_multi_bedroom
+                  name: Bedroom
+                - entity: input_boolean.sl_living_room_multi_bathroom
+                  name: Bathroom
+                - entity: input_boolean.sl_living_room_multi_kitchen
+                  name: Kitchen
+                - entity: input_boolean.sl_living_room_multi_hallway
+                  name: Hallway
 
-      # ── Bedroom ─────────────────────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Bedroom"
-        card:
-          type: entities
-          title: bedroom_s_1
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: Brightness Controls
-            - entity: input_number.sl_bedroom_brightness_step
-              name: Brightness Step (per press)
-            - entity: input_number.sl_bedroom_min_brightness
-              name: Minimum Brightness (long dim)
-            - type: section
-              label: Multi-Room (the rooms of the Toggle Multi-Room action)
-            - entity: input_boolean.sl_bedroom_multi_living_room
-              name: Living Room
-            - entity: input_boolean.sl_bedroom_multi_bedroom
-              name: Bedroom
-            - entity: input_boolean.sl_bedroom_multi_bathroom
-              name: Bathroom
-            - entity: input_boolean.sl_bedroom_multi_kitchen
-              name: Kitchen
-            - entity: input_boolean.sl_bedroom_multi_hallway
-              name: Hallway
+          # ── Bedroom ─────────────────────────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Bedroom"
+            card:
+              type: entities
+              title: bedroom_s_1
+              show_header_toggle: false
+              entities:
+                - type: section
+                  label: Brightness Controls
+                - entity: input_number.sl_bedroom_brightness_step
+                  name: Brightness Step (per press)
+                - entity: input_number.sl_bedroom_min_brightness
+                  name: Minimum Brightness (long dim)
+                - type: section
+                  label: Multi-Room (the rooms of the Toggle Multi-Room action)
+                - entity: input_boolean.sl_bedroom_multi_living_room
+                  name: Living Room
+                - entity: input_boolean.sl_bedroom_multi_bedroom
+                  name: Bedroom
+                - entity: input_boolean.sl_bedroom_multi_bathroom
+                  name: Bathroom
+                - entity: input_boolean.sl_bedroom_multi_kitchen
+                  name: Kitchen
+                - entity: input_boolean.sl_bedroom_multi_hallway
+                  name: Hallway
 
-      # ── Bathroom ────────────────────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Bathroom"
-        card:
-          type: entities
-          title: bathroom_s_1
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: Brightness Controls
-            - entity: input_number.sl_bathroom_brightness_step
-              name: Brightness Step (per press)
-            - entity: input_number.sl_bathroom_min_brightness
-              name: Minimum Brightness (long dim)
-            - type: section
-              label: Multi-Room (the rooms of the Toggle Multi-Room action)
-            - entity: input_boolean.sl_bathroom_multi_living_room
-              name: Living Room
-            - entity: input_boolean.sl_bathroom_multi_bedroom
-              name: Bedroom
-            - entity: input_boolean.sl_bathroom_multi_bathroom
-              name: Bathroom
-            - entity: input_boolean.sl_bathroom_multi_kitchen
-              name: Kitchen
-            - entity: input_boolean.sl_bathroom_multi_hallway
-              name: Hallway
+          # ── Bathroom ────────────────────────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Bathroom"
+            card:
+              type: entities
+              title: bathroom_s_1
+              show_header_toggle: false
+              entities:
+                - type: section
+                  label: Brightness Controls
+                - entity: input_number.sl_bathroom_brightness_step
+                  name: Brightness Step (per press)
+                - entity: input_number.sl_bathroom_min_brightness
+                  name: Minimum Brightness (long dim)
+                - type: section
+                  label: Multi-Room (the rooms of the Toggle Multi-Room action)
+                - entity: input_boolean.sl_bathroom_multi_living_room
+                  name: Living Room
+                - entity: input_boolean.sl_bathroom_multi_bedroom
+                  name: Bedroom
+                - entity: input_boolean.sl_bathroom_multi_bathroom
+                  name: Bathroom
+                - entity: input_boolean.sl_bathroom_multi_kitchen
+                  name: Kitchen
+                - entity: input_boolean.sl_bathroom_multi_hallway
+                  name: Hallway
 
-      # ── Kitchen ─────────────────────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Kitchen"
-        card:
-          type: entities
-          title: kitchen_s_1
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: Brightness Controls
-            - entity: input_number.sl_kitchen_brightness_step
-              name: Brightness Step (per press)
-            - entity: input_number.sl_kitchen_min_brightness
-              name: Minimum Brightness (long dim)
-            - type: section
-              label: Multi-Room (the rooms of the Toggle Multi-Room action)
-            - entity: input_boolean.sl_kitchen_multi_living_room
-              name: Living Room
-            - entity: input_boolean.sl_kitchen_multi_bedroom
-              name: Bedroom
-            - entity: input_boolean.sl_kitchen_multi_bathroom
-              name: Bathroom
-            - entity: input_boolean.sl_kitchen_multi_kitchen
-              name: Kitchen
-            - entity: input_boolean.sl_kitchen_multi_hallway
-              name: Hallway
+          # ── Kitchen ─────────────────────────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Kitchen"
+            card:
+              type: entities
+              title: kitchen_s_1
+              show_header_toggle: false
+              entities:
+                - type: section
+                  label: Brightness Controls
+                - entity: input_number.sl_kitchen_brightness_step
+                  name: Brightness Step (per press)
+                - entity: input_number.sl_kitchen_min_brightness
+                  name: Minimum Brightness (long dim)
+                - type: section
+                  label: Multi-Room (the rooms of the Toggle Multi-Room action)
+                - entity: input_boolean.sl_kitchen_multi_living_room
+                  name: Living Room
+                - entity: input_boolean.sl_kitchen_multi_bedroom
+                  name: Bedroom
+                - entity: input_boolean.sl_kitchen_multi_bathroom
+                  name: Bathroom
+                - entity: input_boolean.sl_kitchen_multi_kitchen
+                  name: Kitchen
+                - entity: input_boolean.sl_kitchen_multi_hallway
+                  name: Hallway
 
-      # ── Hallway (switch picker) ─────────────────────────────
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Hallway"
-        card:
-          type: entities
-          show_header_toggle: false
-          entities:
-            - entity: input_select.sl_switch_selector
-              name: Switch
+          # ── Hallway (switch picker) ─────────────────────────────
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Hallway"
+            card:
+              type: entities
+              show_header_toggle: false
+              entities:
+                - entity: input_select.sl_switch_selector
+                  name: Switch
 
-      # Hallway S1
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Hallway"
-          - entity: input_select.sl_switch_selector
-            state: "hallway_s_1"
-        card:
-          type: entities
-          title: hallway_s_1
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: Brightness Controls
-            - entity: input_number.sl_hallway_brightness_step
-              name: Brightness Step (per press)
-            - entity: input_number.sl_hallway_min_brightness
-              name: Minimum Brightness (long dim)
-            - type: section
-              label: Multi-Room (the rooms of the Toggle Multi-Room action)
-            - entity: input_boolean.sl_hallway_multi_living_room
-              name: Living Room
-            - entity: input_boolean.sl_hallway_multi_bedroom
-              name: Bedroom
-            - entity: input_boolean.sl_hallway_multi_bathroom
-              name: Bathroom
-            - entity: input_boolean.sl_hallway_multi_kitchen
-              name: Kitchen
-            - entity: input_boolean.sl_hallway_multi_hallway
-              name: Hallway
+          # Hallway S1
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Hallway"
+              - entity: input_select.sl_switch_selector
+                state: "hallway_s_1"
+            card:
+              type: entities
+              title: hallway_s_1
+              show_header_toggle: false
+              entities:
+                - type: section
+                  label: Brightness Controls
+                - entity: input_number.sl_hallway_brightness_step
+                  name: Brightness Step (per press)
+                - entity: input_number.sl_hallway_min_brightness
+                  name: Minimum Brightness (long dim)
+                - type: section
+                  label: Multi-Room (the rooms of the Toggle Multi-Room action)
+                - entity: input_boolean.sl_hallway_multi_living_room
+                  name: Living Room
+                - entity: input_boolean.sl_hallway_multi_bedroom
+                  name: Bedroom
+                - entity: input_boolean.sl_hallway_multi_bathroom
+                  name: Bathroom
+                - entity: input_boolean.sl_hallway_multi_kitchen
+                  name: Kitchen
+                - entity: input_boolean.sl_hallway_multi_hallway
+                  name: Hallway
 
-      # Hallway S2
-      - type: conditional
-        conditions:
-          - entity: input_select.sl_room_selector
-            state: "Hallway"
-          - entity: input_select.sl_switch_selector
-            state: "hallway_s_2"
-        card:
-          type: entities
-          title: hallway_s_2
-          show_header_toggle: false
-          entities:
-            - type: section
-              label: Brightness Controls
-            - entity: input_number.sl_hallway_s2_brightness_step
-              name: Brightness Step (per press)
-            - entity: input_number.sl_hallway_s2_min_brightness
-              name: Minimum Brightness (long dim)
-            - type: section
-              label: Multi-Room (the rooms of the Toggle Multi-Room action)
-            - entity: input_boolean.sl_hallway_s2_multi_living_room
-              name: Living Room
-            - entity: input_boolean.sl_hallway_s2_multi_bedroom
-              name: Bedroom
-            - entity: input_boolean.sl_hallway_s2_multi_bathroom
-              name: Bathroom
-            - entity: input_boolean.sl_hallway_s2_multi_kitchen
-              name: Kitchen
-            - entity: input_boolean.sl_hallway_s2_multi_hallway
-              name: Hallway
+          # Hallway S2
+          - type: conditional
+            conditions:
+              - entity: input_select.sl_room_selector
+                state: "Hallway"
+              - entity: input_select.sl_switch_selector
+                state: "hallway_s_2"
+            card:
+              type: entities
+              title: hallway_s_2
+              show_header_toggle: false
+              entities:
+                - type: section
+                  label: Brightness Controls
+                - entity: input_number.sl_hallway_s2_brightness_step
+                  name: Brightness Step (per press)
+                - entity: input_number.sl_hallway_s2_min_brightness
+                  name: Minimum Brightness (long dim)
+                - type: section
+                  label: Multi-Room (the rooms of the Toggle Multi-Room action)
+                - entity: input_boolean.sl_hallway_s2_multi_living_room
+                  name: Living Room
+                - entity: input_boolean.sl_hallway_s2_multi_bedroom
+                  name: Bedroom
+                - entity: input_boolean.sl_hallway_s2_multi_bathroom
+                  name: Bathroom
+                - entity: input_boolean.sl_hallway_s2_multi_kitchen
+                  name: Kitchen
+                - entity: input_boolean.sl_hallway_s2_multi_hallway
+                  name: Hallway
 
-      # ── Advanced: Per-Button Actions ────────────────────────
-      - type: entities
-        show_header_toggle: false
-        entities:
-          - entity: input_boolean.sl_show_button_config
-            name: Configure Button Actions
+      - type: grid
+        cards:
+          - type: heading
+            heading: Button actions
             icon: mdi:gesture-tap-button
+          # ── Advanced: Per-Button Actions ────────────────────────
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_boolean.sl_show_button_config
+                name: Configure Button Actions
+                icon: mdi:gesture-tap-button
 
-      - type: conditional
-        conditions:
-          - entity: input_boolean.sl_show_button_config
-            state: "on"
-        card:
-          type: vertical-stack
-          cards:
-            # Living Room buttons
-            - type: conditional
-              conditions:
-                - entity: input_select.sl_room_selector
-                  state: "Living Room"
-              card:
-                type: entities
-                title: living_room_s_1 — Buttons
-                show_header_toggle: false
-                entities:
-                  - type: section
-                    label: "Button 1 (top)"
-                  - entity: select.sl_living_room_b1_short
-                    name: Short Press
-                  - entity: select.sl_living_room_b1_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 2 (up)"
-                  - entity: select.sl_living_room_b2_short
-                    name: Short Press
-                  - entity: select.sl_living_room_b2_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 3 (down)"
-                  - entity: select.sl_living_room_b3_short
-                    name: Short Press
-                  - entity: select.sl_living_room_b3_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 4 (bottom)"
-                  - entity: select.sl_living_room_b4_short
-                    name: Short Press
-                  - entity: select.sl_living_room_b4_long
-                    name: Long Press
-            # Bedroom buttons
-            - type: conditional
-              conditions:
-                - entity: input_select.sl_room_selector
-                  state: "Bedroom"
-              card:
-                type: entities
-                title: bedroom_s_1 — Buttons
-                show_header_toggle: false
-                entities:
-                  - type: section
-                    label: "Button 1 (top)"
-                  - entity: select.sl_bedroom_b1_short
-                    name: Short Press
-                  - entity: select.sl_bedroom_b1_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 2 (up)"
-                  - entity: select.sl_bedroom_b2_short
-                    name: Short Press
-                  - entity: select.sl_bedroom_b2_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 3 (down)"
-                  - entity: select.sl_bedroom_b3_short
-                    name: Short Press
-                  - entity: select.sl_bedroom_b3_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 4 (bottom)"
-                  - entity: select.sl_bedroom_b4_short
-                    name: Short Press
-                  - entity: select.sl_bedroom_b4_long
-                    name: Long Press
-            # Bathroom buttons
-            - type: conditional
-              conditions:
-                - entity: input_select.sl_room_selector
-                  state: "Bathroom"
-              card:
-                type: entities
-                title: bathroom_s_1 — Buttons
-                show_header_toggle: false
-                entities:
-                  - type: section
-                    label: "Button 1 (top)"
-                  - entity: select.sl_bathroom_b1_short
-                    name: Short Press
-                  - entity: select.sl_bathroom_b1_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 2 (up)"
-                  - entity: select.sl_bathroom_b2_short
-                    name: Short Press
-                  - entity: select.sl_bathroom_b2_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 3 (down)"
-                  - entity: select.sl_bathroom_b3_short
-                    name: Short Press
-                  - entity: select.sl_bathroom_b3_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 4 (bottom)"
-                  - entity: select.sl_bathroom_b4_short
-                    name: Short Press
-                  - entity: select.sl_bathroom_b4_long
-                    name: Long Press
-            # Kitchen buttons
-            - type: conditional
-              conditions:
-                - entity: input_select.sl_room_selector
-                  state: "Kitchen"
-              card:
-                type: entities
-                title: kitchen_s_1 — Buttons
-                show_header_toggle: false
-                entities:
-                  - type: section
-                    label: "Button 1 (top)"
-                  - entity: select.sl_kitchen_b1_short
-                    name: Short Press
-                  - entity: select.sl_kitchen_b1_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 2 (up)"
-                  - entity: select.sl_kitchen_b2_short
-                    name: Short Press
-                  - entity: select.sl_kitchen_b2_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 3 (down)"
-                  - entity: select.sl_kitchen_b3_short
-                    name: Short Press
-                  - entity: select.sl_kitchen_b3_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 4 (bottom)"
-                  - entity: select.sl_kitchen_b4_short
-                    name: Short Press
-                  - entity: select.sl_kitchen_b4_long
-                    name: Long Press
-            # Hallway S1 buttons
-            - type: conditional
-              conditions:
-                - entity: input_select.sl_room_selector
-                  state: "Hallway"
-                - entity: input_select.sl_switch_selector
-                  state: "hallway_s_1"
-              card:
-                type: entities
-                title: hallway_s_1 — Buttons
-                show_header_toggle: false
-                entities:
-                  - type: section
-                    label: "Button 1 (top)"
-                  - entity: select.sl_hallway_b1_short
-                    name: Short Press
-                  - entity: select.sl_hallway_b1_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 2 (up)"
-                  - entity: select.sl_hallway_b2_short
-                    name: Short Press
-                  - entity: select.sl_hallway_b2_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 3 (down)"
-                  - entity: select.sl_hallway_b3_short
-                    name: Short Press
-                  - entity: select.sl_hallway_b3_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 4 (bottom)"
-                  - entity: select.sl_hallway_b4_short
-                    name: Short Press
-                  - entity: select.sl_hallway_b4_long
-                    name: Long Press
-            # Hallway S2 buttons
-            - type: conditional
-              conditions:
-                - entity: input_select.sl_room_selector
-                  state: "Hallway"
-                - entity: input_select.sl_switch_selector
-                  state: "hallway_s_2"
-              card:
-                type: entities
-                title: hallway_s_2 — Buttons
-                show_header_toggle: false
-                entities:
-                  - type: section
-                    label: "Button 1 (top)"
-                  - entity: select.sl_hallway_s2_b1_short
-                    name: Short Press
-                  - entity: select.sl_hallway_s2_b1_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 2 (up)"
-                  - entity: select.sl_hallway_s2_b2_short
-                    name: Short Press
-                  - entity: select.sl_hallway_s2_b2_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 3 (down)"
-                  - entity: select.sl_hallway_s2_b3_short
-                    name: Short Press
-                  - entity: select.sl_hallway_s2_b3_long
-                    name: Long Press
-                  - type: section
-                    label: "Button 4 (bottom)"
-                  - entity: select.sl_hallway_s2_b4_short
-                    name: Short Press
-                  - entity: select.sl_hallway_s2_b4_long
-                    name: Long Press
+          - type: conditional
+            conditions:
+              - entity: input_boolean.sl_show_button_config
+                state: "on"
+            card:
+              type: vertical-stack
+              cards:
+                # Living Room buttons
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Living Room"
+                  card:
+                    type: entities
+                    title: living_room_s_1 — Buttons
+                    show_header_toggle: false
+                    entities:
+                      - type: section
+                        label: "Button 1 (top)"
+                      - entity: select.sl_living_room_b1_short
+                        name: Short Press
+                      - entity: select.sl_living_room_b1_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 2 (up)"
+                      - entity: select.sl_living_room_b2_short
+                        name: Short Press
+                      - entity: select.sl_living_room_b2_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 3 (down)"
+                      - entity: select.sl_living_room_b3_short
+                        name: Short Press
+                      - entity: select.sl_living_room_b3_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 4 (bottom)"
+                      - entity: select.sl_living_room_b4_short
+                        name: Short Press
+                      - entity: select.sl_living_room_b4_long
+                        name: Long Press
+                # Bedroom buttons
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Bedroom"
+                  card:
+                    type: entities
+                    title: bedroom_s_1 — Buttons
+                    show_header_toggle: false
+                    entities:
+                      - type: section
+                        label: "Button 1 (top)"
+                      - entity: select.sl_bedroom_b1_short
+                        name: Short Press
+                      - entity: select.sl_bedroom_b1_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 2 (up)"
+                      - entity: select.sl_bedroom_b2_short
+                        name: Short Press
+                      - entity: select.sl_bedroom_b2_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 3 (down)"
+                      - entity: select.sl_bedroom_b3_short
+                        name: Short Press
+                      - entity: select.sl_bedroom_b3_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 4 (bottom)"
+                      - entity: select.sl_bedroom_b4_short
+                        name: Short Press
+                      - entity: select.sl_bedroom_b4_long
+                        name: Long Press
+                # Bathroom buttons
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Bathroom"
+                  card:
+                    type: entities
+                    title: bathroom_s_1 — Buttons
+                    show_header_toggle: false
+                    entities:
+                      - type: section
+                        label: "Button 1 (top)"
+                      - entity: select.sl_bathroom_b1_short
+                        name: Short Press
+                      - entity: select.sl_bathroom_b1_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 2 (up)"
+                      - entity: select.sl_bathroom_b2_short
+                        name: Short Press
+                      - entity: select.sl_bathroom_b2_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 3 (down)"
+                      - entity: select.sl_bathroom_b3_short
+                        name: Short Press
+                      - entity: select.sl_bathroom_b3_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 4 (bottom)"
+                      - entity: select.sl_bathroom_b4_short
+                        name: Short Press
+                      - entity: select.sl_bathroom_b4_long
+                        name: Long Press
+                # Kitchen buttons
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Kitchen"
+                  card:
+                    type: entities
+                    title: kitchen_s_1 — Buttons
+                    show_header_toggle: false
+                    entities:
+                      - type: section
+                        label: "Button 1 (top)"
+                      - entity: select.sl_kitchen_b1_short
+                        name: Short Press
+                      - entity: select.sl_kitchen_b1_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 2 (up)"
+                      - entity: select.sl_kitchen_b2_short
+                        name: Short Press
+                      - entity: select.sl_kitchen_b2_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 3 (down)"
+                      - entity: select.sl_kitchen_b3_short
+                        name: Short Press
+                      - entity: select.sl_kitchen_b3_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 4 (bottom)"
+                      - entity: select.sl_kitchen_b4_short
+                        name: Short Press
+                      - entity: select.sl_kitchen_b4_long
+                        name: Long Press
+                # Hallway S1 buttons
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Hallway"
+                    - entity: input_select.sl_switch_selector
+                      state: "hallway_s_1"
+                  card:
+                    type: entities
+                    title: hallway_s_1 — Buttons
+                    show_header_toggle: false
+                    entities:
+                      - type: section
+                        label: "Button 1 (top)"
+                      - entity: select.sl_hallway_b1_short
+                        name: Short Press
+                      - entity: select.sl_hallway_b1_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 2 (up)"
+                      - entity: select.sl_hallway_b2_short
+                        name: Short Press
+                      - entity: select.sl_hallway_b2_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 3 (down)"
+                      - entity: select.sl_hallway_b3_short
+                        name: Short Press
+                      - entity: select.sl_hallway_b3_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 4 (bottom)"
+                      - entity: select.sl_hallway_b4_short
+                        name: Short Press
+                      - entity: select.sl_hallway_b4_long
+                        name: Long Press
+                # Hallway S2 buttons
+                - type: conditional
+                  conditions:
+                    - entity: input_select.sl_room_selector
+                      state: "Hallway"
+                    - entity: input_select.sl_switch_selector
+                      state: "hallway_s_2"
+                  card:
+                    type: entities
+                    title: hallway_s_2 — Buttons
+                    show_header_toggle: false
+                    entities:
+                      - type: section
+                        label: "Button 1 (top)"
+                      - entity: select.sl_hallway_s2_b1_short
+                        name: Short Press
+                      - entity: select.sl_hallway_s2_b1_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 2 (up)"
+                      - entity: select.sl_hallway_s2_b2_short
+                        name: Short Press
+                      - entity: select.sl_hallway_s2_b2_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 3 (down)"
+                      - entity: select.sl_hallway_s2_b3_short
+                        name: Short Press
+                      - entity: select.sl_hallway_s2_b3_long
+                        name: Long Press
+                      - type: section
+                        label: "Button 4 (bottom)"
+                      - entity: select.sl_hallway_s2_b4_short
+                        name: Short Press
+                      - entity: select.sl_hallway_s2_b4_long
+                        name: Long Press
 
   # ════════════════════════════════════════════════════════════
   # Z2M Sync Tab
@@ -1412,22 +1470,30 @@ views:
   - title: Z2M Sync
     path: sync
     icon: mdi:sync
-    cards:
-      - type: entities
-        title: Sync Status
-        show_header_toggle: false
-        entities:
-          - entity: sensor.sl_z2m_sync_status
-            name: Sync status
-          - type: attribute
-            entity: sensor.sl_z2m_sync_status
-            attribute: last_sync
-            name: Last sync
-      - type: button
-        name: Force Sync
-        icon: mdi:sync
-        show_state: false
-        tap_action:
-          action: call-service
-          service: script.sl_push_config
-
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Sync
+            icon: mdi:sync
+          - type: entities
+            title: Sync Status
+            show_header_toggle: false
+            entities:
+              - entity: sensor.sl_z2m_sync_status
+                name: Sync status
+              - type: attribute
+                entity: sensor.sl_z2m_sync_status
+                attribute: last_sync
+                name: Last sync
+          - type: button
+            grid_options:
+              columns: full
+            name: Force Sync
+            icon: mdi:sync
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.sl_push_config
