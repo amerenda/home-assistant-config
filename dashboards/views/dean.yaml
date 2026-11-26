@@ -212,10 +212,47 @@ strategy:
           service: script.sl_toggle_all
       - type: horizontal-stack
         cards:
+          # badge: every room with lights on matches this window's scene
           - type: custom:mushroom-template-card
+            sl_window: morning
             primary: Morning
             icon: mdi:weather-sunset-up
             color: "{{ '#FFB74D' if is_state('sensor.sl_current_window', 'morning') else 'disabled' }}"
+            badge_color: green
+            badge_icon: &sl_window_active_tpl |-
+              {%- macro is_active(s) -%}
+              {%- set m = namespace(ok=true) -%}
+              {%- for b, v in s.lights.items() -%}
+              {%- set e = 'light.' ~ b -%}
+              {%- set st = states(e) -%}
+              {%- if v.state == 'OFF' -%}
+              {%- if st != 'off' %}{% set m.ok = false %}{% endif -%}
+              {%- elif st != 'on' -%}
+              {%- set m.ok = false -%}
+              {%- else -%}
+              {%- if v.brightness is defined and ((state_attr(e, 'brightness') | int(0)) - v.brightness) | abs > 3 %}{% set m.ok = false %}{% endif -%}
+              {%- if v.color_temp is defined -%}
+              {%- set k = state_attr(e, 'color_temp_kelvin') | int(0) -%}
+              {%- if k == 0 or (((1000000 / k) | round | int) - v.color_temp) | abs > 6 %}{% set m.ok = false %}{% endif -%}
+              {%- endif -%}
+              {%- if v.color is defined -%}
+              {%- set xy = state_attr(e, 'xy_color') or [0, 0] -%}
+              {%- if (xy[0] - v.color.x) | abs > 0.02 or (xy[1] - v.color.y) | abs > 0.02 %}{% set m.ok = false %}{% endif -%}
+              {%- endif -%}
+              {%- endif -%}
+              {%- endfor -%}
+              {{- 'y' if m.ok else '' -}}
+              {%- endmacro %}
+              {%- set w = config.sl_window %}
+              {%- set scenes = state_attr('sensor.sl_scenes', 'scenes') or [] %}
+              {%- set ns = namespace(on=0, off_scene=0) %}
+              {%- for s in scenes if s.window is defined and s.window == w %}
+              {%- if s.lights.keys() | map('regex_replace', '^', 'light.') | select('is_state', 'on') | list | count > 0 %}
+              {%- set ns.on = ns.on + 1 %}
+              {%- if is_active(s) != 'y' %}{% set ns.off_scene = ns.off_scene + 1 %}{% endif %}
+              {%- endif %}
+              {%- endfor %}
+              {{ 'mdi:check' if ns.on > 0 and ns.off_scene == 0 else '' }}
             vertical: true
             tap_action:
               action: perform-action
@@ -223,9 +260,12 @@ strategy:
               data:
                 window: morning
           - type: custom:mushroom-template-card
+            sl_window: day
             primary: Day
             icon: mdi:weather-sunny
             color: "{{ '#FFB74D' if is_state('sensor.sl_current_window', 'day') else 'disabled' }}"
+            badge_color: green
+            badge_icon: *sl_window_active_tpl
             vertical: true
             tap_action:
               action: perform-action
@@ -233,9 +273,12 @@ strategy:
               data:
                 window: day
           - type: custom:mushroom-template-card
+            sl_window: evening
             primary: Evening
             icon: mdi:weather-sunset-down
             color: "{{ '#FFB74D' if is_state('sensor.sl_current_window', 'evening') else 'disabled' }}"
+            badge_color: green
+            badge_icon: *sl_window_active_tpl
             vertical: true
             tap_action:
               action: perform-action
@@ -243,9 +286,12 @@ strategy:
               data:
                 window: evening
           - type: custom:mushroom-template-card
+            sl_window: night
             primary: Night
             icon: mdi:weather-night
             color: "{{ '#FFB74D' if is_state('sensor.sl_current_window', 'night') else 'disabled' }}"
+            badge_color: green
+            badge_icon: *sl_window_active_tpl
             vertical: true
             tap_action:
               action: perform-action
@@ -289,6 +335,29 @@ strategy:
               square: false
             filter:
               template: &sl_scene_buttons_tpl |-
+                {%- macro is_active(s) -%}
+                {%- set m = namespace(ok=true) -%}
+                {%- for b, v in s.lights.items() -%}
+                {%- set e = 'light.' ~ b -%}
+                {%- set st = states(e) -%}
+                {%- if v.state == 'OFF' -%}
+                {%- if st != 'off' %}{% set m.ok = false %}{% endif -%}
+                {%- elif st != 'on' -%}
+                {%- set m.ok = false -%}
+                {%- else -%}
+                {%- if v.brightness is defined and ((state_attr(e, 'brightness') | int(0)) - v.brightness) | abs > 3 %}{% set m.ok = false %}{% endif -%}
+                {%- if v.color_temp is defined -%}
+                {%- set k = state_attr(e, 'color_temp_kelvin') | int(0) -%}
+                {%- if k == 0 or (((1000000 / k) | round | int) - v.color_temp) | abs > 6 %}{% set m.ok = false %}{% endif -%}
+                {%- endif -%}
+                {%- if v.color is defined -%}
+                {%- set xy = state_attr(e, 'xy_color') or [0, 0] -%}
+                {%- if (xy[0] - v.color.x) | abs > 0.02 or (xy[1] - v.color.y) | abs > 0.02 %}{% set m.ok = false %}{% endif -%}
+                {%- endif -%}
+                {%- endif -%}
+                {%- endfor -%}
+                {{- 'y' if m.ok else '' -}}
+                {%- endmacro %}
                 {%- set room = config.sl_room %}
                 {%- set cur = states('sensor.sl_current_window') %}
                 {%- set icons = {'morning': 'mdi:weather-sunset-up', 'day': 'mdi:weather-sunny', 'evening': 'mdi:weather-sunset-down', 'night': 'mdi:weather-night'} %}
@@ -296,11 +365,13 @@ strategy:
                 {%- set ns = namespace(cards=[]) %}
                 {%- for w in ['morning', 'day', 'evening', 'night'] %}
                 {%- for s in scenes if s.window is defined and s.window == w %}
-                {%- set ns.cards = ns.cards + [{'type': 'custom:mushroom-template-card', 'primary': w | title, 'icon': icons[w], 'color': '#FFB74D' if w == cur else 'disabled', 'vertical': true, 'tap_action': {'action': 'perform-action', 'perform_action': 'script.sl_scene_apply_name', 'data': {'name': s.name}}}] %}
+                {%- set c = {'type': 'custom:mushroom-template-card', 'primary': w | title, 'icon': icons[w], 'color': '#FFB74D' if w == cur else 'disabled', 'vertical': true, 'tap_action': {'action': 'perform-action', 'perform_action': 'script.sl_scene_apply_name', 'data': {'name': s.name}}} %}
+                {%- set ns.cards = ns.cards + [dict(c, badge_icon='mdi:check', badge_color='green') if is_active(s) == 'y' else c] %}
                 {%- endfor %}
                 {%- endfor %}
                 {%- for s in scenes if s.window is not defined and s.in_cycle %}
-                {%- set ns.cards = ns.cards + [{'type': 'custom:mushroom-template-card', 'primary': s.name, 'icon': 'mdi:palette', 'color': 'disabled', 'vertical': true, 'tap_action': {'action': 'perform-action', 'perform_action': 'script.sl_scene_apply_name', 'data': {'name': s.name}}}] %}
+                {%- set c = {'type': 'custom:mushroom-template-card', 'primary': s.name, 'icon': 'mdi:palette', 'color': 'disabled', 'vertical': true, 'tap_action': {'action': 'perform-action', 'perform_action': 'script.sl_scene_apply_name', 'data': {'name': s.name}}} %}
+                {%- set ns.cards = ns.cards + [dict(c, badge_icon='mdi:check', badge_color='green') if is_active(s) == 'y' else c] %}
                 {%- endfor %}
                 {{ ns.cards }}
           - type: conditional
