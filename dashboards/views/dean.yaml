@@ -17,6 +17,11 @@ strategy:
         hidden: true
       light.hallway_1:
         hidden: true
+      # AC units do not report indoor humidity (always unknown)
+      sensor.151732605151026_indoor_humidity:
+        hidden: true
+      sensor.151732607639365_indoor_humidity:
+        hidden: true
       # Hide PTZ and guard buttons, sirens, and motion/animal sensors for bedroom, living room and kitchen when unavailable
       # Bedroom entities
       button.bedroom_guard_go_to:
@@ -90,10 +95,9 @@ strategy:
       binary_sensor.kitchen_person:
         hidden: true
 
-    # Hide unavailable entities using card_options templates
-    # Note: mushroom-strategy doesn't support domain-level filtering by state
-    # We need to add specific entities here as they're discovered
-    # Alternatively, entities can be hidden individually in card_options above
+    domains:
+      _:
+        hide_unavailable_entities: true
 
     # Quick access cards (between greeting and area cards)
     # Extra cards (below area cards)
@@ -191,6 +195,33 @@ strategy:
         icon_color: blue
         order: 1
         extra_cards:
+          # Scene buttons: the room's window scenes and Button 4 cycle scenes
+          # (sensor.sl_scenes). sl_room is read by the template as config.sl_room.
+          - type: custom:auto-entities
+            sl_room: Living Room
+            show_empty: false
+            card_param: cards
+            card:
+              type: grid
+              title: Scenes
+              columns: 4
+              square: false
+            filter:
+              template: &sl_scene_buttons_tpl |-
+                {%- set room = config.sl_room %}
+                {%- set cur = states('sensor.sl_current_window') %}
+                {%- set icons = {'morning': 'mdi:weather-sunset-up', 'day': 'mdi:weather-sunny', 'evening': 'mdi:weather-sunset-down', 'night': 'mdi:weather-night'} %}
+                {%- set scenes = (state_attr('sensor.sl_scenes', 'scenes') or []) | selectattr('room', 'eq', room) | list %}
+                {%- set ns = namespace(cards=[]) %}
+                {%- for w in ['morning', 'day', 'evening', 'night'] %}
+                {%- for s in scenes if s.window is defined and s.window == w %}
+                {%- set ns.cards = ns.cards + [{'type': 'custom:mushroom-template-card', 'primary': w | title, 'icon': icons[w], 'color': '#FFB74D' if w == cur else 'disabled', 'vertical': true, 'tap_action': {'action': 'perform-action', 'perform_action': 'script.sl_scene_apply_name', 'data': {'name': s.name}}}] %}
+                {%- endfor %}
+                {%- endfor %}
+                {%- for s in scenes if s.window is not defined and s.in_cycle %}
+                {%- set ns.cards = ns.cards + [{'type': 'custom:mushroom-template-card', 'primary': s.name, 'icon': 'mdi:palette', 'color': 'disabled', 'vertical': true, 'tap_action': {'action': 'perform-action', 'perform_action': 'script.sl_scene_apply_name', 'data': {'name': s.name}}}] %}
+                {%- endfor %}
+                {{ ns.cards }}
           - type: conditional
             conditions:
               - entity: switch.living_room_privacy_mode
@@ -224,6 +255,17 @@ strategy:
         icon_color: orange
         order: 2
         extra_cards:
+          - type: custom:auto-entities
+            sl_room: Kitchen
+            show_empty: false
+            card_param: cards
+            card:
+              type: grid
+              title: Scenes
+              columns: 4
+              square: false
+            filter:
+              template: *sl_scene_buttons_tpl
           - type: conditional
             conditions:
               - entity: switch.kitchen_privacy_mode
@@ -256,12 +298,35 @@ strategy:
         icon: mdi:shower
         icon_color: cyan
         order: 3
+        extra_cards:
+          - type: custom:auto-entities
+            sl_room: Bathroom
+            show_empty: false
+            card_param: cards
+            card:
+              type: grid
+              title: Scenes
+              columns: 4
+              square: false
+            filter:
+              template: *sl_scene_buttons_tpl
       bedroom:
         name: Bedroom
         icon: mdi:bed
         icon_color: purple
         order: 4
         extra_cards:
+          - type: custom:auto-entities
+            sl_room: Bedroom
+            show_empty: false
+            card_param: cards
+            card:
+              type: grid
+              title: Scenes
+              columns: 4
+              square: false
+            filter:
+              template: *sl_scene_buttons_tpl
           - type: conditional
             conditions:
               - entity: switch.bedroom_privacy_mode
@@ -294,6 +359,18 @@ strategy:
         icon: mdi:door-open
         icon_color: amber
         order: 5
+        extra_cards:
+          - type: custom:auto-entities
+            sl_room: Hallway
+            show_empty: false
+            card_param: cards
+            card:
+              type: grid
+              title: Scenes
+              columns: 4
+              square: false
+            filter:
+              template: *sl_scene_buttons_tpl
       # Hide the 'home' area card, but keep the main dashboard view
       home:
         hidden: true
